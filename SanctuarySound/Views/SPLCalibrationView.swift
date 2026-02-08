@@ -18,7 +18,6 @@ struct SPLCalibrationView: View {
     @Binding var splPreference: SPLPreference
     var onSave: (SPLPreference) -> Void
 
-    @EnvironmentObject var purchaseManager: PurchaseManager
     @Environment(\.dismiss) private var dismiss
     @State private var calibrationSPL: String = ""
     @State private var showCalibrationPrompt = false
@@ -26,8 +25,6 @@ struct SPLCalibrationView: View {
     @State private var hapticTrigger = false
     @State private var showSessionReport = false
     @State private var latestReport: SPLSessionReport?
-    @State private var freeTimerElapsed: TimeInterval = 0
-    @State private var freeTimerTask: Task<Void, Never>?
 
     /// Convenience accessor for the shared meter.
     private var splMeter: SPLMeter { store.splMeter }
@@ -187,16 +184,7 @@ struct SPLCalibrationView: View {
                             showSessionReport = true
                         }
                     } else {
-                        // Free-tier: check if 5-min limit reached
-                        if !purchaseManager.isPro && freeTimerElapsed >= PurchaseManager.freeSPLDuration {
-                            _ = purchaseManager.requirePro()
-                        } else {
-                            splMeter.start()
-                            // Start free-tier timer if not Pro
-                            if !purchaseManager.isPro {
-                                startFreeTimer()
-                            }
-                        }
+                        splMeter.start()
                     }
                 } label: {
                     HStack(spacing: 6) {
@@ -539,32 +527,6 @@ struct SPLCalibrationView: View {
         return "\(hours)h \(remainingMins)m"
     }
 
-
-    // MARK: - Free-Tier Timer
-
-    private func startFreeTimer() {
-        freeTimerTask?.cancel()
-        freeTimerTask = Task { @MainActor in
-            while !Task.isCancelled && splMeter.isRunning {
-                try? await Task.sleep(nanoseconds: 1_000_000_000) // 1 second
-                freeTimerElapsed += 1
-                if freeTimerElapsed >= PurchaseManager.freeSPLDuration {
-                    // Auto-stop and show paywall
-                    let report = splMeter.generateSessionReport(
-                        flaggingMode: splPreference.flaggingMode
-                    )
-                    splMeter.stop()
-                    if let report {
-                        store.saveReport(report)
-                        latestReport = report
-                        showSessionReport = true
-                    }
-                    _ = purchaseManager.requirePro()
-                    break
-                }
-            }
-        }
-    }
 
     // MARK: - Color Helpers
 

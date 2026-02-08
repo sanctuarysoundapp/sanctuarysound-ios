@@ -1,6 +1,6 @@
 # CLAUDE.md — SanctuarySound Project Bible
 
-> **Last Updated:** 2026-02-07
+> **Last Updated:** 2026-02-08
 > **Status:** Active Development — Sprint 2 (Mixer Integration & Analysis)
 > **Primary Stack:** Swift 5.9+ / SwiftUI / MVVM / iOS 17+
 
@@ -19,6 +19,7 @@ SanctuarySound is a native iOS app that acts as a **"Virtual Audio Director"** f
 ```
 SanctuarySound/
 ├── SanctuarySoundApp.swift              # @main entry point
+├── AppConfig.swift                      # Centralized URLs, version, mission constants
 ├── Models/
 │   └── ServiceModels.swift              # All enums, structs, data types
 ├── Engine/
@@ -30,7 +31,10 @@ SanctuarySound/
 │   ├── InputEntryView.swift             # Service setup wizard (4-step) + ViewModel + BoothColors
 │   ├── RecommendationDetailView.swift   # Engine output display (gain, EQ, comp, key warnings)
 │   ├── AnalysisView.swift               # Delta analysis display
-│   └── SPLCalibrationView.swift         # SPL monitor + calibration + alerting + session reports
+│   ├── SPLCalibrationView.swift         # SPL monitor + calibration + alerting + session reports
+│   ├── AboutView.swift                  # Mission, donation links, community, legal
+│   ├── OnboardingView.swift             # 3-screen welcome (mission + workflow + experience levels)
+│   └── SplashView.swift                 # Animated launch + RootView (splash → onboarding → home)
 ├── ViewModels/
 │   └── (ServiceSetupViewModel lives in InputEntryView.swift currently)
 ├── Store/
@@ -265,17 +269,32 @@ The engine is pure and stateless — perfect for unit testing.
 - [x] Alert Mode labeling improvements ("Alert Mode" not "Flagging Mode")
 - [x] SPL Preferences on Saved tab — tappable rows that navigate to SPL tab
 
-### ✅ Completed (GTM — Launch Prep)
-- [x] `PurchaseManager.swift` — StoreKit 2 IAP ($24.99 one-time Pro unlock)
-- [x] `PaywallView.swift` — BoothColors-themed purchase sheet
-- [x] `OnboardingView.swift` — 3-screen welcome flow
-- [x] `SplashView.swift` — Animated splash screen with equalizer bars
-- [x] Free-tier gating: 3-channel limit, EQ/HPF/comp overlay, 5-min SPL, CSV gate
+### ✅ Completed (GTM — Open Source + Donation Model)
+- [x] IAP removed — `PurchaseManager.swift` and `PaywallView.swift` deleted
+- [x] All features unlocked (no gating) — free and open-source forever
+- [x] `AppConfig.swift` — centralized URLs, donation via Church Center (Victory Church AL)
+- [x] `AboutView.swift` — mission statement, donation links, GitHub, privacy, share
+- [x] `OnboardingView.swift` — screen 1 updated for ministry mission messaging
+- [x] `SplashView.swift` — animated splash screen with equalizer bars
+- [x] `.github/FUNDING.yml` — GitHub Sponsors + donation link
+- [x] Donation model: church 501(c)(3) routed, tax-deductible for donors
 - [x] Repo foundation: .gitignore, LICENSE (MIT), README.md, PRIVACY.md, CONTRIBUTING.md
 - [x] GitHub Actions CI (.github/workflows/build.yml)
 - [x] Issue templates + PR template
 - [x] SoundEngineTests — 8 core tests passing, test target in Xcode project
 - [x] SoundEngine bug fix: gain clamping crash when drum cage isolation inverts range bounds
+
+### 🚀 Beta Readiness (Closed Beta — TestFlight)
+**Status:** READY — 0 blocking issues
+- [x] Code signing configured (Automatic, Team M2739G49TS)
+- [x] Info.plist has `NSMicrophoneUsageDescription` for SPL feature
+- [x] All Sprint 2 features implemented and functional
+- [x] 8/8 unit tests passing
+- [x] BUILD SUCCEEDED (zero errors, zero warnings)
+- [x] Zero IAP remnants in codebase (verified via grep)
+- [ ] TestFlight upload and internal testing
+- [ ] Accessibility labels for key interactive elements (VoiceOver)
+- [ ] README screenshots (currently placeholder)
 
 ### 📋 Sprint 3 — Live Mixer Connection & Scene Pushing
 **Phase 1: Connection + Read Parameters** ⭐ PRIORITY
@@ -321,7 +340,7 @@ The engine is pure and stateless — perfect for unit testing.
 - [ ] Link PCO people to SavedVocalist records
 - [ ] Auto-assign saved vocal profiles when known person detected
 
-### 🔮 Future (v2+ / Premium)
+### 🔮 Future (v2+)
 - [ ] Apple Watch SPL haptic tap (WatchConnectivity companion app)
 - [ ] Apple Watch SPL monitoring (additional measurement point during service)
 - [ ] Live Activity on Lock Screen — Dynamic Island real-time SPL display
@@ -348,12 +367,13 @@ The engine is pure and stateless — perfect for unit testing.
 | **VSC Control** | **Passive** — detect mode, provide feedback | VSC is console-side I/O routing, cannot trigger playback remotely |
 | **Mixer Connection Priority** | **Read-first** before push | Enables delta analysis without risk of changing live settings |
 | **Planning Center Auth** | OAuth 2.0 with PKCE | Standard iOS flow via ASWebAuthenticationSession |
-| **PCO Tier Gating** | **Fully Pro-gated** | Strong conversion driver; John's church actively uses PCO |
+| **PCO Tier Gating** | **Free — all features available** | Open-source model, no feature gating |
 | **SPL Measurement** | iPhone mic with calibration | Practical for volunteers; Apple Watch as future secondary point |
 | **SPL Target** | User-configurable (default 90 dB) | Preference, not hard limit |
 | **SPL Flagging** | Strict / Balanced / Variable modes | User selects sensitivity |
 | **Measurement Point (MVP)** | Mix position only | Simplifies calibration; multi-point is v2+ |
 | **Vocalist Profiles** | Saved and reusable across services | Core workflow: define once, assign per service |
+| **Donation Platform** | Church Center (Planning Center) via Victory Church AL 501(c)(3) | Tax-deductible for donors, built for churches, URL: `victorychurchal.churchcenter.com` |
 | **Analysis Mode** | Both pre-service (snapshot) and during-rehearsal (live) | Snapshot for MVP, live for Sprint 3 |
 
 ### TCP/MIDI Protocol Key Facts

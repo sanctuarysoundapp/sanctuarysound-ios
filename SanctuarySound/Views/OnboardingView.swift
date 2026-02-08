@@ -81,12 +81,12 @@ struct OnboardingView: View {
                     .tracking(3)
                     .foregroundStyle(BoothColors.textPrimary)
 
-                Text("Your Virtual Audio Director")
+                Text(AppConfig.missionStatement)
                     .font(.system(size: 15, weight: .medium))
                     .foregroundStyle(BoothColors.accent)
             }
 
-            Text("Precision mixer settings for every Sunday,\ncalculated in seconds.")
+            Text("Precision mixer settings for every\nSunday service. Open source.\nNo paywalls. Free forever.")
                 .font(.system(size: 14))
                 .foregroundStyle(BoothColors.textSecondary)
                 .multilineTextAlignment(.center)

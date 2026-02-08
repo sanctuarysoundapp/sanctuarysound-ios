@@ -190,11 +190,11 @@ private struct EqualizerBar: View {
 // MARK: - ─── Root View (Splash → Onboarding → Home Transition) ───────────
 
 /// Wraps the splash animation, onboarding flow, and main content
-/// with crossfade transitions. Manages app-level purchase state.
+/// with crossfade transitions.
 struct RootView: View {
-    @EnvironmentObject var purchaseManager: PurchaseManager
     @State private var showSplash = true
     @AppStorage("hasSeenOnboarding") private var hasSeenOnboarding = false
+    @StateObject private var themeProvider = ThemeProvider.shared
 
     var body: some View {
         ZStack {
@@ -209,11 +209,9 @@ struct RootView: View {
             } else {
                 HomeView()
                     .transition(.opacity)
-                    .sheet(isPresented: $purchaseManager.showPaywall) {
-                        PaywallView(purchaseManager: purchaseManager)
-                    }
             }
         }
+        .environmentObject(themeProvider)
         .onAppear {
             // Dismiss splash after the animation completes
             DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
@@ -221,10 +219,6 @@ struct RootView: View {
                     showSplash = false
                 }
             }
-        }
-        .task {
-            await purchaseManager.loadProducts()
-            await purchaseManager.checkEntitlement()
         }
     }
 }
@@ -238,5 +232,4 @@ struct RootView: View {
 
 #Preview("Root View") {
     RootView()
-        .environmentObject(PurchaseManager())
 }

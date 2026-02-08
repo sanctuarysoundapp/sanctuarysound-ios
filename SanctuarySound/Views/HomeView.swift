@@ -14,14 +14,17 @@ import UniformTypeIdentifiers
 
 struct HomeView: View {
     @StateObject private var store = ServiceStore()
+    @StateObject private var mixerConnection = MixerConnectionManager()
+    @StateObject private var pcoManager = PlanningCenterManager()
     @State private var selectedTab: AppTab = .setup
     @State private var bannerHapticTrigger = false
+    @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
         ZStack(alignment: .top) {
             TabView(selection: $selectedTab) {
                 // ── Tab 1: Service Setup ──
-                InputEntryView(store: store)
+                InputEntryView(store: store, pcoManager: pcoManager)
                     .tabItem {
                         Label("Setup", systemImage: "slider.horizontal.3")
                     }
@@ -45,7 +48,17 @@ struct HomeView: View {
                 }
                 .tag(AppTab.spl)
 
-                // ── Tab 4: Saved Data ──
+                // ── Tab 4: Mixer ──
+                MixerConnectionView(
+                    connectionManager: mixerConnection,
+                    store: store
+                )
+                .tabItem {
+                    Label("Mixer", systemImage: "cable.connector.horizontal")
+                }
+                .tag(AppTab.mixer)
+
+                // ── Tab 5: Saved Data ──
                 SavedDataView(store: store, selectedTab: $selectedTab)
                     .tabItem {
                         Label("Saved", systemImage: "folder.fill")
@@ -73,6 +86,16 @@ struct HomeView: View {
         }
         .sensoryFeedback(.warning, trigger: bannerHapticTrigger)
         .animation(.easeInOut(duration: 0.3), value: store.splMeter.alertState.isActive)
+        .onChange(of: scenePhase) { _, newPhase in
+            switch newPhase {
+            case .background:
+                mixerConnection.handleBackgrounding()
+            case .active:
+                mixerConnection.handleForegrounding()
+            default:
+                break
+            }
+        }
     }
 }
 
@@ -80,6 +103,7 @@ enum AppTab: String {
     case setup
     case analysis
     case spl
+    case mixer
     case saved
 }
 
@@ -184,7 +208,6 @@ private struct SPLAlertBanner: View {
 
 struct ImportAnalysisView: View {
     @ObservedObject var store: ServiceStore
-    @EnvironmentObject var purchaseManager: PurchaseManager
     @State private var showCSVImport = false
     @State private var importedSnapshot: MixerSnapshot?
     @State private var analysisResult: MixerAnalysis?
@@ -270,10 +293,7 @@ struct ImportAnalysisView: View {
                 .foregroundStyle(BoothColors.textSecondary)
 
             Button {
-                // Free-tier gate: CSV import requires Pro
-                if purchaseManager.requirePro() {
-                    showCSVImport = true
-                }
+                showCSVImport = true
             } label: {
                 HStack(spacing: 8) {
                     Image(systemName: "doc.badge.plus")
