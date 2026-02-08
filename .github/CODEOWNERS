@@ -1,0 +1,15 @@
+# SanctuarySound Code Owners
+# These owners will be automatically requested for review on PRs
+
+# Default — all files
+* @sanctuarysoundapp/core
+
+# Audio engine — critical path
+SanctuarySound/Engine/ @sanctuarysoundapp/core
+
+# Network layer — security sensitive
+SanctuarySound/Network/ @sanctuarysoundapp/core
+SanctuarySound/Store/SecureStorage.swift @sanctuarysoundapp/core
+
+# CI/CD
+.github/ @sanctuarysoundapp/core
