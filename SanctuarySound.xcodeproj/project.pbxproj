@@ -42,6 +42,7 @@
 		AA000036 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = AB000036 /* Localizable.xcstrings */; };
 		AA000037 /* InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = AB000037 /* InfoPlist.xcstrings */; };
 		AA100001 /* SoundEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB100001 /* SoundEngineTests.swift */; };
+		AA100002 /* PCOTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB100002 /* PCOTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -91,6 +92,7 @@
 		AB000036 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		AB000037 /* InfoPlist.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = InfoPlist.xcstrings; sourceTree = "<group>"; };
 		AB100001 /* SoundEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundEngineTests.swift; sourceTree = "<group>"; };
+		AB100002 /* PCOTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PCOTests.swift; sourceTree = "<group>"; };
 		AC000001 /* SanctuarySound.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SanctuarySound.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AC100001 /* SanctuarySoundTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SanctuarySoundTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -224,6 +226,7 @@
 			isa = PBXGroup;
 			children = (
 				AB100001 /* SoundEngineTests.swift */,
+				AB100002 /* PCOTests.swift */,
 			);
 			path = SanctuarySoundTests;
 			sourceTree = "<group>";
@@ -299,6 +302,7 @@
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
+				es,
 				Base,
 			);
 			mainGroup = AE000001;
@@ -369,6 +373,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AA100001 /* SoundEngineTests.swift in Sources */,
+				AA100002 /* PCOTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

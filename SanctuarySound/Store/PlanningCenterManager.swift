@@ -189,7 +189,7 @@ final class PlanningCenterManager: ObservableObject {
     // MARK: - ─── Position Mapping ────────────────────────────────────────────
 
     /// Map a PCO team position name to an InputSource enum value.
-    private func mapPositionToSource(_ position: String) -> InputSource {
+    func mapPositionToSource(_ position: String) -> InputSource {
         let lower = position.lowercased()
 
         // Vocal positions
