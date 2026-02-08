@@ -11,6 +11,7 @@
 import Foundation
 import AuthenticationServices
 import CryptoKit
+import UIKit
 
 
 // MARK: - ─── PCO Client ──────────────────────────────────────────────────
@@ -24,6 +25,12 @@ final class PCOClient: ObservableObject {
     private var tokens: PCOTokens?
     private let baseURL = "https://api.planningcenteronline.com"
     private let session = URLSession.shared
+
+    /// Retains the auth session while the browser is presented.
+    private var activeAuthSession: ASWebAuthenticationSession?
+
+    /// Provides the presentation anchor for ASWebAuthenticationSession.
+    private let contextProvider = AuthPresentationContext()
 
     init() {
         // Try to restore tokens from Keychain
@@ -256,11 +263,14 @@ final class PCOClient: ObservableObject {
     }
 
     private func performWebAuth(url: URL) async throws -> URL {
-        try await withCheckedThrowingContinuation { continuation in
-            let session = ASWebAuthenticationSession(
+        try await withCheckedThrowingContinuation { [weak self] continuation in
+            let authSession = ASWebAuthenticationSession(
                 url: url,
                 callbackURLScheme: "sanctuarysound"
-            ) { callbackURL, error in
+            ) { [weak self] callbackURL, error in
+                // Clear the retained session reference
+                self?.activeAuthSession = nil
+
                 if let error {
                     continuation.resume(throwing: error)
                 } else if let callbackURL {
@@ -269,8 +279,12 @@ final class PCOClient: ObservableObject {
                     continuation.resume(throwing: PCOError.authCancelled)
                 }
             }
-            session.prefersEphemeralWebBrowserSession = false
-            session.start()
+            authSession.prefersEphemeralWebBrowserSession = false
+            authSession.presentationContextProvider = self?.contextProvider
+
+            // Retain the session so it isn't deallocated
+            self?.activeAuthSession = authSession
+            authSession.start()
         }
     }
 
@@ -279,6 +293,26 @@ final class PCOClient: ObservableObject {
             .queryItems?
             .first(where: { $0.name == "code" })?
             .value
+    }
+}
+
+
+// MARK: - ─── Auth Presentation Context ──────────────────────────────────
+
+/// Provides the key window as the presentation anchor for ASWebAuthenticationSession.
+private final class AuthPresentationContext: NSObject, ASWebAuthenticationPresentationContextProviding {
+    func presentationAnchor(for session: ASWebAuthenticationSession) -> ASPresentationAnchor {
+        guard let scene = UIApplication.shared.connectedScenes
+            .compactMap({ $0 as? UIWindowScene })
+            .first(where: { $0.activationState == .foregroundActive }),
+              let window = scene.windows.first(where: { $0.isKeyWindow }) else {
+            // Fallback: create a window from any available scene
+            let fallbackScene = UIApplication.shared.connectedScenes
+                .compactMap({ $0 as? UIWindowScene })
+                .first
+            return fallbackScene?.windows.first ?? ASPresentationAnchor()
+        }
+        return window
     }
 }
 

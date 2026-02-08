@@ -53,7 +53,7 @@ struct SplashView: View {
                         .frame(width: 180, height: 180)
                         .opacity(glowOpacity)
 
-                    Image("AppIcon")
+                    Image("AppIconImage")
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                         .frame(width: 120, height: 120)
