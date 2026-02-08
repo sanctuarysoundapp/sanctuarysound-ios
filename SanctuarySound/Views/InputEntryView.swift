@@ -41,6 +41,18 @@ final class ServiceSetupViewModel: ObservableObject {
     @Published var editingSongIndex: Int?
 
     private let engine = SoundEngine()
+    private var hasAppliedDefaults = false
+
+    /// Apply user preferences as service defaults (called once on first appear).
+    func applyDefaults(from prefs: UserPreferences) {
+        guard !hasAppliedDefaults else { return }
+        hasAppliedDefaults = true
+        service.mixer = prefs.defaultMixer
+        service.experienceLevel = prefs.defaultExperienceLevel
+        service.bandComposition = prefs.defaultBandComposition
+        service.drumConfig = prefs.defaultDrumConfig
+        service.room = RoomProfile(size: prefs.defaultRoomSize, surface: prefs.defaultRoomSurface)
+    }
 
     // ── Computed Properties ──
 
@@ -224,20 +236,22 @@ enum SetupStep: Int, CaseIterable, Identifiable {
 }
 
 
-// MARK: - ─── Color System (Dark Booth Optimized) ──────────────────────────
+// MARK: - ─── Color System (Theme-Driven) ────────────────────────────────
 
-/// High-contrast color palette designed for dark environments.
+/// Delegates to the active ColorTheme via ThemeProvider.activeColors.
+/// All existing BoothColors.xyz references resolve dynamically to the
+/// current theme — no call-site changes needed across the codebase.
 struct BoothColors {
-    static let background       = Color(red: 0.06, green: 0.06, blue: 0.08)
-    static let surface          = Color(red: 0.10, green: 0.10, blue: 0.13)
-    static let surfaceElevated  = Color(red: 0.14, green: 0.14, blue: 0.18)
-    static let accent           = Color(red: 0.30, green: 0.75, blue: 0.55)
-    static let accentWarm       = Color(red: 0.95, green: 0.65, blue: 0.20)
-    static let accentDanger     = Color(red: 0.95, green: 0.30, blue: 0.25)
-    static let textPrimary      = Color(red: 0.92, green: 0.92, blue: 0.94)
-    static let textSecondary    = Color(red: 0.55, green: 0.55, blue: 0.60)
-    static let textMuted        = Color(red: 0.35, green: 0.35, blue: 0.40)
-    static let divider          = Color(red: 0.18, green: 0.18, blue: 0.22)
+    static var background:      Color { ThemeProvider.activeColors.background }
+    static var surface:         Color { ThemeProvider.activeColors.surface }
+    static var surfaceElevated: Color { ThemeProvider.activeColors.surfaceElevated }
+    static var accent:          Color { ThemeProvider.activeColors.accent }
+    static var accentWarm:      Color { ThemeProvider.activeColors.accentWarm }
+    static var accentDanger:    Color { ThemeProvider.activeColors.accentDanger }
+    static var textPrimary:     Color { ThemeProvider.activeColors.textPrimary }
+    static var textSecondary:   Color { ThemeProvider.activeColors.textSecondary }
+    static var textMuted:       Color { ThemeProvider.activeColors.textMuted }
+    static var divider:         Color { ThemeProvider.activeColors.divider }
 }
 
 
@@ -246,7 +260,7 @@ struct BoothColors {
 struct InputEntryView: View {
     @StateObject private var vm = ServiceSetupViewModel()
     @ObservedObject var store: ServiceStore
-    @EnvironmentObject var purchaseManager: PurchaseManager
+    @ObservedObject var pcoManager: PlanningCenterManager
 
     var body: some View {
         NavigationStack {
@@ -277,7 +291,20 @@ struct InputEntryView: View {
             .navigationTitle("SanctuarySound")
             .navigationBarTitleDisplayMode(.inline)
             .toolbarColorScheme(.dark, for: .navigationBar)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    NavigationLink {
+                        SettingsView(store: store, pcoManager: pcoManager)
+                    } label: {
+                        Image(systemName: "gearshape")
+                            .foregroundStyle(BoothColors.textSecondary)
+                    }
+                }
+            }
             .preferredColorScheme(.dark)
+            .onAppear {
+                vm.applyDefaults(from: store.userPreferences)
+            }
         }
     }
 }
@@ -736,7 +763,6 @@ struct ChannelRow: View {
 
 struct AddChannelSheet: View {
     @ObservedObject var vm: ServiceSetupViewModel
-    @EnvironmentObject var purchaseManager: PurchaseManager
     @Environment(\.dismiss) private var dismiss
 
     private var needsVocalProfile: Bool {
@@ -842,13 +868,7 @@ struct AddChannelSheet: View {
                         if isEditing {
                             vm.updateChannel()
                         } else {
-                            // Free-tier gate: limit to 3 channels
-                            if !purchaseManager.isPro &&
-                                vm.service.channels.count >= PurchaseManager.freeChannelLimit {
-                                _ = purchaseManager.requirePro()
-                            } else {
-                                vm.addChannel()
-                            }
+                            vm.addChannel()
                         }
                     }
                     .fontWeight(.semibold)
@@ -1476,5 +1496,5 @@ struct EmptyStateView: View {
 // MARK: - ─── Preview ─────────────────────────────────────────────────────
 
 #Preview {
-    InputEntryView(store: ServiceStore())
+    InputEntryView(store: ServiceStore(), pcoManager: PlanningCenterManager())
 }

@@ -24,6 +24,7 @@ final class ServiceStore: ObservableObject {
     @Published private(set) var savedSnapshots: [MixerSnapshot] = []
     @Published var splPreference: SPLPreference = SPLPreference()
     @Published private(set) var savedReports: [SPLSessionReport] = []
+    @Published var userPreferences: UserPreferences = UserPreferences()
 
     // ── Shared SPL Meter (cross-tab access for alert banner) ──
     let splMeter = SPLMeter()
@@ -35,6 +36,7 @@ final class ServiceStore: ObservableObject {
     private let snapshotsFile = "snapshots.json"
     private let preferencesFile = "preferences.json"
     private let reportsFile = "spl_reports.json"
+    private let userPreferencesFile = "user_preferences.json"
 
     private var documentsURL: URL {
         FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
@@ -178,6 +180,13 @@ final class ServiceStore: ObservableObject {
         splMeter.stop()
     }
 
+    // MARK: - User Preferences
+
+    func updatePreferences(_ preferences: UserPreferences) {
+        userPreferences = preferences
+        persist(userPreferences, to: userPreferencesFile)
+    }
+
     // MARK: - Persistence Helpers
 
     private func persist<T: Encodable>(_ data: T, to filename: String) {
@@ -213,5 +222,6 @@ final class ServiceStore: ObservableObject {
         savedSnapshots = load([MixerSnapshot].self, from: snapshotsFile) ?? []
         splPreference = load(SPLPreference.self, from: preferencesFile) ?? SPLPreference()
         savedReports = load([SPLSessionReport].self, from: reportsFile) ?? []
+        userPreferences = load(UserPreferences.self, from: userPreferencesFile) ?? UserPreferences()
     }
 }

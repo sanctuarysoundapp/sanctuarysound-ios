@@ -15,7 +15,6 @@ import SwiftUI
 struct RecommendationDetailView: View {
     let recommendation: MixerSettingRecommendation
     @Environment(\.dismiss) private var dismiss
-    @EnvironmentObject var purchaseManager: PurchaseManager
 
     var body: some View {
         NavigationStack {
@@ -36,8 +35,7 @@ struct RecommendationDetailView: View {
                         ForEach(recommendation.channelRecommendations) { channelRec in
                             ChannelRecommendationCard(
                                 channelRec: channelRec,
-                                experienceLevel: recommendation.service.experienceLevel,
-                                isPro: purchaseManager.isPro
+                                experienceLevel: recommendation.service.experienceLevel
                             )
                         }
                     }
@@ -116,7 +114,6 @@ private struct GlobalNotesCard: View {
 private struct ChannelRecommendationCard: View {
     let channelRec: ChannelRecommendation
     let experienceLevel: ExperienceLevel
-    let isPro: Bool
 
     @State private var isExpanded: Bool = false
 
@@ -133,28 +130,22 @@ private struct ChannelRecommendationCard: View {
             // ── Expandable Detail ──
             if isExpanded {
                 VStack(spacing: 12) {
-                    if isPro {
-                        // ── Pro: Full channel strip ──
-                        // HPF
-                        if experienceLevel.showsHPF, let hpf = channelRec.hpfFrequency {
-                            hpfSection(hpf: hpf)
-                        }
-
-                        // EQ
-                        if experienceLevel.showsEQ, !channelRec.eqBands.isEmpty {
-                            eqSection
-                        }
-
-                        // Compression
-                        if experienceLevel.showsCompression, let comp = channelRec.compressor {
-                            compressorSection(comp: comp)
-                        }
-                    } else {
-                        // ── Free: Pro overlay ──
-                        proLockedOverlay
+                    // HPF
+                    if experienceLevel.showsHPF, let hpf = channelRec.hpfFrequency {
+                        hpfSection(hpf: hpf)
                     }
 
-                    // Key Warnings (basic warnings free, detailed Pro)
+                    // EQ
+                    if experienceLevel.showsEQ, !channelRec.eqBands.isEmpty {
+                        eqSection
+                    }
+
+                    // Compression
+                    if experienceLevel.showsCompression, let comp = channelRec.compressor {
+                        compressorSection(comp: comp)
+                    }
+
+                    // Key Warnings
                     if !channelRec.keyWarnings.isEmpty {
                         keyWarningsSection
                     }
@@ -275,25 +266,6 @@ private struct ChannelRecommendationCard: View {
         }
         .padding(.horizontal, 16)
         .padding(.bottom, isExpanded ? 12 : 16)
-    }
-
-    // ── Pro Locked Overlay ──
-    private var proLockedOverlay: some View {
-        VStack(spacing: 8) {
-            Image(systemName: "lock.fill")
-                .font(.system(size: 20))
-                .foregroundStyle(BoothColors.accentWarm)
-            Text("EQ, HPF & Compression")
-                .font(.system(size: 13, weight: .semibold))
-                .foregroundStyle(BoothColors.textPrimary)
-            Text("Unlock with SanctuarySound Pro")
-                .font(.system(size: 11))
-                .foregroundStyle(BoothColors.textSecondary)
-        }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 20)
-        .background(BoothColors.surfaceElevated.opacity(0.6))
-        .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 
     // ── HPF Section ──

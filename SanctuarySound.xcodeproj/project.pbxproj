@@ -21,9 +21,24 @@
 		AA000012 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000012 /* HomeView.swift */; };
 		AA000013 /* ServiceStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000013 /* ServiceStore.swift */; };
 		AA000014 /* SplashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000015 /* SplashView.swift */; };
-		AA000016 /* PurchaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000016 /* PurchaseManager.swift */; };
-		AA000017 /* PaywallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000017 /* PaywallView.swift */; };
 		AA000018 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000018 /* OnboardingView.swift */; };
+		AA000019 /* AppConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000019 /* AppConfig.swift */; };
+		AA000020 /* AboutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000020 /* AboutView.swift */; };
+		AA000021 /* UserPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000021 /* UserPreferences.swift */; };
+		AA000022 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000022 /* SettingsView.swift */; };
+		AA000023 /* ColorTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000023 /* ColorTheme.swift */; };
+		AA000024 /* ThemeProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000024 /* ThemeProvider.swift */; };
+		AA000025 /* MIDIMessageTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000025 /* MIDIMessageTypes.swift */; };
+		AA000026 /* MIDIProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000026 /* MIDIProtocol.swift */; };
+		AA000027 /* AvantisMIDIProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000027 /* AvantisMIDIProfile.swift */; };
+		AA000028 /* SQMIDIProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000028 /* SQMIDIProfile.swift */; };
+		AA000029 /* MixerConnectionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000029 /* MixerConnectionManager.swift */; };
+		AA000030 /* MixerConnectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000030 /* MixerConnectionView.swift */; };
+		AA000031 /* SecureStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000031 /* SecureStorage.swift */; };
+		AA000032 /* PCOModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000032 /* PCOModels.swift */; };
+		AA000033 /* PCOClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000033 /* PCOClient.swift */; };
+		AA000034 /* PlanningCenterManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000034 /* PlanningCenterManager.swift */; };
+		AA000035 /* PCOImportSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000035 /* PCOImportSheet.swift */; };
 		AA100001 /* SoundEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB100001 /* SoundEngineTests.swift */; };
 /* End PBXBuildFile section */
 
@@ -53,9 +68,24 @@
 		AB000013 /* ServiceStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceStore.swift; sourceTree = "<group>"; };
 		AB000014 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		AB000015 /* SplashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashView.swift; sourceTree = "<group>"; };
-		AB000016 /* PurchaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PurchaseManager.swift; sourceTree = "<group>"; };
-		AB000017 /* PaywallView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaywallView.swift; sourceTree = "<group>"; };
 		AB000018 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
+		AB000019 /* AppConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConfig.swift; sourceTree = "<group>"; };
+		AB000020 /* AboutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutView.swift; sourceTree = "<group>"; };
+		AB000021 /* UserPreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserPreferences.swift; sourceTree = "<group>"; };
+		AB000022 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		AB000023 /* ColorTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorTheme.swift; sourceTree = "<group>"; };
+		AB000024 /* ThemeProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeProvider.swift; sourceTree = "<group>"; };
+		AB000025 /* MIDIMessageTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MIDIMessageTypes.swift; sourceTree = "<group>"; };
+		AB000026 /* MIDIProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MIDIProtocol.swift; sourceTree = "<group>"; };
+		AB000027 /* AvantisMIDIProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvantisMIDIProfile.swift; sourceTree = "<group>"; };
+		AB000028 /* SQMIDIProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SQMIDIProfile.swift; sourceTree = "<group>"; };
+		AB000029 /* MixerConnectionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MixerConnectionManager.swift; sourceTree = "<group>"; };
+		AB000030 /* MixerConnectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MixerConnectionView.swift; sourceTree = "<group>"; };
+		AB000031 /* SecureStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecureStorage.swift; sourceTree = "<group>"; };
+		AB000032 /* PCOModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PCOModels.swift; sourceTree = "<group>"; };
+		AB000033 /* PCOClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PCOClient.swift; sourceTree = "<group>"; };
+		AB000034 /* PlanningCenterManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlanningCenterManager.swift; sourceTree = "<group>"; };
+		AB000035 /* PCOImportSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PCOImportSheet.swift; sourceTree = "<group>"; };
 		AB100001 /* SoundEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundEngineTests.swift; sourceTree = "<group>"; };
 		AC000001 /* SanctuarySound.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SanctuarySound.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AC100001 /* SanctuarySoundTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SanctuarySoundTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -92,11 +122,13 @@
 			isa = PBXGroup;
 			children = (
 				AB000001 /* SanctuarySoundApp.swift */,
+				AB000019 /* AppConfig.swift */,
 				AB000014 /* Info.plist */,
 				AE000003 /* Models */,
 				AE000004 /* Engine */,
 				AE000005 /* Views */,
 				AE000006 /* ViewModels */,
+				AE000009 /* Network */,
 				AE000007 /* Audio */,
 				AE000008 /* Store */,
 				AB000010 /* Assets.xcassets */,
@@ -108,6 +140,8 @@
 			isa = PBXGroup;
 			children = (
 				AB000002 /* ServiceModels.swift */,
+				AB000021 /* UserPreferences.swift */,
+				AB000023 /* ColorTheme.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -131,8 +165,11 @@
 				AB000009 /* AnalysisView.swift */,
 				AB000011 /* SPLCalibrationView.swift */,
 				AB000015 /* SplashView.swift */,
-				AB000017 /* PaywallView.swift */,
 				AB000018 /* OnboardingView.swift */,
+				AB000020 /* AboutView.swift */,
+				AB000022 /* SettingsView.swift */,
+				AB000030 /* MixerConnectionView.swift */,
+				AB000035 /* PCOImportSheet.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -140,8 +177,23 @@
 		AE000006 /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
+				AB000024 /* ThemeProvider.swift */,
 			);
 			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		AE000009 /* Network */ = {
+			isa = PBXGroup;
+			children = (
+				AB000025 /* MIDIMessageTypes.swift */,
+				AB000026 /* MIDIProtocol.swift */,
+				AB000027 /* AvantisMIDIProfile.swift */,
+				AB000028 /* SQMIDIProfile.swift */,
+				AB000029 /* MixerConnectionManager.swift */,
+				AB000032 /* PCOModels.swift */,
+				AB000033 /* PCOClient.swift */,
+			);
+			path = Network;
 			sourceTree = "<group>";
 		};
 		AE000007 /* Audio */ = {
@@ -156,7 +208,8 @@
 			isa = PBXGroup;
 			children = (
 				AB000013 /* ServiceStore.swift */,
-				AB000016 /* PurchaseManager.swift */,
+				AB000031 /* SecureStorage.swift */,
+				AB000034 /* PlanningCenterManager.swift */,
 			);
 			path = Store;
 			sourceTree = "<group>";
@@ -282,9 +335,24 @@
 				AA000012 /* HomeView.swift in Sources */,
 				AA000013 /* ServiceStore.swift in Sources */,
 				AA000014 /* SplashView.swift in Sources */,
-				AA000016 /* PurchaseManager.swift in Sources */,
-				AA000017 /* PaywallView.swift in Sources */,
 				AA000018 /* OnboardingView.swift in Sources */,
+				AA000019 /* AppConfig.swift in Sources */,
+				AA000020 /* AboutView.swift in Sources */,
+				AA000021 /* UserPreferences.swift in Sources */,
+				AA000022 /* SettingsView.swift in Sources */,
+				AA000023 /* ColorTheme.swift in Sources */,
+				AA000024 /* ThemeProvider.swift in Sources */,
+				AA000025 /* MIDIMessageTypes.swift in Sources */,
+				AA000026 /* MIDIProtocol.swift in Sources */,
+				AA000027 /* AvantisMIDIProfile.swift in Sources */,
+				AA000028 /* SQMIDIProfile.swift in Sources */,
+				AA000029 /* MixerConnectionManager.swift in Sources */,
+				AA000030 /* MixerConnectionView.swift in Sources */,
+				AA000031 /* SecureStorage.swift in Sources */,
+				AA000032 /* PCOModels.swift in Sources */,
+				AA000033 /* PCOClient.swift in Sources */,
+				AA000034 /* PlanningCenterManager.swift in Sources */,
+				AA000035 /* PCOImportSheet.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

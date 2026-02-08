@@ -4,5 +4,18 @@
 <dict>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>SanctuarySound uses the microphone to measure sound pressure levels (SPL) in your worship space for mix calibration.</string>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>SanctuarySound connects to your Allen &amp; Heath mixer over the local network to read channel settings for analysis and recommendations.</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>sanctuarysound</string>
+			</array>
+			<key>CFBundleURLName</key>
+			<string>com.sanctuarysound.oauth</string>
+		</dict>
+	</array>
 </dict>
 </plist>

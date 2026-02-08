@@ -8,9 +8,11 @@
 
 > **Precision mixer settings for every Sunday, calculated in seconds.**
 
-SanctuarySound is an open-source iOS app that calculates optimal mixer settings for church worship services. Enter your band composition, room acoustics, setlist, and console model — get precise gain ranges, EQ curves, compressor parameters, HPF frequencies, and fader start points tailored to your specific setup.
+SanctuarySound is a **free, open-source** iOS app that calculates optimal mixer settings for church worship services. Enter your band composition, room acoustics, setlist, and console model — get precise gain ranges, EQ curves, compressor parameters, HPF frequencies, and fader start points tailored to your specific setup.
 
-Built by a church audio volunteer, for church audio volunteers.
+**No subscriptions. No paywalls. No ads. Free forever.**
+
+Built for the church, by the church.
 
 ---
 
@@ -107,7 +109,7 @@ SanctuarySound/
 
 **Pattern:** MVVM with strict separation. Models own no logic. ViewModels own the engine. Views display state. The `SoundEngine` is pure and stateless — designed for unit testing.
 
-**Dependencies:** Zero. Pure Swift, SwiftUI, AVFoundation, and StoreKit.
+**Dependencies:** Zero. Pure Swift, SwiftUI, and AVFoundation.
 
 ---
 
@@ -141,6 +143,17 @@ Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines
 ## Privacy
 
 SanctuarySound collects **no data**. The microphone is used only for real-time SPL measurement — audio is never recorded or transmitted. All user data is stored locally on your device. See [PRIVACY.md](PRIVACY.md) for the full policy.
+
+---
+
+## Support This Ministry
+
+SanctuarySound is free forever. If this app helps your worship team, consider supporting its development:
+
+- **Church Teams:** [Donate through Victory Church AL](https://victorychurchal.churchcenter.com) (tax-deductible via 501(c)(3))
+- **Developers:** [GitHub Sponsors](https://github.com/sponsors/sanctuarysoundapp)
+
+Every contribution helps us build more tools for the church audio community.
 
 ---
 

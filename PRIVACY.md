@@ -28,9 +28,9 @@ All user data (services, vocalist profiles, input presets, mixer snapshots, SPL 
 - Is not accessible to other apps
 - Is deleted when you uninstall the App
 
-## In-App Purchases
+## Donations
 
-The App offers a one-time in-app purchase ("SanctuarySound Pro") processed entirely through Apple's App Store. SanctuarySound does not collect, store, or have access to any payment information. All billing is handled by Apple. See [Apple's Privacy Policy](https://www.apple.com/legal/privacy/) for details.
+SanctuarySound is free and open-source. Voluntary donations are processed through external platforms (church ministry website and GitHub Sponsors). The App does not collect, process, or have access to any payment or donor information. Donation links in the app open your web browser — no payment data passes through the app.
 
 ## Third-Party Services
 
