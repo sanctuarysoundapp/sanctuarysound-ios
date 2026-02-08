@@ -1,7 +1,7 @@
 # SanctuarySound — Virtual Audio Director
 
 <!-- [![App Store](https://img.shields.io/badge/App_Store-Download-blue?logo=apple)](https://apps.apple.com/app/sanctuarysound) -->
-[![Build](https://img.shields.io/github/actions/workflow/status/sanctuarysound/sanctuarysound-ios/build.yml?branch=main)](https://github.com/sanctuarysound/sanctuarysound-ios/actions)
+[![Build](https://img.shields.io/github/actions/workflow/status/sanctuarysoundapp/sanctuarysound-ios/build.yml?branch=main)](https://github.com/sanctuarysoundapp/sanctuarysound-ios/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-iOS_17+-lightgrey?logo=apple)](https://developer.apple.com/ios/)
 [![Swift](https://img.shields.io/badge/Swift-5.9+-orange?logo=swift)](https://swift.org)
@@ -86,7 +86,7 @@ The engine always calculates everything — the experience level only controls w
 ### Build
 
 ```bash
-git clone https://github.com/sanctuarysound/sanctuarysound-ios.git
+git clone https://github.com/sanctuarysoundapp/sanctuarysound-ios.git
 cd sanctuarysound-ios
 open SanctuarySound.xcodeproj
 ```

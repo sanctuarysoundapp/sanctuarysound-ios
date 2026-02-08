@@ -47,4 +47,4 @@ If this policy is updated, the changes will be posted here with an updated "Last
 ## Contact
 
 For privacy questions or concerns, please open an issue on our GitHub repository:
-https://github.com/sanctuarysound/sanctuarysound-ios/issues
+https://github.com/sanctuarysoundapp/sanctuarysound-ios/issues

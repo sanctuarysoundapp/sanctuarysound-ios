@@ -14,7 +14,7 @@ Thank you for your interest in contributing to SanctuarySound! This app helps ch
 ### Setup
 
 ```bash
-git clone https://github.com/sanctuarysound/sanctuarysound-ios.git
+git clone https://github.com/sanctuarysoundapp/sanctuarysound-ios.git
 cd sanctuarysound-ios
 open SanctuarySound.xcodeproj
 ```
@@ -25,7 +25,7 @@ Build and run on the iOS Simulator (iPhone 16 Pro or later recommended).
 
 ### Reporting Bugs
 
-Use the [Bug Report](https://github.com/sanctuarysound/sanctuarysound-ios/issues/new?template=bug_report.md) issue template. Include:
+Use the [Bug Report](https://github.com/sanctuarysoundapp/sanctuarysound-ios/issues/new?template=bug_report.md) issue template. Include:
 
 - Steps to reproduce
 - Expected vs. actual behavior
@@ -35,7 +35,7 @@ Use the [Bug Report](https://github.com/sanctuarysound/sanctuarysound-ios/issues
 
 ### Requesting Features
 
-Use the [Feature Request](https://github.com/sanctuarysound/sanctuarysound-ios/issues/new?template=feature_request.md) issue template. Describe:
+Use the [Feature Request](https://github.com/sanctuarysoundapp/sanctuarysound-ios/issues/new?template=feature_request.md) issue template. Describe:
 
 - The use case (what problem does this solve?)
 - Your proposed solution
@@ -43,7 +43,7 @@ Use the [Feature Request](https://github.com/sanctuarysound/sanctuarysound-ios/i
 
 ### Requesting New Mixer Support
 
-Use the [Mixer Support Request](https://github.com/sanctuarysound/sanctuarysound-ios/issues/new?template=mixer_support.md) template. Include:
+Use the [Mixer Support Request](https://github.com/sanctuarysoundapp/sanctuarysound-ios/issues/new?template=mixer_support.md) template. Include:
 
 - Mixer brand and model
 - Gain range (min to max dB)
