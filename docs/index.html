@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SanctuarySound — Virtual Audio Director for House of Worship</title>
+    <meta name="description" content="Free, open-source iOS app that gives church audio volunteers precise mixer settings — gain, EQ, compression — tailored to every Sunday service.">
+    <style>
+        :root {
+            --bg: #0F0F14;
+            --surface: #1A1A21;
+            --surface-elevated: #242430;
+            --accent: #4DC08D;
+            --accent-warm: #F2A633;
+            --accent-danger: #F24D40;
+            --text-primary: #EBEBF0;
+            --text-secondary: #8C8C99;
+            --text-muted: #59596B;
+            --divider: #2E2E38;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg);
+            color: var(--text-primary);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Hero */
+        .hero {
+            text-align: center;
+            padding: 80px 0 60px;
+        }
+
+        .hero-icon {
+            width: 96px;
+            height: 96px;
+            background: linear-gradient(135deg, var(--accent), #2A9D6A);
+            border-radius: 22px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 28px;
+            font-size: 48px;
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 12px;
+        }
+
+        .hero h1 span {
+            color: var(--accent);
+        }
+
+        .hero .tagline {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            max-width: 560px;
+            margin: 0 auto 32px;
+        }
+
+        .hero-badges {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            background: var(--surface);
+            border: 1px solid var(--divider);
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .badge .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent);
+        }
+
+        .badge .dot.amber {
+            background: var(--accent-warm);
+        }
+
+        /* Features */
+        .features {
+            padding: 60px 0;
+        }
+
+        .features h2 {
+            text-align: center;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: var(--accent);
+            margin-bottom: 40px;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: var(--surface);
+            border: 1px solid var(--divider);
+            border-radius: 14px;
+            padding: 28px;
+        }
+
+        .feature-card .icon {
+            font-size: 1.8rem;
+            margin-bottom: 12px;
+        }
+
+        .feature-card h3 {
+            font-size: 1.05rem;
+            margin-bottom: 8px;
+        }
+
+        .feature-card p {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        /* Mission */
+        .mission {
+            padding: 60px 0;
+            text-align: center;
+        }
+
+        .mission-card {
+            background: var(--surface);
+            border: 1px solid var(--divider);
+            border-radius: 14px;
+            padding: 48px 32px;
+            max-width: 640px;
+            margin: 0 auto;
+        }
+
+        .mission-card h2 {
+            font-size: 1.5rem;
+            margin-bottom: 16px;
+        }
+
+        .mission-card p {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            line-height: 1.7;
+        }
+
+        .mission-card .highlight {
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        /* CTA */
+        .cta {
+            padding: 60px 0;
+            text-align: center;
+        }
+
+        .cta h2 {
+            font-size: 1.5rem;
+            margin-bottom: 12px;
+        }
+
+        .cta p {
+            color: var(--text-secondary);
+            margin-bottom: 28px;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: transform 0.15s, opacity 0.15s;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            opacity: 0.9;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: var(--bg);
+        }
+
+        .btn-secondary {
+            background: var(--surface-elevated);
+            color: var(--text-primary);
+            border: 1px solid var(--divider);
+        }
+
+        /* Footer */
+        footer {
+            border-top: 1px solid var(--divider);
+            padding: 32px 0;
+            text-align: center;
+        }
+
+        footer .links {
+            display: flex;
+            gap: 24px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+
+        footer a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        footer a:hover {
+            color: var(--accent);
+        }
+
+        footer .copyright {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+
+        /* Divider */
+        .section-divider {
+            border: none;
+            border-top: 1px solid var(--divider);
+            margin: 0;
+        }
+
+        /* Responsive */
+        @media (max-width: 640px) {
+            .hero {
+                padding: 60px 0 40px;
+            }
+
+            .hero h1 {
+                font-size: 1.8rem;
+            }
+
+            .hero .tagline {
+                font-size: 1.05rem;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .mission-card {
+                padding: 32px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-icon">&#127911;</div>
+            <h1>Sanctuary<span>Sound</span></h1>
+            <p class="tagline">A virtual audio director that gives church volunteers precise mixer settings for every Sunday service.</p>
+            <div class="hero-badges">
+                <span class="badge"><span class="dot"></span> Free &amp; Open Source</span>
+                <span class="badge"><span class="dot"></span> iOS 17+</span>
+                <span class="badge"><span class="dot amber"></span> Closed Beta</span>
+            </div>
+        </div>
+    </section>
+
+    <hr class="section-divider">
+
+    <!-- Features -->
+    <section class="features">
+        <div class="container">
+            <h2>What It Does</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="icon">&#127899;</div>
+                    <h3>Smart Gain Staging</h3>
+                    <p>Calculates optimal preamp gain for every channel based on source type, mic model, and your mixer's range. No more guessing.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="icon">&#127932;</div>
+                    <h3>Key-Aware EQ</h3>
+                    <p>Adjusts EQ recommendations per song key. Carves space between kick and bass, tames mud zones, and boosts presence where it matters.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="icon">&#128202;</div>
+                    <h3>SPL Monitoring</h3>
+                    <p>Real-time sound level measurement with threshold alerts, haptic feedback, and session reports. Keep your mix at a healthy volume.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="icon">&#128268;</div>
+                    <h3>Live Mixer Connection</h3>
+                    <p>Connect to Allen &amp; Heath Avantis and SQ consoles over TCP/MIDI. Read channel parameters in real time for delta analysis.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="icon">&#128197;</div>
+                    <h3>Planning Center Import</h3>
+                    <p>Import setlists and team rosters directly from Planning Center Online. Songs, keys, BPM, and team positions auto-populate your service setup.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="icon">&#128200;</div>
+                    <h3>Delta Analysis</h3>
+                    <p>Compare your actual mixer settings against computed ideals. See exactly where your mix diverges and what to adjust, channel by channel.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <hr class="section-divider">
+
+    <!-- Mission -->
+    <section class="mission">
+        <div class="container">
+            <div class="mission-card">
+                <h2>For The Church, By The Church</h2>
+                <p>
+                    SanctuarySound is an <span class="highlight">open-source ministry tool</span> built to turn volunteers into capable audio engineers. No subscriptions. No paywalls. No feature gating. Every feature is free, forever.
+                </p>
+                <p style="margin-top: 16px;">
+                    Built by worship tech volunteers who understand the Sunday morning reality: rotating teams, changing bands, and the pressure of getting the mix right on the first try.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <hr class="section-divider">
+
+    <!-- CTA -->
+    <section class="cta">
+        <div class="container">
+            <h2>Join the Closed Beta</h2>
+            <p>SanctuarySound is currently in closed beta testing via TestFlight.</p>
+            <div class="cta-buttons">
+                <a href="https://github.com/sanctuarysoundapp/sanctuarysound-ios" class="btn btn-primary">View on GitHub</a>
+                <a href="https://victorychurchal.churchcenter.com" class="btn btn-secondary">Support the Mission</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="links">
+                <a href="https://github.com/sanctuarysoundapp/sanctuarysound-ios">GitHub</a>
+                <a href="https://github.com/sanctuarysoundapp/sanctuarysound-ios/blob/main/PRIVACY.md">Privacy Policy</a>
+                <a href="https://github.com/sanctuarysoundapp/sanctuarysound-ios/blob/main/CONTRIBUTING.md">Contribute</a>
+                <a href="https://github.com/sanctuarysoundapp/sanctuarysound-ios/issues">Report an Issue</a>
+            </div>
+            <p class="copyright">SanctuarySound is a ministry of Victory Church AL, a 501(c)(3) nonprofit. MIT License.</p>
+        </div>
+    </footer>
+
+</body>
+</html>
