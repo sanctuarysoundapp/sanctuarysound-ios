@@ -39,6 +39,8 @@
 		AA000033 /* PCOClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000033 /* PCOClient.swift */; };
 		AA000034 /* PlanningCenterManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000034 /* PlanningCenterManager.swift */; };
 		AA000035 /* PCOImportSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000035 /* PCOImportSheet.swift */; };
+		AA000036 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = AB000036 /* Localizable.xcstrings */; };
+		AA000037 /* InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = AB000037 /* InfoPlist.xcstrings */; };
 		AA100001 /* SoundEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB100001 /* SoundEngineTests.swift */; };
 /* End PBXBuildFile section */
 
@@ -86,6 +88,8 @@
 		AB000033 /* PCOClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PCOClient.swift; sourceTree = "<group>"; };
 		AB000034 /* PlanningCenterManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlanningCenterManager.swift; sourceTree = "<group>"; };
 		AB000035 /* PCOImportSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PCOImportSheet.swift; sourceTree = "<group>"; };
+		AB000036 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
+		AB000037 /* InfoPlist.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = InfoPlist.xcstrings; sourceTree = "<group>"; };
 		AB100001 /* SoundEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundEngineTests.swift; sourceTree = "<group>"; };
 		AC000001 /* SanctuarySound.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SanctuarySound.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AC100001 /* SanctuarySoundTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SanctuarySoundTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -132,6 +136,8 @@
 				AE000007 /* Audio */,
 				AE000008 /* Store */,
 				AB000010 /* Assets.xcassets */,
+				AB000036 /* Localizable.xcstrings */,
+				AB000037 /* InfoPlist.xcstrings */,
 			);
 			path = SanctuarySound;
 			sourceTree = "<group>";
@@ -312,6 +318,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				AA000010 /* Assets.xcassets in Resources */,
+				AA000036 /* Localizable.xcstrings in Resources */,
+				AA000037 /* InfoPlist.xcstrings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

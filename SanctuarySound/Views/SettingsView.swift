@@ -72,7 +72,7 @@ struct SettingsView: View {
             settingsRow(label: "Console") {
                 Picker("Console", selection: $prefs.defaultMixer) {
                     ForEach(MixerModel.allCases) { mixer in
-                        Text(mixer.rawValue).tag(mixer)
+                        Text(mixer.localizedName).tag(mixer)
                     }
                 }
                 .pickerStyle(.menu)
@@ -84,7 +84,7 @@ struct SettingsView: View {
             settingsRow(label: "Experience Level") {
                 Picker("Level", selection: $prefs.defaultExperienceLevel) {
                     ForEach(ExperienceLevel.allCases) { level in
-                        Text(level.rawValue).tag(level)
+                        Text(level.localizedName).tag(level)
                     }
                 }
                 .pickerStyle(.menu)
@@ -96,7 +96,7 @@ struct SettingsView: View {
             settingsRow(label: "Band") {
                 Picker("Band", selection: $prefs.defaultBandComposition) {
                     ForEach(BandComposition.allCases) { band in
-                        Text(band.rawValue).tag(band)
+                        Text(band.localizedName).tag(band)
                     }
                 }
                 .pickerStyle(.menu)
@@ -108,7 +108,7 @@ struct SettingsView: View {
             settingsRow(label: "Drums") {
                 Picker("Drums", selection: $prefs.defaultDrumConfig) {
                     ForEach(DrumConfiguration.allCases) { config in
-                        Text(config.rawValue).tag(config)
+                        Text(config.localizedName).tag(config)
                     }
                 }
                 .pickerStyle(.menu)
@@ -120,7 +120,7 @@ struct SettingsView: View {
             settingsRow(label: "Room Size") {
                 Picker("Size", selection: $prefs.defaultRoomSize) {
                     ForEach(RoomSize.allCases) { size in
-                        Text(size.rawValue).tag(size)
+                        Text(size.localizedName).tag(size)
                     }
                 }
                 .pickerStyle(.menu)
@@ -132,7 +132,7 @@ struct SettingsView: View {
             settingsRow(label: "Room Surface") {
                 Picker("Surface", selection: $prefs.defaultRoomSurface) {
                     ForEach(RoomSurface.allCases) { surface in
-                        Text(surface.rawValue).tag(surface)
+                        Text(surface.localizedName).tag(surface)
                     }
                 }
                 .pickerStyle(.menu)
@@ -255,7 +255,7 @@ struct SettingsView: View {
                     .frame(width: 28, height: 28)
 
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(theme.rawValue)
+                    Text(theme.localizedName)
                         .font(.system(size: 13, weight: .medium))
                         .foregroundStyle(BoothColors.textPrimary)
                     Text(theme.description)
