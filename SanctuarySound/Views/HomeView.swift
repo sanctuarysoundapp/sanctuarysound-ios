@@ -855,7 +855,7 @@ struct SavedDataView: View {
                                 Text(input.name)
                                     .font(.system(size: 14, weight: .medium))
                                     .foregroundStyle(BoothColors.textPrimary)
-                                Text(input.source.rawValue)
+                                Text(input.source.localizedName)
                                     .font(.system(size: 11))
                                     .foregroundStyle(BoothColors.textSecondary)
                             }
@@ -896,12 +896,12 @@ struct SavedDataView: View {
                                 Text(vocalist.name)
                                     .font(.system(size: 14, weight: .medium))
                                     .foregroundStyle(BoothColors.textPrimary)
-                                Text("\(vocalist.range.rawValue) — \(vocalist.style.rawValue)")
+                                Text("\(vocalist.range.localizedName) — \(vocalist.style.localizedName)")
                                     .font(.system(size: 11))
                                     .foregroundStyle(BoothColors.textSecondary)
                             }
                             Spacer()
-                            Text(vocalist.preferredMic.rawValue.components(separatedBy: " ").first ?? "")
+                            Text(vocalist.preferredMic.localizedName.components(separatedBy: " ").first ?? "")
                                 .font(.system(size: 9, weight: .bold, design: .monospaced))
                                 .foregroundStyle(BoothColors.textMuted)
                         }
@@ -977,7 +977,7 @@ struct SavedDataView: View {
             SPLPreferenceRow(
                 icon: "bell.badge.fill",
                 title: "Alert Mode",
-                value: store.splPreference.flaggingMode.rawValue,
+                value: store.splPreference.flaggingMode.localizedName,
                 subtitle: "Flags when \(Int(store.splPreference.flagThresholdDB)) dB over target",
                 valueColor: BoothColors.accentWarm
             ) {

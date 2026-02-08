@@ -50,6 +50,10 @@ enum ColorThemeID: String, CaseIterable, Identifiable, Codable {
         }
     }
 
+    var localizedName: String {
+        String(localized: String.LocalizationValue(rawValue))
+    }
+
     var description: String {
         switch self {
         case .darkBooth:    return "Classic dark palette with green accents"

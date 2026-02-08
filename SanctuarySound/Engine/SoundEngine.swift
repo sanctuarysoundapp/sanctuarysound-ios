@@ -440,7 +440,7 @@ final class SoundEngine {
                 frequency: 200,
                 gainDB: cutAmount,
                 q: 1.5,
-                reason: "Proximity effect correction for \(vocal.micType.rawValue)"
+                reason: "Proximity effect correction for \(vocal.micType.localizedName)"
             ))
         }
         
@@ -450,7 +450,7 @@ final class SoundEngine {
             frequency: presenceMid,
             gainDB: 2.0,
             q: 1.5,
-            reason: "Presence boost for \(vocal.range.rawValue) voice"
+            reason: "Presence boost for \(vocal.range.localizedName) voice"
         ))
 
         // "Air" boost for soprano/mezzo-soprano range or contemporary worship
@@ -487,7 +487,7 @@ final class SoundEngine {
                 frequency: 350,
                 gainDB: room.surface.lowMidBiasDB,
                 q: 1.0,
-                reason: "Room correction: \(room.surface.rawValue) surfaces"
+                reason: "Room correction: \(room.surface.localizedName) surfaces"
             ))
         }
         
@@ -498,7 +498,7 @@ final class SoundEngine {
                 gainDB: room.surface.highFrequencyBiasDB,
                 q: 0.7,
                 type: .highShelf,
-                reason: "Room HF correction: \(room.surface.rawValue) surfaces"
+                reason: "Room HF correction: \(room.surface.localizedName) surfaces"
             ))
         }
         
@@ -522,7 +522,7 @@ final class SoundEngine {
                     frequency: bassHz,
                     gainDB: -2.0,
                     q: 3.0,
-                    reason: "[\(songTitle)] Key of \(key.rawValue): carve space for bass at \(Int(bassHz)) Hz"
+                    reason: "[\(songTitle)] Key of \(key.localizedName): carve space for bass at \(Int(bassHz)) Hz"
                 ))
             }
         }
@@ -537,7 +537,7 @@ final class SoundEngine {
                         frequency: h3,
                         gainDB: -1.5,
                         q: 2.5,
-                        reason: "[\(songTitle)] Key of \(key.rawValue): 3rd harmonic buildup at \(Int(h3)) Hz"
+                        reason: "[\(songTitle)] Key of \(key.localizedName): 3rd harmonic buildup at \(Int(h3)) Hz"
                     ))
                 }
             }
@@ -551,7 +551,7 @@ final class SoundEngine {
                 frequency: fundamental,
                 gainDB: 1.5,
                 q: 2.5,
-                reason: "[\(songTitle)] Reinforce bass fundamental in key of \(key.rawValue) (\(Int(fundamental)) Hz)"
+                reason: "[\(songTitle)] Reinforce bass fundamental in key of \(key.localizedName) (\(Int(fundamental)) Hz)"
             ))
         }
         
@@ -592,7 +592,7 @@ final class SoundEngine {
                     attackMS: 10.0,
                     releaseMS: 120.0,
                     makeupGainDB: 1.5,
-                    reason: "Vocal compression for \(vocalProfile?.style.rawValue ?? "worship") style"
+                    reason: "Vocal compression for \(vocalProfile?.style.localizedName ?? "worship") style"
                 )
             }
             
@@ -662,7 +662,7 @@ final class SoundEngine {
                     conflictFrequency: bassHz,
                     affectedSource: source,
                     severity: .high,
-                    suggestion: "Key of \(key.rawValue) puts heavy energy at \(Int(bassHz)) Hz. Watch your low-end balance between kick and bass. Consider a tight notch cut on one to let the other breathe."
+                    suggestion: "Key of \(key.localizedName) puts heavy energy at \(Int(bassHz)) Hz. Watch your low-end balance between kick and bass. Consider a tight notch cut on one to let the other breathe."
                 ))
             }
             
@@ -674,7 +674,7 @@ final class SoundEngine {
                     conflictFrequency: lowMid,
                     affectedSource: source,
                     severity: .moderate,
-                    suggestion: "Key of \(key.rawValue) generates harmonics at \(Int(lowMid)) Hz (\"mud zone\"). Consider a subtle cut on guitars around this frequency."
+                    suggestion: "Key of \(key.localizedName) generates harmonics at \(Int(lowMid)) Hz (\"mud zone\"). Consider a subtle cut on guitars around this frequency."
                 ))
             }
             
@@ -687,7 +687,7 @@ final class SoundEngine {
                         conflictFrequency: keyH2,
                         affectedSource: source,
                         severity: .low,
-                        suggestion: "Key of \(key.rawValue): piano and vocals may compete at \(Int(keyH2)) Hz. Subtle EQ separation could help clarity."
+                        suggestion: "Key of \(key.localizedName): piano and vocals may compete at \(Int(keyH2)) Hz. Subtle EQ separation could help clarity."
                     ))
                 }
             }
@@ -763,7 +763,7 @@ final class SoundEngine {
         let uniqueKeys = Set(service.setlist.map { $0.key })
         if uniqueKeys.count == 1 && !service.setlist.isEmpty {
             let key = service.setlist.first!.key
-            notes.append("📎 All songs are in the key of \(key.rawValue). This means harmonic buildup at \(Int(key.bassRangeHz)) Hz and \(Int(key.lowMidRangeHz)) Hz will be persistent throughout the set. Monitor these frequencies closely.")
+            notes.append("📎 All songs are in the key of \(key.localizedName). This means harmonic buildup at \(Int(key.bassRangeHz)) Hz and \(Int(key.lowMidRangeHz)) Hz will be persistent throughout the set. Monitor these frequencies closely.")
         }
         
         // Intensity progression

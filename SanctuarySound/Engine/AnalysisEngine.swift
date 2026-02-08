@@ -360,7 +360,7 @@ final class AnalysisEngine {
         if flagged {
             message = "Estimated peak SPL: \(String(format: "%.0f", peakSPL)) dB — \(String(format: "%.0f", delta)) dB over your \(Int(pref.targetDB)) dB target"
         } else if delta > 0 {
-            message = "Estimated peak SPL: \(String(format: "%.0f", peakSPL)) dB — \(String(format: "%.0f", delta)) dB over target but within \(pref.flaggingMode.rawValue) threshold"
+            message = "Estimated peak SPL: \(String(format: "%.0f", peakSPL)) dB — \(String(format: "%.0f", delta)) dB over target but within \(pref.flaggingMode.localizedName) threshold"
         } else {
             message = "Estimated peak SPL: \(String(format: "%.0f", peakSPL)) dB — \(String(format: "%.0f", abs(delta))) dB under target"
         }

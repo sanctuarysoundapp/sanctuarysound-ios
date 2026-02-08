@@ -92,7 +92,7 @@ private struct OverallScoreCard: View {
                         .font(.system(size: 36))
                         .foregroundStyle(scoreColor)
 
-                    Text(analysis.overallScore.rawValue)
+                    Text(analysis.overallScore.localizedName)
                         .font(.system(size: 14, weight: .bold, design: .monospaced))
                         .foregroundStyle(scoreColor)
                 }
@@ -238,7 +238,7 @@ private struct ChannelDeltaCard: View {
                         .foregroundStyle(BoothColors.textPrimary)
 
                     if let source = delta.source {
-                        Text(source.rawValue)
+                        Text(source.localizedName)
                             .font(.system(size: 11))
                             .foregroundStyle(BoothColors.textSecondary)
                     }
@@ -246,7 +246,7 @@ private struct ChannelDeltaCard: View {
 
                 Spacer()
 
-                Text(delta.overallScore.rawValue)
+                Text(delta.overallScore.localizedName)
                     .font(.system(size: 10, weight: .bold, design: .monospaced))
                     .foregroundStyle(scoreColor)
                     .padding(.horizontal, 8)

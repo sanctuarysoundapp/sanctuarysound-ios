@@ -277,7 +277,7 @@ struct PCOImportSheet: View {
                                                 .font(.system(size: 13, weight: .medium))
                                                 .foregroundStyle(BoothColors.textPrimary)
                                             Spacer()
-                                            Text(song.key.rawValue)
+                                            Text(song.key.localizedName)
                                                 .font(.system(size: 11, weight: .bold, design: .monospaced))
                                                 .foregroundStyle(BoothColors.accent)
                                                 .padding(.horizontal, 6)
@@ -300,7 +300,7 @@ struct PCOImportSheet: View {
                                                 .font(.system(size: 13, weight: .medium))
                                                 .foregroundStyle(BoothColors.textPrimary)
                                             Spacer()
-                                            Text(channel.source.rawValue)
+                                            Text(channel.source.localizedName)
                                                 .font(.system(size: 11))
                                                 .foregroundStyle(BoothColors.textSecondary)
                                         }

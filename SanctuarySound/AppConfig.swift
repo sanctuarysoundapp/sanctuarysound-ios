@@ -52,7 +52,7 @@ struct AppConfig {
 
     // ── Mission ──
 
-    static let missionStatement = "Built for the church, by the church. Free forever."
+    static let missionStatement = String(localized: "Built for the church, by the church. Free forever.")
 
-    static let missionDescription = "SanctuarySound is an open-source ministry tool that helps church audio volunteers get better sound every Sunday. It will always be free. If this app blesses your ministry, consider supporting its development."
+    static let missionDescription = String(localized: "SanctuarySound is an open-source ministry tool that helps church audio volunteers get better sound every Sunday. It will always be free. If this app blesses your ministry, consider supporting its development.")
 }

@@ -747,7 +747,7 @@ struct InputChannel: Codable, Identifiable {
         isActive: Bool = true
     ) {
         self.id = id
-        self.label = label.isEmpty ? source.rawValue : label
+        self.label = label.isEmpty ? source.localizedName : label
         self.source = source
         self.vocalProfile = vocalProfile
         self.isActive = isActive
@@ -1494,4 +1494,118 @@ struct SPLEstimate {
     let deltaDB: Double                 // estimated - target (positive = over)
     let flagged: Bool                   // Exceeds threshold for user's flagging mode
     let message: String
+}
+
+
+// MARK: - ─── Localized Display Names ────────────────────────────────────────
+// Each user-facing enum gets a `localizedName` computed property that wraps its
+// rawValue through `String(localized:)`. This enables Xcode String Catalogs to
+// extract strings for translation while keeping rawValues stable for Codable.
+
+extension MixerModel {
+    var localizedName: String {
+        String(localized: String.LocalizationValue(rawValue))
+    }
+}
+
+extension ExperienceLevel {
+    var localizedName: String {
+        String(localized: String.LocalizationValue(rawValue))
+    }
+}
+
+extension BandComposition {
+    var localizedName: String {
+        String(localized: String.LocalizationValue(rawValue))
+    }
+}
+
+extension InputSource {
+    var localizedName: String {
+        String(localized: String.LocalizationValue(rawValue))
+    }
+}
+
+extension InputCategory {
+    var localizedName: String {
+        String(localized: String.LocalizationValue(rawValue))
+    }
+}
+
+extension VocalRange {
+    var localizedName: String {
+        String(localized: String.LocalizationValue(rawValue))
+    }
+}
+
+extension VocalStyle {
+    var localizedName: String {
+        String(localized: String.LocalizationValue(rawValue))
+    }
+}
+
+extension MicType {
+    var localizedName: String {
+        String(localized: String.LocalizationValue(rawValue))
+    }
+}
+
+extension MusicalKey {
+    var localizedName: String {
+        String(localized: String.LocalizationValue(rawValue))
+    }
+}
+
+extension DrumConfiguration {
+    var localizedName: String {
+        String(localized: String.LocalizationValue(rawValue))
+    }
+}
+
+extension RoomSize {
+    var localizedName: String {
+        String(localized: String.LocalizationValue(rawValue))
+    }
+}
+
+extension RoomSurface {
+    var localizedName: String {
+        String(localized: String.LocalizationValue(rawValue))
+    }
+}
+
+extension SongIntensity {
+    var localizedName: String {
+        String(localized: String.LocalizationValue(rawValue))
+    }
+}
+
+extension SPLFlaggingMode {
+    var localizedName: String {
+        String(localized: String.LocalizationValue(rawValue))
+    }
+}
+
+extension EQBandType {
+    var localizedName: String {
+        String(localized: String.LocalizationValue(rawValue))
+    }
+}
+
+extension WarningSeverity {
+    var localizedName: String {
+        String(localized: String.LocalizationValue(rawValue))
+    }
+}
+
+extension DeltaStatus {
+    var localizedName: String {
+        String(localized: String.LocalizationValue(rawValue))
+    }
+}
+
+extension AnalysisScore {
+    var localizedName: String {
+        String(localized: String.LocalizationValue(rawValue))
+    }
 }

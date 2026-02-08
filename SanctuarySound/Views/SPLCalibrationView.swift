@@ -353,7 +353,7 @@ struct SPLCalibrationView: View {
         SectionCard(title: "Alert Mode") {
             Picker("Alert Mode", selection: $splPreference.flaggingMode) {
                 ForEach(SPLFlaggingMode.allCases) { mode in
-                    Text(mode.rawValue).tag(mode)
+                    Text(mode.localizedName).tag(mode)
                 }
             }
             .pickerStyle(.segmented)
@@ -850,7 +850,7 @@ struct SPLSessionReportView: View {
                 )
                 ReportStatBadge(
                     label: "Mode",
-                    value: report.flaggingMode.rawValue,
+                    value: report.flaggingMode.localizedName,
                     color: BoothColors.accentWarm
                 )
             }
@@ -1080,7 +1080,7 @@ private struct ReportExportView: View {
                 HStack(spacing: 8) {
                     exportStatBadge(label: "Duration", value: formatDuration(report.totalMonitoringSeconds))
                     exportStatBadge(label: "Target", value: "\(Int(report.targetDB)) dB", color: BoothColors.accent)
-                    exportStatBadge(label: "Mode", value: report.flaggingMode.rawValue, color: BoothColors.accentWarm)
+                    exportStatBadge(label: "Mode", value: report.flaggingMode.localizedName, color: BoothColors.accentWarm)
                 }
 
                 HStack(spacing: 8) {

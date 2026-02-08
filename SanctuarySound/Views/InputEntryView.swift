@@ -78,7 +78,7 @@ final class ServiceSetupViewModel: ObservableObject {
                          draftChannelSource.category == .speech
 
         let channel = InputChannel(
-            label: draftChannelLabel.isEmpty ? draftChannelSource.rawValue : draftChannelLabel,
+            label: draftChannelLabel.isEmpty ? draftChannelSource.localizedName : draftChannelLabel,
             source: draftChannelSource,
             vocalProfile: needsVocal ? draftVocalProfile : nil
         )
@@ -93,7 +93,7 @@ final class ServiceSetupViewModel: ObservableObject {
 
         let updated = InputChannel(
             id: service.channels[index].id,
-            label: draftChannelLabel.isEmpty ? draftChannelSource.rawValue : draftChannelLabel,
+            label: draftChannelLabel.isEmpty ? draftChannelSource.localizedName : draftChannelLabel,
             source: draftChannelSource,
             vocalProfile: needsVocal ? draftVocalProfile : nil
         )
@@ -448,7 +448,7 @@ struct BasicsStepView: View {
                 SectionCard(title: "Console") {
                     Picker("Mixer", selection: $vm.service.mixer) {
                         ForEach(MixerModel.allCases) { mixer in
-                            Text(mixer.rawValue).tag(mixer)
+                            Text(mixer.localizedName).tag(mixer)
                         }
                     }
                     .pickerStyle(.menu)
@@ -463,7 +463,7 @@ struct BasicsStepView: View {
                 SectionCard(title: "Band") {
                     Picker("Composition", selection: $vm.service.bandComposition) {
                         ForEach(BandComposition.allCases) { comp in
-                            Text(comp.rawValue).tag(comp)
+                            Text(comp.localizedName).tag(comp)
                         }
                     }
                     .pickerStyle(.menu)
@@ -471,7 +471,7 @@ struct BasicsStepView: View {
 
                     Picker("Drum Setup", selection: $vm.service.drumConfig) {
                         ForEach(DrumConfiguration.allCases) { config in
-                            Text(config.rawValue).tag(config)
+                            Text(config.localizedName).tag(config)
                         }
                     }
                     .pickerStyle(.menu)
@@ -489,14 +489,14 @@ struct BasicsStepView: View {
                     )
 
                     // Room size detail
-                    Text(vm.service.room.size.rawValue)
+                    Text(vm.service.room.size.localizedName)
                         .font(.system(size: 11))
                         .foregroundStyle(BoothColors.textSecondary)
                         .frame(maxWidth: .infinity, alignment: .center)
 
                     Picker("Surfaces", selection: $vm.service.room.surface) {
                         ForEach(RoomSurface.allCases) { surface in
-                            Text(surface.rawValue).tag(surface)
+                            Text(surface.localizedName).tag(surface)
                         }
                     }
                     .pickerStyle(.menu)
@@ -676,7 +676,7 @@ struct SavedInputsSheet: View {
                                             Text(input.name)
                                                 .font(.system(size: 14, weight: .medium))
                                                 .foregroundStyle(BoothColors.textPrimary)
-                                            Text(input.source.rawValue)
+                                            Text(input.source.localizedName)
                                                 .font(.system(size: 11))
                                                 .foregroundStyle(BoothColors.textSecondary)
                                         }
@@ -729,7 +729,7 @@ struct ChannelRow: View {
                     .font(.system(size: 14, weight: .medium))
                     .foregroundStyle(BoothColors.textPrimary)
 
-                Text(channel.source.rawValue)
+                Text(channel.source.localizedName)
                     .font(.system(size: 11))
                     .foregroundStyle(BoothColors.textSecondary)
             }
@@ -789,7 +789,7 @@ struct AddChannelSheet: View {
                                                 vm.draftChannelSource = first
                                             }
                                         } label: {
-                                            Label(cat.rawValue, systemImage: cat.systemIcon)
+                                            Label(cat.localizedName, systemImage: cat.systemIcon)
                                                 .font(.system(size: 12, weight: .medium))
                                                 .foregroundStyle(
                                                     vm.selectedChannelCategory == cat
@@ -812,7 +812,7 @@ struct AddChannelSheet: View {
 
                             Picker("Input", selection: $vm.draftChannelSource) {
                                 ForEach(InputSource.allCases.filter { $0.category == vm.selectedChannelCategory }) { source in
-                                    Text(source.rawValue).tag(source)
+                                    Text(source.localizedName).tag(source)
                                 }
                             }
                             .pickerStyle(.wheel)
@@ -831,20 +831,20 @@ struct AddChannelSheet: View {
                             SectionCard(title: "Vocal Profile") {
                                 IconPicker(
                                     items: VocalRange.allCases.map { range in
-                                        (value: range, icon: vocalRangeIcon(range), label: range.rawValue)
+                                        (value: range, icon: vocalRangeIcon(range), label: range.localizedName)
                                     },
                                     selection: $vm.draftVocalProfile.range,
                                     columns: 3
                                 )
 
                                 Picker("Style", selection: $vm.draftVocalProfile.style) {
-                                    ForEach(VocalStyle.allCases) { s in Text(s.rawValue).tag(s) }
+                                    ForEach(VocalStyle.allCases) { s in Text(s.localizedName).tag(s) }
                                 }
                                 .pickerStyle(.menu)
                                 .tint(BoothColors.accent)
 
                                 Picker("Mic", selection: $vm.draftVocalProfile.micType) {
-                                    ForEach(MicType.allCases) { m in Text(m.rawValue).tag(m) }
+                                    ForEach(MicType.allCases) { m in Text(m.localizedName).tag(m) }
                                 }
                                 .pickerStyle(.menu)
                                 .tint(BoothColors.accent)
@@ -998,14 +998,14 @@ struct SongRow: View {
                 Text(song.title)
                     .font(.system(size: 14, weight: .medium))
                     .foregroundStyle(BoothColors.textPrimary)
-                Text(song.intensity.rawValue)
+                Text(song.intensity.localizedName)
                     .font(.system(size: 11))
                     .foregroundStyle(BoothColors.textSecondary)
             }
 
             Spacer()
 
-            Text(song.key.rawValue)
+            Text(song.key.localizedName)
                 .font(.system(size: 14, weight: .bold, design: .rounded))
                 .foregroundStyle(BoothColors.accent)
                 .frame(width: 32, height: 32)
@@ -1053,7 +1053,7 @@ struct AddSongSheet: View {
                                     Button {
                                         vm.draftSongKey = key
                                     } label: {
-                                        Text(key.rawValue)
+                                        Text(key.localizedName)
                                             .font(.system(size: 16, weight: .bold, design: .rounded))
                                             .foregroundStyle(
                                                 vm.draftSongKey == key
@@ -1255,14 +1255,14 @@ struct ReviewStepView: View {
         ScrollView {
             VStack(spacing: 20) {
                 SectionCard(title: "Summary") {
-                    SummaryRow(label: "Console", value: vm.service.mixer.rawValue)
-                    SummaryRow(label: "Band", value: vm.service.bandComposition.rawValue)
-                    SummaryRow(label: "Drums", value: vm.service.drumConfig.rawValue)
-                    SummaryRow(label: "Room", value: "\(vm.service.room.size.rawValue) / \(vm.service.room.surface.rawValue)")
+                    SummaryRow(label: "Console", value: vm.service.mixer.localizedName)
+                    SummaryRow(label: "Band", value: vm.service.bandComposition.localizedName)
+                    SummaryRow(label: "Drums", value: vm.service.drumConfig.localizedName)
+                    SummaryRow(label: "Room", value: "\(vm.service.room.size.localizedName) / \(vm.service.room.surface.localizedName)")
                     SummaryRow(label: "RT60 (est.)", value: String(format: "%.1f s", vm.service.room.effectiveRT60))
                     SummaryRow(label: "Channels", value: "\(vm.activeChannelCount)")
                     SummaryRow(label: "Songs", value: "\(vm.service.setlist.count)")
-                    SummaryRow(label: "Detail Level", value: vm.service.experienceLevel.rawValue)
+                    SummaryRow(label: "Detail Level", value: vm.service.experienceLevel.localizedName)
                 }
 
                 if !vm.service.setlist.isEmpty {
@@ -1270,7 +1270,7 @@ struct ReviewStepView: View {
                         HStack(spacing: 6) {
                             ForEach(vm.service.setlist) { song in
                                 VStack(spacing: 4) {
-                                    Text(song.key.rawValue)
+                                    Text(song.key.localizedName)
                                         .font(.system(size: 14, weight: .bold, design: .rounded))
                                         .foregroundStyle(BoothColors.accent)
                                     Text(song.title.prefix(8) + (song.title.count > 8 ? "..." : ""))

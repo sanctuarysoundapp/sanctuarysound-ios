@@ -76,7 +76,7 @@ private struct RecommendationHeader: View {
 
             HStack(spacing: 12) {
                 InfoBadge(label: "RT60", value: String(format: "%.1fs", service.room.effectiveRT60))
-                InfoBadge(label: "Drums", value: service.drumConfig.rawValue.components(separatedBy: " ").first ?? "")
+                InfoBadge(label: "Drums", value: service.drumConfig.localizedName.components(separatedBy: " ").first ?? "")
                 InfoBadge(
                     label: "Room",
                     value: service.room.hasLowEndProblem ? "Boomy" : "OK",
@@ -182,7 +182,7 @@ private struct ChannelRecommendationCard: View {
                     .font(.system(size: 14, weight: .semibold))
                     .foregroundStyle(BoothColors.textPrimary)
 
-                Text(channel.source.rawValue)
+                Text(channel.source.localizedName)
                     .font(.system(size: 11))
                     .foregroundStyle(BoothColors.textSecondary)
             }
@@ -574,7 +574,7 @@ private struct KeyWarningRow: View {
                         .font(.system(size: 12, weight: .semibold))
                         .foregroundStyle(BoothColors.textPrimary)
 
-                    Text("Key: \(warning.song.key.rawValue)")
+                    Text("Key: \(warning.song.key.localizedName)")
                         .font(.system(size: 10, weight: .medium, design: .monospaced))
                         .foregroundStyle(severityColor)
                         .padding(.horizontal, 6)
