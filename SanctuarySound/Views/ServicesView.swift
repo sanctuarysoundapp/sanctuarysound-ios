@@ -159,6 +159,8 @@ struct ServicesView: View {
                 .background(BoothColors.accent)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
             }
+            .accessibilityLabel("New Service")
+            .accessibilityHint("Opens the service setup wizard")
             .padding(.top, 8)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -183,6 +185,8 @@ struct ServicesView: View {
                 .background(BoothColors.accent)
                 .clipShape(RoundedRectangle(cornerRadius: 10))
             }
+            .accessibilityLabel("New Service")
+            .accessibilityHint("Opens the service setup wizard")
 
             if let lastService = store.savedServices.first {
                 Button {
@@ -199,6 +203,8 @@ struct ServicesView: View {
                     .background(BoothColors.surfaceElevated)
                     .clipShape(RoundedRectangle(cornerRadius: 10))
                 }
+                .accessibilityLabel("Duplicate Last Service")
+                .accessibilityHint("Creates a copy of \(lastService.name)")
             }
 
             if pcoManager.client.isAuthenticated {
@@ -216,6 +222,8 @@ struct ServicesView: View {
                     .background(BoothColors.accent.opacity(0.1))
                     .clipShape(RoundedRectangle(cornerRadius: 10))
                 }
+                .accessibilityLabel("Import from Planning Center")
+                .accessibilityHint("Opens service setup with Planning Center import")
             }
         }
     }
@@ -258,6 +266,8 @@ struct ServicesView: View {
                 .background(BoothColors.surfaceElevated)
                 .clipShape(RoundedRectangle(cornerRadius: 10))
             }
+            .accessibilityLabel("Add Venue")
+            .accessibilityHint("Opens a form to create a new venue")
         }
     }
 
@@ -303,6 +313,8 @@ struct ServicesView: View {
                 }
             }
             .buttonStyle(.plain)
+            .accessibilityLabel("\(venue.name), \(venue.rooms.count) room\(venue.rooms.count == 1 ? "" : "s")")
+            .accessibilityHint(expandedVenueID == venue.id ? "Collapse rooms" : "Expand rooms")
 
             // Expanded room list
             if expandedVenueID == venue.id {
@@ -327,6 +339,7 @@ struct ServicesView: View {
                         .background(BoothColors.accent.opacity(0.06))
                         .clipShape(RoundedRectangle(cornerRadius: 6))
                     }
+                    .accessibilityLabel("Add Room to \(venue.name)")
                     .padding(.leading, 24)
                     .padding(.top, 2)
                 }
@@ -377,6 +390,8 @@ struct ServicesView: View {
         }
         .padding(.leading, 24)
         .padding(.vertical, 2)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(room.name), \(roomSizeShort(room.roomSize)), \(roomSurfaceShort(room.roomSurface))\(room.defaultMixer.map { ", \($0.shortName)" } ?? "")")
         .contextMenu {
             Button {
                 editingRoom = RoomEditContext(venueID: venueID, room: room)
@@ -405,6 +420,7 @@ struct ServicesView: View {
                     .font(.system(size: 14))
                     .foregroundStyle(BoothColors.textPrimary)
                     .textInputAutocapitalization(.never)
+                    .accessibilityLabel("Search services")
                 if !searchText.isEmpty {
                     Button {
                         searchText = ""
@@ -413,6 +429,7 @@ struct ServicesView: View {
                             .font(.system(size: 14))
                             .foregroundStyle(BoothColors.textMuted)
                     }
+                    .accessibilityLabel("Clear search")
                 }
             }
             .padding(10)
@@ -488,6 +505,9 @@ struct ServicesView: View {
             .clipShape(RoundedRectangle(cornerRadius: 8))
         }
         .buttonStyle(.plain)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(service.name), \(service.channels.count) channels, \(service.mixer.shortName), \(service.setlist.count) songs")
+        .accessibilityHint("Opens service details")
         .contextMenu {
             Button {
                 duplicateService(service)
@@ -1220,6 +1240,8 @@ struct ServiceDetailView: View {
                 .background(BoothColors.accent)
                 .clipShape(RoundedRectangle(cornerRadius: 10))
             }
+            .accessibilityLabel("Re-Generate Recommendations")
+            .accessibilityHint("Runs the sound engine to calculate new mixer settings")
 
             // Duplicate for next Sunday
             Button {
@@ -1237,6 +1259,8 @@ struct ServiceDetailView: View {
                 .background(BoothColors.surfaceElevated)
                 .clipShape(RoundedRectangle(cornerRadius: 10))
             }
+            .accessibilityLabel("Duplicate for Next Sunday")
+            .accessibilityHint("Creates a copy of this service dated for next Sunday")
         }
     }
 

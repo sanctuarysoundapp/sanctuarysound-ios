@@ -25,6 +25,10 @@ struct SPLCalibrationView: View {
     @State private var hapticTrigger = false
     @State private var showSessionReport = false
     @State private var latestReport: SPLSessionReport?
+    @State private var showCalibrationError = false
+
+    // Valid SPL range for calibration references (40 dB near-silence to 130 dB pain threshold)
+    private static let calibrationRange: ClosedRange<Double> = 40...130
 
     var body: some View {
         NavigationStack {
@@ -131,6 +135,9 @@ struct SPLCalibrationView: View {
                             lineWidth: 2
                         )
                 )
+                .accessibilityElement(children: .combine)
+                .accessibilityLabel("Current sound level \(Int(splMeter.currentDB)) dB SPL")
+                .accessibilityValue("\(Int(splMeter.currentDB))")
 
                 VStack(spacing: 12) {
                     // Peak
@@ -146,6 +153,9 @@ struct SPLCalibrationView: View {
                     .padding(.vertical, 6)
                     .background(peakColor.opacity(0.08))
                     .clipShape(RoundedRectangle(cornerRadius: 6))
+                    .accessibilityElement(children: .combine)
+                    .accessibilityLabel("Peak level \(Int(splMeter.peakDB)) dB")
+                    .accessibilityValue("\(Int(splMeter.peakDB))")
 
                     // Average
                     VStack(spacing: 2) {
@@ -160,6 +170,9 @@ struct SPLCalibrationView: View {
                     .padding(.vertical, 6)
                     .background(BoothColors.surfaceElevated)
                     .clipShape(RoundedRectangle(cornerRadius: 6))
+                    .accessibilityElement(children: .combine)
+                    .accessibilityLabel("Average level \(Int(splMeter.averageDB)) dB")
+                    .accessibilityValue("\(Int(splMeter.averageDB))")
                 }
             }
 
@@ -193,6 +206,8 @@ struct SPLCalibrationView: View {
                     .background(splMeter.isRunning ? BoothColors.accentDanger : BoothColors.accent)
                     .clipShape(RoundedRectangle(cornerRadius: 10))
                 }
+                .accessibilityLabel(splMeter.isRunning ? "Stop monitoring and generate report" : "Start SPL monitoring")
+                .accessibilityHint(splMeter.isRunning ? "Stops measurement and shows a session report" : "Begins measuring sound pressure level using the iPhone microphone")
 
                 Button {
                     splMeter.resetPeak()
@@ -205,6 +220,7 @@ struct SPLCalibrationView: View {
                         .background(BoothColors.surfaceElevated)
                         .clipShape(RoundedRectangle(cornerRadius: 10))
                 }
+                .accessibilityLabel("Reset peak level")
             }
 
             // ── Breach counter (live) ──
@@ -246,6 +262,9 @@ struct SPLCalibrationView: View {
                         .font(.system(size: 18, weight: .medium))
                         .foregroundStyle(BoothColors.textMuted)
                 }
+                .accessibilityElement(children: .combine)
+                .accessibilityLabel("SPL target \(Int(splPreference.targetDB)) dB")
+                .accessibilityValue("\(Int(splPreference.targetDB))")
 
                 // ── Stepper buttons with slider ──
                 HStack(spacing: 12) {
@@ -262,6 +281,7 @@ struct SPLCalibrationView: View {
                             )
                     }
                     .disabled(splPreference.targetDB <= Self.splMin)
+                    .accessibilityLabel("Decrease target SPL")
 
                     // Slider
                     Slider(
@@ -270,6 +290,8 @@ struct SPLCalibrationView: View {
                         step: 1
                     )
                     .tint(targetSliderColor)
+                    .accessibilityLabel("SPL target slider")
+                    .accessibilityValue("\(Int(splPreference.targetDB)) dB, \(targetDescription)")
 
                     // Plus button
                     Button {
@@ -284,6 +306,7 @@ struct SPLCalibrationView: View {
                             )
                     }
                     .disabled(splPreference.targetDB >= Self.splMax)
+                    .accessibilityLabel("Increase target SPL")
                 }
 
                 // ── Range labels ──
@@ -352,6 +375,7 @@ struct SPLCalibrationView: View {
                 }
             }
             .pickerStyle(.segmented)
+            .accessibilityLabel("SPL alert mode")
 
             Text(splPreference.flaggingMode.description)
                 .font(.system(size: 11))
@@ -416,24 +440,34 @@ struct SPLCalibrationView: View {
                     .background(BoothColors.accentWarm.opacity(0.12))
                     .clipShape(RoundedRectangle(cornerRadius: 10))
                 }
+                .accessibilityLabel("Calibrate SPL meter")
+                .accessibilityHint("Lets you enter a reference SPL reading to calibrate the iPhone microphone")
             }
         }
         .alert("Calibrate SPL Meter", isPresented: $showCalibrationPrompt) {
             TextField("Reference SPL (dB)", text: $calibrationSPL)
                 .keyboardType(.decimalPad)
             Button("Calibrate") {
-                if let knownSPL = Double(calibrationSPL) {
+                if let knownSPL = Double(calibrationSPL),
+                   Self.calibrationRange.contains(knownSPL) {
                     let offset = splMeter.calculateCalibrationOffset(knownSPL: knownSPL)
                     splPreference = SPLPreference(
                         targetDB: splPreference.targetDB,
                         flaggingMode: splPreference.flaggingMode,
                         calibrationOffset: offset
                     )
+                } else {
+                    showCalibrationError = true
                 }
             }
             Button("Cancel", role: .cancel) { }
         } message: {
             Text("Play a steady tone and enter the SPL reading from your reference meter. The iPhone mic will be calibrated to match.")
+        }
+        .alert("Invalid SPL Reference", isPresented: $showCalibrationError) {
+            Button("OK", role: .cancel) { }
+        } message: {
+            Text("Enter a value between 40 and 130 dB. This is the valid range for real-world SPL calibration references.")
         }
     }
 
@@ -476,6 +510,9 @@ struct SPLCalibrationView: View {
                         .clipShape(RoundedRectangle(cornerRadius: 8))
                     }
                     .buttonStyle(.plain)
+                    .accessibilityElement(children: .combine)
+                    .accessibilityLabel("SPL report from \(formatReportDate(report.date)), \(report.breachCount) breaches, peak \(Int(report.overallPeakDB)) dB")
+                    .accessibilityHint("Tap to view full report")
 
                     // ── Delete Button (outside the card) ──
                     Button(role: .destructive) {
@@ -489,6 +526,7 @@ struct SPLCalibrationView: View {
                             .clipShape(RoundedRectangle(cornerRadius: 8))
                     }
                     .buttonStyle(.plain)
+                    .accessibilityLabel("Delete report from \(formatReportDate(report.date))")
                 }
                 .contextMenu {
                     Button(role: .destructive) {
@@ -507,10 +545,14 @@ struct SPLCalibrationView: View {
         return BoothColors.accentDanger
     }
 
+    private static let reportDateFormatter: DateFormatter = {
+        let f = DateFormatter()
+        f.dateFormat = "MMM d, h:mm a"
+        return f
+    }()
+
     private func formatReportDate(_ date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "MMM d, h:mm a"
-        return formatter.string(from: date)
+        Self.reportDateFormatter.string(from: date)
     }
 
     private func formatDuration(_ seconds: TimeInterval) -> String {
@@ -602,6 +644,9 @@ private struct SPLBar: View {
             }
         }
         .frame(height: 18)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("SPL level bar, current \(Int(currentDB)) dB, target \(Int(targetDB)) dB")
+        .accessibilityValue("\(Int(currentDB)) of \(Int(targetDB)) dB")
 
         // dB scale labels
         HStack {

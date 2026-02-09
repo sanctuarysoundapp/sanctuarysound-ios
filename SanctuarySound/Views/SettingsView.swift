@@ -137,6 +137,8 @@ struct SettingsView: View {
                 .background(BoothColors.accent)
                 .clipShape(RoundedRectangle(cornerRadius: 10))
             }
+            .accessibilityLabel("Support This Ministry")
+            .accessibilityHint("Opens donation page")
 
             settingsLink(
                 icon: "chevron.left.forwardslash.chevron.right",
@@ -297,10 +299,14 @@ struct SettingsView: View {
                 HStack(spacing: 12) {
                     Slider(value: $prefs.defaultTargetSPL, in: 70...100, step: 1)
                         .tint(BoothColors.accent)
+                        .accessibilityLabel("Target SPL")
+                        .accessibilityValue("\(Int(prefs.defaultTargetSPL)) dB")
 
                     Stepper("", value: $prefs.defaultTargetSPL, in: 70...100, step: 1)
                         .labelsHidden()
                         .tint(BoothColors.accent)
+                        .accessibilityLabel("Adjust target SPL")
+                        .accessibilityValue("\(Int(prefs.defaultTargetSPL)) dB")
                 }
                 .onChange(of: prefs.defaultTargetSPL) { _, _ in savePrefs() }
             }
@@ -365,6 +371,8 @@ struct SettingsView: View {
                                 : BoothColors.accent)
                     .clipShape(RoundedRectangle(cornerRadius: 10))
             }
+            .accessibilityLabel(pcoManager.client.isAuthenticated ? "Disconnect from Planning Center" : "Connect to Planning Center")
+            .accessibilityHint(pcoManager.client.isAuthenticated ? "Signs out of Planning Center" : "Signs in to import setlists and teams")
         }
     }
 
@@ -417,6 +425,9 @@ struct SettingsView: View {
             .background(isSelected ? BoothColors.surfaceElevated : Color.clear)
             .clipShape(RoundedRectangle(cornerRadius: 8))
         }
+        .accessibilityLabel("\(theme.localizedName) theme")
+        .accessibilityHint(theme.description)
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
 
 
@@ -474,6 +485,8 @@ struct SettingsView: View {
                 .font(.system(size: 13, weight: .bold, design: .monospaced))
                 .foregroundStyle(count > 0 ? BoothColors.accent : BoothColors.textMuted)
         }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(label): \(count)")
     }
 
 
@@ -556,6 +569,9 @@ struct SettingsView: View {
             .background(BoothColors.surfaceElevated)
             .clipShape(RoundedRectangle(cornerRadius: 8))
         }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(title), \(subtitle)")
+        .accessibilityHint("Opens in browser")
     }
 
     private func savePrefs() {

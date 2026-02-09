@@ -56,18 +56,29 @@ extension SPLSessionReport {
 
 extension SPLSessionReport {
 
+    /// Cached DateFormatter instances — created once, reused across all calls.
+    private enum Formatters {
+        static let sessionDate: DateFormatter = {
+            let f = DateFormatter()
+            f.dateFormat = "EEEE, MMM d · h:mm a"
+            return f
+        }()
+
+        static let time: DateFormatter = {
+            let f = DateFormatter()
+            f.dateFormat = "h:mm:ss a"
+            return f
+        }()
+    }
+
     /// Formats the session start date for display (e.g., "Sunday, Feb 9 · 10:30 AM").
     func formatSessionDate() -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "EEEE, MMM d · h:mm a"
-        return formatter.string(from: sessionStart)
+        Formatters.sessionDate.string(from: sessionStart)
     }
 
     /// Formats a timestamp to a short time string (e.g., "10:32:15 AM").
     func formatTime(_ date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "h:mm:ss a"
-        return formatter.string(from: date)
+        Formatters.time.string(from: date)
     }
 
     /// Formats a duration in seconds to a compact string (e.g., "45s", "3m 12s", "1h 5m").

@@ -79,6 +79,7 @@ struct InputEntryView: View {
                         Image(systemName: "gearshape")
                             .foregroundStyle(BoothColors.textSecondary)
                     }
+                    .accessibilityLabel("Settings")
                 }
             }
             .preferredColorScheme(.dark)
@@ -147,6 +148,8 @@ struct BasicsStepView: View {
                         )
                         .clipShape(RoundedRectangle(cornerRadius: 10))
                     }
+                    .accessibilityLabel("Import from Planning Center")
+                    .accessibilityHint("Import songs, team, and service details from Planning Center Online")
                 }
 
                 SectionCard(title: "Service Info") {
@@ -270,6 +273,7 @@ struct ChannelsStepView: View {
                             .font(.system(size: 13, weight: .medium))
                             .foregroundStyle(BoothColors.accentWarm)
                     }
+                    .accessibilityLabel("Import channels from Planning Center")
                 }
 
                 if !store.savedInputs.isEmpty {
@@ -280,6 +284,7 @@ struct ChannelsStepView: View {
                             .font(.system(size: 13, weight: .medium))
                             .foregroundStyle(BoothColors.accentWarm)
                     }
+                    .accessibilityLabel("Open saved inputs library")
                     .padding(.trailing, 12)
                 }
 
@@ -291,6 +296,8 @@ struct ChannelsStepView: View {
                         .font(.system(size: 14, weight: .semibold))
                         .foregroundStyle(BoothColors.accent)
                 }
+                .accessibilityLabel("Add input channel")
+                .accessibilityHint("Opens a sheet to configure a new input channel")
             }
             .padding(.horizontal)
             .padding(.vertical, 10)
@@ -319,6 +326,7 @@ struct ChannelsStepView: View {
                                             .font(.system(size: 11, weight: .medium))
                                             .foregroundStyle(BoothColors.accent)
                                     }
+                                    .accessibilityLabel("Edit \(channel.label)")
                                     Spacer()
                                     Divider().frame(height: 14)
                                     Spacer()
@@ -329,6 +337,7 @@ struct ChannelsStepView: View {
                                             .font(.system(size: 11, weight: .medium))
                                             .foregroundStyle(BoothColors.accentWarm)
                                     }
+                                    .accessibilityLabel("Duplicate \(channel.label)")
                                     Spacer()
                                     Divider().frame(height: 14)
                                     Spacer()
@@ -339,6 +348,7 @@ struct ChannelsStepView: View {
                                             .font(.system(size: 11, weight: .medium))
                                             .foregroundStyle(BoothColors.accentDanger)
                                     }
+                                    .accessibilityLabel("Remove \(channel.label)")
                                     Spacer()
                                 }
                                 .padding(.vertical, 6)
@@ -607,6 +617,7 @@ struct SetlistStepView: View {
                             .font(.system(size: 13, weight: .medium))
                             .foregroundStyle(BoothColors.accentWarm)
                     }
+                    .accessibilityLabel("Import setlist from Planning Center")
                 }
 
                 Button {
@@ -617,6 +628,7 @@ struct SetlistStepView: View {
                         .font(.system(size: 14, weight: .semibold))
                         .foregroundStyle(BoothColors.accent)
                 }
+                .accessibilityLabel("Add song to setlist")
             }
             .padding(.horizontal)
             .padding(.vertical, 10)
@@ -645,6 +657,7 @@ struct SetlistStepView: View {
                                             .font(.system(size: 11, weight: .medium))
                                             .foregroundStyle(BoothColors.accent)
                                     }
+                                    .accessibilityLabel("Edit \(song.title)")
                                     Spacer()
                                     Divider().frame(height: 14)
                                     Spacer()
@@ -655,6 +668,7 @@ struct SetlistStepView: View {
                                             .font(.system(size: 11, weight: .medium))
                                             .foregroundStyle(BoothColors.accentWarm)
                                     }
+                                    .accessibilityLabel("Duplicate \(song.title)")
                                     Spacer()
                                     Divider().frame(height: 14)
                                     Spacer()
@@ -665,6 +679,7 @@ struct SetlistStepView: View {
                                             .font(.system(size: 11, weight: .medium))
                                             .foregroundStyle(BoothColors.accentDanger)
                                     }
+                                    .accessibilityLabel("Remove \(song.title)")
                                     Spacer()
                                 }
                                 .padding(.vertical, 6)
@@ -740,6 +755,8 @@ struct AddSongSheet: View {
                                             .clipShape(RoundedRectangle(cornerRadius: 8))
                                     }
                                     .buttonStyle(.plain)
+                                    .accessibilityLabel("Key of \(key.localizedName)")
+                                    .accessibilityAddTraits(vm.draftSongKey == key ? .isSelected : [])
                                 }
                             }
 
@@ -977,6 +994,8 @@ struct ReviewStepView: View {
                     .clipShape(RoundedRectangle(cornerRadius: 12))
                 }
                 .disabled(!vm.canGenerate || vm.isGenerating)
+                .accessibilityLabel(vm.isGenerating ? "Calculating mix recommendations" : "Generate mix recommendations")
+                .accessibilityHint(vm.canGenerate ? "Runs the sound engine to compute gain, EQ, and compression settings for all channels" : "Add at least one input channel first")
                 .padding(.top, 8)
 
                 if !vm.canGenerate {

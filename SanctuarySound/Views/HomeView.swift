@@ -171,6 +171,9 @@ private struct SPLAlertBanner: View {
             .shadow(color: bannerColor.opacity(0.4), radius: 8, y: 2)
         }
         .buttonStyle(.plain)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(labelText), \(messageText)")
+        .accessibilityHint("Tap to view SPL monitor")
         .padding(.horizontal, 12)
         .padding(.top, 4)
         .onAppear {
@@ -227,6 +230,8 @@ struct CSVImportSheet: View {
                                 .background(BoothColors.accent)
                                 .clipShape(RoundedRectangle(cornerRadius: 10))
                             }
+                            .accessibilityLabel("Choose CSV file")
+                            .accessibilityHint("Opens a file picker to select a CSV export from your mixer software")
 
                             Text("or paste CSV content below")
                                 .font(.system(size: 11))
@@ -243,6 +248,7 @@ struct CSVImportSheet: View {
                                 .padding(8)
                                 .background(BoothColors.surfaceElevated)
                                 .clipShape(RoundedRectangle(cornerRadius: 8))
+                                .accessibilityLabel("CSV content")
                         }
 
                         if let error = importError {
@@ -270,6 +276,8 @@ struct CSVImportSheet: View {
                             .clipShape(RoundedRectangle(cornerRadius: 10))
                         }
                         .disabled(csvText.isEmpty)
+                        .accessibilityLabel("Import CSV")
+                        .accessibilityHint("Parses the CSV content and imports mixer settings")
                     }
                     .padding()
                 }

@@ -45,6 +45,8 @@ struct StepIndicatorBar: View {
                         .frame(maxWidth: .infinity)
                     }
                     .buttonStyle(.plain)
+                    .accessibilityLabel("Step: \(step.title)")
+                    .accessibilityAddTraits(step == currentStep ? .isSelected : [])
                 }
             }
         }
