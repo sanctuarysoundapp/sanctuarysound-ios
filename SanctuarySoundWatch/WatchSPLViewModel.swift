@@ -9,6 +9,7 @@
 // ============================================================================
 
 import Foundation
+import SwiftUI
 import WatchKit
 
 
@@ -32,8 +33,12 @@ final class WatchSPLViewModel: ObservableObject {
     // ── Reports ──
     @Published private(set) var reports: [SPLSessionReport] = []
 
+    // ── Crown Adjustment ──
+    @Published var crownTargetDB: Double = 90.0
+    private var crownDebounceTask: Task<Void, Never>?
+
     // ── Session Receiver ──
-    private let sessionReceiver = WatchSessionReceiver()
+    let sessionReceiver = WatchSessionReceiver()
 
     // ── Haptic Tracking ──
     private var previousAlertRaw: String = "safe"
@@ -54,6 +59,48 @@ final class WatchSPLViewModel: ObservableObject {
         } else {
             sessionReceiver.sendCommand(WCMessageKey.commandStart)
         }
+    }
+
+    // MARK: - ─── Ring Gauge Computations ──────────────────────────────────────
+
+    /// Ring fill fraction: 0.0 at 40 dB floor, 1.0 at target dB. Can exceed 1.0 when over target.
+    var ringFillFraction: Double {
+        let floor = 40.0
+        let range = max(targetDB - floor, 1.0)
+        return min(max(currentDB - floor, 0), range + 20) / range
+    }
+
+    /// Ring color based on current alert state: green (safe), amber (warning), red (alert).
+    var ringColor: Color {
+        switch alertStateCodable.rawValue {
+        case "alert":
+            return WatchColors.accentDanger
+        case "warning":
+            return WatchColors.accentWarm
+        default:
+            return WatchColors.accent
+        }
+    }
+
+    // MARK: - ─── Crown Target Adjustment ────────────────────────────────────────
+
+    /// Called by the view when crownTargetDB changes via Digital Crown rotation.
+    /// Debounces 500ms before committing the value and syncing to iPhone.
+    func onCrownTargetChanged() {
+        crownDebounceTask?.cancel()
+        crownDebounceTask = Task { @MainActor [weak self] in
+            try? await Task.sleep(nanoseconds: 500_000_000)
+            guard !Task.isCancelled, let self else { return }
+            self.commitCrownTarget()
+        }
+    }
+
+    private func commitCrownTarget() {
+        let clamped = min(max(crownTargetDB, 70.0), 100.0)
+        crownTargetDB = clamped
+        targetDB = clamped
+        UserDefaults.standard.set(clamped, forKey: "watchTargetDB")
+        sessionReceiver.sendPreferenceUpdate(targetDB: clamped)
     }
 
     // MARK: - Receiver Configuration
@@ -105,6 +152,7 @@ final class WatchSPLViewModel: ObservableObject {
     private func handlePreferences(_ context: [String: Any]) {
         if let target = context[WCMessageKey.targetDB] as? Double {
             targetDB = target
+            crownTargetDB = target
             UserDefaults.standard.set(target, forKey: "watchTargetDB")
         }
         if let mode = context[WCMessageKey.flaggingMode] as? String {
@@ -149,6 +197,8 @@ final class WatchSPLViewModel: ObservableObject {
     private func loadLocalData() {
         targetDB = UserDefaults.standard.double(forKey: "watchTargetDB")
         if targetDB == 0 { targetDB = 90.0 }
+
+        crownTargetDB = targetDB
 
         flaggingModeName = UserDefaults.standard.string(forKey: "watchFlaggingMode") ?? "Balanced"
 

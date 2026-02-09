@@ -33,6 +33,7 @@ enum WCMessageKey {
     // ── Message Types ──
     static let typeSPLSnapshot = "splSnapshot"
     static let typeCommand = "command"
+    static let typePreferenceUpdate = "preferenceUpdate"
 
     // ── Application Context Keys (preferences) ──
     static let targetDB = "targetDB"

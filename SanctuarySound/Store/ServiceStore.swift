@@ -392,6 +392,21 @@ final class ServiceStore: ObservableObject {
                 self.stopMonitoringAndSaveReport()
             }
         }
+
+        // Handle Watch target dB update (Crown adjustment)
+        watchManager.onTargetDBUpdate = { [weak self] newTarget in
+            guard let self else { return }
+            Task { @MainActor in
+                let updated = SPLPreference(
+                    targetDB: newTarget,
+                    flaggingMode: self.splPreference.flaggingMode,
+                    calibrationOffset: self.splPreference.calibrationOffset
+                )
+                self.splPreference = updated
+                self.splMeter.updateAlertThresholds(preference: updated)
+                self.persist(updated, to: self.preferencesFile)
+            }
+        }
     }
 
     // MARK: - Persistence Helpers
