@@ -56,11 +56,30 @@ Enter your service details in 60 seconds. SanctuarySound's engine analyzes every
 - Configurable target SPL with alert modes (Strict / Balanced / Variable)
 - Haptic alerts when exceeding thresholds
 - Session reports with breach logging, grades, and statistics
+- Calibration with 40-130 dB reference validation
 
 **Mixer Analysis**
 - Import mixer state from Allen & Heath Director CSV exports
 - Delta analysis: compare your actual settings vs. calculated ideals
 - Per-channel scoring with actionable suggestions
+- Live console connection via TCP/MIDI (Avantis, SQ series)
+
+**Planning Center Online Integration**
+- OAuth 2.0 import of setlists (songs, keys, BPM) directly from service plans
+- Team roster import with smart position-to-channel classification
+- Folder navigation with breadcrumb bar
+- Drum kit templates (Basic 3-mic, Standard 5-mic, Full 7-mic, Custom)
+
+**Audio Tools**
+- 31-band 1/3-octave Real-Time Analyzer (EQ Analyzer) via vDSP FFT
+- RT60 room acoustics measurement (clap-test wizard + Schroeder integration)
+- Sound Engineer Q&A — 13 built-in articles across 8 categories
+
+**Apple Watch Companion**
+- Real-time SPL monitoring relayed from iPhone via WatchConnectivity
+- Start/stop controls from your wrist
+- Past session reports viewable on Watch
+- WidgetKit complications for watch face (circular gauge, corner, rectangular)
 
 **Detail Level Gating**
 - Essentials: Gain + Fader only
@@ -68,6 +87,10 @@ Enter your service details in 60 seconds. SanctuarySound's engine analyzes every
 - Full: Full channel strip with compression and detailed key warnings
 
 The engine always calculates everything — the detail level only controls what's displayed.
+
+**Accessibility**
+- Comprehensive VoiceOver support across all interactive views
+- Accessibility labels, hints, and traits on buttons, data displays, and navigation
 
 ---
 
@@ -81,8 +104,8 @@ The engine always calculates everything — the detail level only controls what'
 
 ### Requirements
 
-- iOS 17.0+
-- Xcode 15.0+
+- iOS 17.0+ (watchOS 10.0+ for companion app)
+- Xcode 16.0+
 - Swift 5.9+
 
 ### Build
@@ -99,17 +122,27 @@ Select an iPhone simulator and press **Cmd+R** to build and run.
 
 ```
 SanctuarySound/
-├── Models/          # Pure value types (structs, enums)
-├── Engine/          # Stateless calculation engine
-├── Views/           # SwiftUI views (dark booth-optimized)
+├── Config/          # App entry point, URLs
+├── Models/          # Pure value types (structs, enums) — 11 files
+├── Engine/          # Stateless calculation + DSP engines — 5 files
+├── Views/           # SwiftUI views (dark booth-optimized) — 23 files
 ├── ViewModels/      # @MainActor observable classes
-├── Store/           # JSON persistence layer
-└── Audio/           # AVAudioEngine SPL measurement
+├── Network/         # PCO REST client, MIDI protocol, console connection — 7 files
+├── Store/           # JSON persistence + OAuth + PCO manager — 4 files
+├── Audio/           # SPL measurement, EQ analysis, RT60 — 3 files
+├── Shared/          # Multi-target types (iOS + Watch + Widget)
+├── Connectivity/    # WatchConnectivity session management
+└── Tips/            # TipKit definitions
+
+SanctuarySoundWatch/          # watchOS companion — 7 files
+SanctuarySoundWatchWidgetExt/ # WidgetKit complications
 ```
 
 **Pattern:** MVVM with strict separation. Models own no logic. ViewModels own the engine. Views display state. The `SoundEngine` is pure and stateless — designed for unit testing.
 
-**Dependencies:** Zero. Pure Swift, SwiftUI, and AVFoundation.
+**Tests:** 261 iOS unit tests + 17 Watch tests passing. Zero external dependencies.
+
+**Dependencies:** Zero. Pure Swift, SwiftUI, AVFoundation, Accelerate, and Network frameworks.
 
 ---
 
@@ -133,10 +166,10 @@ See [CLAUDE.md](CLAUDE.md) for the complete engineering reference.
 Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 **Priority areas:**
-- Unit tests for `SoundEngine` calculations
 - New mixer model support (see issue templates)
-- Accessibility improvements (VoiceOver, Dynamic Type)
 - Localization (Spanish, Portuguese for global HOW community)
+- Dynamic Type support for larger text sizes
+- Additional unit tests for edge cases
 
 ---
 

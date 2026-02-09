@@ -1,6 +1,6 @@
 # Privacy Policy — SanctuarySound
 
-**Last Updated:** February 8, 2026
+**Last Updated:** February 9, 2026
 
 SanctuarySound ("the App") is committed to protecting your privacy. This policy explains what data the App collects, how it is used, and your rights.
 
@@ -32,9 +32,27 @@ All user data (services, vocalist profiles, input presets, mixer snapshots, SPL 
 
 SanctuarySound is free and open-source. Voluntary donations are processed through external platforms (church ministry website and GitHub Sponsors). The App does not collect, process, or have access to any payment or donor information. Donation links in the app open your web browser — no payment data passes through the app.
 
+## Planning Center Online Integration
+
+SanctuarySound optionally connects to **Planning Center Online** (PCO) to import service plans, setlists, and team rosters. When you use this feature:
+
+- **OAuth 2.0 authentication** is used — the App never sees or stores your Planning Center password
+- **OAuth tokens** are stored securely in the iOS Keychain on your device
+- The App only requests **read access** to your service plans, songs, and team members
+- **No data is sent** from the App to Planning Center — communication is one-way (import only)
+- You can disconnect at any time via the Settings tab, which removes stored tokens
+
+## Apple Watch Companion
+
+If you use the watchOS companion app:
+
+- SPL readings are relayed from iPhone to Apple Watch via **WatchConnectivity** (a private Apple framework)
+- Data travels directly between your paired devices over Bluetooth/Wi-Fi — it does not pass through any external server
+- Session reports are transferred to the Watch for local viewing
+
 ## Third-Party Services
 
-SanctuarySound does **not** integrate with any third-party analytics, advertising, crash reporting, or tracking services.
+SanctuarySound does **not** integrate with any third-party analytics, advertising, crash reporting, or tracking services. The only external service is Planning Center Online, which is optional and user-initiated.
 
 ## Children's Privacy
 

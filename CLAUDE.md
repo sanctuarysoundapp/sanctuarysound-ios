@@ -1,8 +1,8 @@
 # CLAUDE.md — SanctuarySound Project Bible
 
-> **Last Updated:** 2026-02-08
-> **Status:** Active Development — Sprint 2 (Mixer Integration & Analysis)
-> **Primary Stack:** Swift 5.9+ / SwiftUI / MVVM / iOS 17+
+> **Last Updated:** 2026-02-09
+> **Status:** Beta Ready — TestFlight Provisioning
+> **Primary Stack:** Swift 5.9+ / SwiftUI / MVVM / iOS 17+ / watchOS 10+
 
 ---
 
@@ -18,31 +18,95 @@ SanctuarySound is a native iOS app that acts as a **"Virtual Audio Director"** f
 
 ```
 SanctuarySound/
-├── SanctuarySoundApp.swift              # @main entry point
-├── AppConfig.swift                      # Centralized URLs, version, mission constants
+├── Config/
+│   ├── SanctuarySoundApp.swift          # @main entry point (TipKit configured)
+│   └── AppConfig.swift                  # Centralized URLs, version, mission constants
 ├── Models/
-│   └── ServiceModels.swift              # All enums, structs, data types
+│   ├── ServiceModels.swift              # Core enums/structs (~780 lines after Sprint B split)
+│   ├── AudioConstants.swift             # Audio engineering constants (extracted Sprint B)
+│   ├── MixerModel.swift                 # Mixer enum + specs (extracted Sprint B)
+│   ├── VocalModels.swift                # Vocal types, profiles, ranges (extracted Sprint B)
+│   ├── RecommendationModels.swift       # Engine output types (extracted Sprint B)
+│   ├── AnalysisModels.swift             # Delta analysis types (extracted Sprint B)
+│   ├── SPLReportFormatting.swift        # Report formatting + static DateFormatters
+│   ├── UserPreferences.swift            # Defaults, ColorThemeID
+│   ├── ColorTheme.swift                 # 5 dark themes
+│   ├── VenueModels.swift                # Venue + Room (2-level hierarchy)
+│   └── ConsoleProfile.swift             # ConsoleProfile + ConsoleConnectionType
 ├── Engine/
 │   ├── SoundEngine.swift                # Stateless recommendation engine
 │   ├── AnalysisEngine.swift             # Delta analysis (actual vs ideal)
-│   └── CSVImporter.swift                # Avantis Director CSV parser
+│   ├── CSVImporter.swift                # Avantis Director CSV parser
+│   ├── FrequencyAnalysis.swift          # FFTProcessor, FrequencyBands, PeakHoldTracker
+│   └── RT60Calculator.swift             # RT60 measurement + Schroeder integration
 ├── Views/
-│   ├── HomeView.swift                   # Tab navigation + Import/Analysis + SavedData + AlertBanner
-│   ├── InputEntryView.swift             # Service setup wizard (4-step) + ViewModel + BoothColors
+│   ├── HomeView.swift                   # 5-tab shell + SPLAlertBanner + CSVImportSheet
+│   ├── ServicesView.swift               # Services tab — saved services + venues
+│   ├── InputLibraryView.swift           # Inputs tab — saved inputs + vocal profiles
+│   ├── ConsolesView.swift               # Consoles tab — profiles + snapshots
+│   ├── ToolsView.swift                  # Tools tab — SPL, EQ, RT60, Q&A
+│   ├── SettingsView.swift               # Settings tab — prefs, theme, about
+│   ├── InputEntryView.swift             # Service setup wizard (4-step) + BoothColors
 │   ├── RecommendationDetailView.swift   # Engine output display (gain, EQ, comp, key warnings)
 │   ├── AnalysisView.swift               # Delta analysis display
-│   ├── SPLCalibrationView.swift         # SPL monitor + calibration + alerting + session reports
+│   ├── SPLCalibrationView.swift         # SPL monitor + calibration + alerting
+│   ├── SPLSessionReportView.swift       # SPL session report detail (extracted Sprint B)
+│   ├── SPLReportExportView.swift        # Report sharing/export (extracted Sprint B)
+│   ├── EQAnalyzerView.swift             # 31-band RTA display
+│   ├── RT60MeasurementView.swift        # RT60 clap-test wizard
+│   ├── QABrowserView.swift              # Sound engineer Q&A browser
+│   ├── MixerConnectionView.swift        # TCP/MIDI console connection
+│   ├── PCOImportSheet.swift             # Planning Center folder nav + import
+│   ├── PCOTeamImportPreviewView.swift   # Team import editable checklist
+│   ├── DrumKitTemplatePicker.swift       # Drum kit template picker
 │   ├── AboutView.swift                  # Mission, donation links, community, legal
-│   ├── OnboardingView.swift             # 3-screen welcome (mission + workflow + detail levels)
-│   └── SplashView.swift                 # Animated launch + RootView (splash → onboarding → home)
+│   ├── OnboardingView.swift             # 5-screen welcome + Quick Setup
+│   ├── SplashView.swift                 # Animated launch + RootView
+│   └── Components/
+│       ├── SharedComponents.swift       # SectionCard, BoothTextField, InfoBadge, etc.
+│       └── StepNavigation.swift         # StepIndicatorBar, StepNavigationBar
 ├── ViewModels/
-│   └── (ServiceSetupViewModel lives in InputEntryView.swift currently)
+│   ├── ServiceSetupViewModel.swift      # Service wizard state (extracted Sprint B)
+│   └── ThemeProvider.swift              # Theme switching + nonisolated storage
+├── Network/
+│   ├── PCOClient.swift                  # PCO REST client + OAuth
+│   ├── PCOModels.swift                  # Codable PCO response structs
+│   ├── MIDIMessageTypes.swift           # MIDI protocol types
+│   ├── MIDIProtocol.swift               # MIDI encode/decode
+│   ├── AvantisMIDIProfile.swift         # Avantis-specific MIDI params
+│   ├── SQMIDIProfile.swift              # SQ-specific MIDI params
+│   └── MixerConnectionManager.swift     # NWConnection lifecycle
 ├── Store/
-│   └── ServiceStore.swift               # JSON persistence + shared SPLMeter instance
+│   ├── ServiceStore.swift               # JSON persistence + CRUD + migration
+│   ├── SecureStorage.swift              # Keychain wrapper for OAuth tokens
+│   ├── PlanningCenterManager.swift      # PCO OAuth + import operations
+│   └── QAStore.swift                    # Q&A article storage
 ├── Audio/
-│   └── SPLMeter.swift                   # iPhone mic SPL measurement + alert state + breach logging
+│   ├── SPLMeter.swift                   # iPhone mic SPL + 10Hz throttle + OSLog
+│   ├── EQAnalyzer.swift                 # Real-time EQ analysis
+│   └── RT60Analyzer.swift               # RT60 measurement engine
+├── Shared/                              # Multi-target: iOS + Watch + Widget
+│   ├── SPLSharedTypes.swift             # SPL types shared across targets
+│   └── WatchConnectivityDTO.swift       # WCSession DTOs
+├── Connectivity/
+│   └── WatchSessionManager.swift        # iPhone-side WCSession delegate
+├── Tips/
+│   └── AppTips.swift                    # TipKit definitions
+├── AppLogger.swift                      # OSLog centralized logging (5 categories)
 └── Resources/
     └── Assets.xcassets                  # Colors, icons
+
+SanctuarySoundWatch/                     # watchOS companion app
+├── SanctuarySoundWatchApp.swift
+├── WatchSPLView.swift                   # SPL display + controls
+├── WatchSPLViewModel.swift              # Watch view model
+├── WatchSessionReceiver.swift           # Watch-side WCSession
+├── WatchColors.swift                    # Watch theme colors
+├── WatchReportsListView.swift           # Past report list
+└── WatchReportDetailView.swift          # Report detail
+
+SanctuarySoundWatchWidgetExt/
+└── WatchComplicationProvider.swift      # WidgetKit complications
 ```
 
 ### Pattern: MVVM (Strict)
@@ -198,18 +262,16 @@ Each file follows:
 
 ## 🧪 Testing Strategy
 
-### ✅ SoundEngine Unit Tests (8 tests passing)
-The engine is pure and stateless — perfect for unit testing.
+### ✅ 261 iOS Unit Tests Passing + 17 Watch Tests
+The engine is pure and stateless — perfect for unit testing. Sprint C added comprehensive test coverage.
 
-**Implemented tests (`SanctuarySoundTests/SoundEngineTests.swift`):**
-- ✅ Lead vocal (soprano, SM58, Key of G, medium room) → gain within Avantis range, safe zone ≤ 10 dB
-- ✅ Kick drum (open stage, Key of E) → HPF 20-60 Hz, gain clamped to Avantis range
-- ✅ DI piano (line level) → nominal gain under 40 dB
-- ✅ Reflective large room (RT60 ~2.7s) → global note about room acoustics
-- ✅ All songs Key of E → channel recommendations generated (soft key warning check)
-- ✅ Beginner level → engine still calculates full strip (gain, fader)
-- ✅ Gain clamping → tested across Avantis, X32, Yamaha TF mixer ranges
-- ✅ Multi-channel service (6 channels) → all valid gain ranges and fader positions
+**Test Suites:**
+- `SoundEngineTests` (8 tests) — Gain, HPF, EQ, room acoustics, clamping, multi-channel
+- `ForceUnwrapSafetyTests` (10 tests) — Edge cases for all formerly force-unwrapped sites
+- `SPLCalibrationTests` (5 tests) — Calibration offset math, range validation (40-130 dB)
+- `SPLFormattingTests` (8 tests) — DateFormatter output correctness, idempotency
+- `PCOClientTests` (90+ tests) — OAuth, API endpoints, folder nav, position classification
+- `WatchSPLViewModelTests` (17 tests) — SPLAlertStateCodable, SPLSnapshot
 
 ### Snapshot Tests (Priority 2 — Planned)
 - InputEntryView in each step state
@@ -288,21 +350,62 @@ The engine is pure and stateless — perfect for unit testing.
 **Status:** READY — 0 blocking issues
 - [x] Code signing configured (Automatic, Team M2739G49TS)
 - [x] Info.plist has `NSMicrophoneUsageDescription` for SPL feature
-- [x] All Sprint 2 features implemented and functional
-- [x] 8/8 unit tests passing
+- [x] All features implemented and functional through Sprint 4 + Tech Debt
+- [x] 261/261 iOS unit tests passing + 17 Watch tests
 - [x] BUILD SUCCEEDED (zero errors, zero warnings)
 - [x] Zero IAP remnants in codebase (verified via grep)
+- [x] Accessibility labels for key interactive elements (VoiceOver) — Sprint C
+- [x] Technical debt remediated (3 sprints: force unwraps, file splitting, accessibility)
 - [ ] TestFlight upload and internal testing
-- [ ] Accessibility labels for key interactive elements (VoiceOver)
 - [ ] README screenshots (currently placeholder)
 
-### 📋 Sprint 3 — Live Mixer Connection & Scene Pushing
-**Phase 1: Connection + Read Parameters** ⭐ PRIORITY
-- [ ] `Network/MixerConnectionManager.swift` — NWConnection lifecycle, reconnect, status
-- [ ] `Network/MIDIProtocol.swift` — Encode/decode A&H MIDI TCP messages
-- [ ] Read all channel params: gain, HPF, PEQ, comp, fader, names, metering
-- [ ] `Views/MixerConnectionView.swift` — IP entry, status, live metering
+### ✅ Completed (Sprint 3 — Tools & Console Read)
+- [x] EQ Analyzer — 31-band 1/3-octave RTA via Accelerate/vDSP FFT, peak hold, snapshots
+- [x] Room Acoustics — RT60 clap-test wizard, Schroeder integration, room classification
+- [x] Sound Engineer Q&A — 13 built-in articles, 8 categories, offline, searchable
+- [x] Console Read Integration — "Connect Live" on TCP consoles, pre-fill from ConsoleProfile
+- [x] `MixerConnectionView.swift` — IP entry, status, console connection
+- [x] `MIDIProtocol.swift` — Encode/decode A&H MIDI TCP messages
+- [x] `MixerConnectionManager.swift` — NWConnection lifecycle, reconnect, status
 
+### ✅ Completed (Sprint 4 — Planning Center Online Integration)
+- [x] `PCOClient.swift` — REST client with OAuth 2.0 + PKCE
+- [x] `PCOModels.swift` — Codable PCO response structs
+- [x] `PlanningCenterManager.swift` — OAuth state, sync, import operations
+- [x] `PCOImportSheet.swift` — Folder navigation + service plan picker
+- [x] `PCOTeamImportPreviewView.swift` — Editable team import checklist
+- [x] `DrumKitTemplatePicker.swift` — Basic 3/Standard 5/Full 7/Custom drum templates
+- [x] Smart position classification (~30 production keywords filtered)
+- [x] Full Service Mode — combined songs + team import in one flow
+- [x] Service pre-fill from PCO plan (date, name, venue auto-match)
+
+### ✅ Completed (watchOS Companion App)
+- [x] `SanctuarySoundWatch/` — 7 Swift files, real-time SPL from iPhone via WatchConnectivity
+- [x] Watch can send start/stop commands back to iPhone
+- [x] WidgetKit complications (circular gauge, corner text, rectangular)
+- [x] Past session reports viewable on Watch
+- [x] Theme-synced colors via @AppStorage
+
+### ✅ Completed (Tech Debt Remediation — 3 Sprints)
+**Sprint A (PR #12):** Force unwrap safety + error observability
+- [x] 12 force unwraps eliminated across 5 files (guard-let with descriptive errors)
+- [x] `AppLogger.swift` — OSLog infrastructure with 5 category-based Loggers
+- [x] SPLMeter 50Hz→10Hz UI throttle via `CACurrentMediaTime()` gating
+- [x] `PCOError.invalidURL(String)` — dedicated error for URL construction failures
+- [x] 10 new tests in `ForceUnwrapSafetyTests.swift`
+
+**Sprint B (PR #13):** File splitting
+- [x] `ServiceModels.swift` 1,518→783 lines (5 extracted: AudioConstants, MixerModel, VocalModels, RecommendationModels, AnalysisModels)
+- [x] `InputEntryView.swift` 1,652→1,007 lines (3 extracted: ServiceSetupViewModel, SharedComponents, StepNavigation)
+- [x] `SPLCalibrationView.swift` 1,217→621 lines (3 extracted: SPLSessionReportView, SPLReportExportView, SPLReportFormatting)
+
+**Sprint C (PR #14):** Accessibility + validation + performance
+- [x] VoiceOver accessibility labels across 12 view files
+- [x] SPL calibration input validation (40-130 dB range with error alert)
+- [x] Static DateFormatters in 3 files (SPLReportFormatting, SPLCalibrationView, ToolsView)
+- [x] 13 new tests (SPLCalibrationTests + SPLFormattingTests)
+
+### 📋 Future — Live Mixer Push
 **Phase 2: Push Individual Settings**
 - [ ] `Network/MixerBridge.swift` — Convert recommendations → MIDI commands
 - [ ] "Send to Mixer" per-channel button with confirmation flow
@@ -322,34 +425,15 @@ The engine is pure and stateless — perfect for unit testing.
 - [ ] Per-song SPL snapshots during VSC playback
 - [ ] Export recommendations as PDF or shareable image
 
-### 📋 Sprint 4 — Planning Center Online Integration
-**Phase 1: OAuth + Setlist Import** (MVP)
-- [ ] `Store/SecureStorage.swift` — Keychain wrapper for OAuth tokens
-- [ ] `Network/PCOClient.swift` — REST client for PCO JSON API 1.0
-- [ ] `Network/PCOModels.swift` — Codable PCO response structs
-- [ ] `Store/PlanningCenterManager.swift` — OAuth state, sync, import operations
-- [ ] `Views/PCOImportSheet.swift` — Service plan picker, setlist preview
-- [ ] "Import from Planning Center" button in SetlistStepView (auto-populate songs, keys, BPM)
-
-**Phase 2: Team Roster → Auto-Create Channels**
-- [ ] Fetch team members from PCO service plan
-- [ ] Fuzzy-match PCO positions → InputSource types
-- [ ] "Import Team" button in ChannelsStepView with mapping review
-
-**Phase 3: Vocalist Profile Linking**
-- [ ] Link PCO people to SavedVocalist records
-- [ ] Auto-assign saved vocal profiles when known person detected
-
 ### 🔮 Future (v2+)
-- [ ] Apple Watch SPL haptic tap (WatchConnectivity companion app)
-- [ ] Apple Watch SPL monitoring (additional measurement point during service)
+- [ ] Watch-independent SPL measurement (Apple Watch mic)
 - [ ] Live Activity on Lock Screen — Dynamic Island real-time SPL display
-- [ ] CoreAudio RT60 measurement module (iPhone mic → clap test → decay analysis)
 - [ ] Multi-point SPL measurement (mix position + congregation areas)
 - [ ] Multi-service comparison ("Last week vs this week" using session reports)
 - [ ] Community-shared room profiles and vocal profiles
 - [ ] Setlist reordering (drag-and-drop)
 - [ ] X32/M32 deep TCP protocol support (different protocol from A&H)
+- [ ] Vocalist profile linking to PCO people records
 
 ---
 
@@ -424,8 +508,10 @@ The engine is pure and stateless — perfect for unit testing.
 ## 💬 Session Continuity Notes
 
 When resuming work on this project:
-1. The foundation is **three files** — models, engine, and the entry view. All compile-ready for an iOS 17+ SwiftUI project.
-2. The **ViewModel** (`ServiceSetupViewModel`) currently lives inside `InputEntryView.swift`. It should be extracted to its own file during Sprint 1.
-3. The `SoundEngine.generateRecommendation(for:)` method returns a `MixerSettingRecommendation` but **no view exists to display it yet**. This is the highest-priority next task.
-4. All audio math constants are defined in `AudioConstants` struct and mixer-specific values in `MixerModel` enum. If you need to tweak the gain model or add a new mixer, those are the two places to look.
-5. The `BoothColors` struct defines the entire color system. Use it everywhere — never hardcode colors.
+1. The codebase is **~60 Swift files** across iOS app, watchOS companion, and widget targets. All compile and pass 261+ tests.
+2. The **ViewModel** (`ServiceSetupViewModel`) lives in its own file at `ViewModels/ServiceSetupViewModel.swift` (extracted in Sprint B).
+3. All audio math constants are defined in `AudioConstants` struct (`Models/AudioConstants.swift`) and mixer-specific values in `MixerModel` enum (`Models/MixerModel.swift`). If you need to tweak the gain model or add a new mixer, those are the two places to look.
+4. The `BoothColors` struct delegates to `ThemeProvider.activeColors` (5 themes). Use `BoothColors` everywhere — never hardcode colors.
+5. OSLog logging is available via `AppLogger.swift` — use `Logger.persistence`, `.network`, `.audio`, `.engine`, `.connectivity` for structured logging.
+6. **Next milestone:** TestFlight provisioning and internal beta distribution.
+7. **Next feature work:** Live mixer push (Phase 2+), Watch-independent SPL measurement.

@@ -6,8 +6,8 @@ Thank you for your interest in contributing to SanctuarySound! This app helps ch
 
 ### Prerequisites
 
-- macOS with Xcode 15.0+
-- iOS 17.0+ deployment target
+- macOS with Xcode 16.0+
+- iOS 17.0+ deployment target (watchOS 10.0+ for companion)
 - Swift 5.9+
 - No external dependencies required
 
@@ -19,7 +19,7 @@ cd sanctuarysound-ios
 open SanctuarySound.xcodeproj
 ```
 
-Build and run on the iOS Simulator (iPhone 16 Pro or later recommended).
+Build and run on the iOS Simulator (iPhone 17 Pro Max recommended). The project includes an iOS app, watchOS companion, and widget extension.
 
 ## How to Contribute
 
@@ -54,11 +54,11 @@ Use the [Mixer Support Request](https://github.com/sanctuarysoundapp/sanctuaryso
 ### Submitting Code
 
 1. Fork the repository
-2. Create a feature branch from `develop`: `git checkout -b feature/your-feature`
+2. Create a feature branch from `main`: `git checkout -b feature/your-feature`
 3. Make your changes following the code conventions below
-4. Write or update tests as needed
+4. Write or update tests as needed (261+ tests must pass)
 5. Ensure the project builds clean with no warnings
-6. Submit a pull request to `develop`
+6. Submit a pull request to `main`
 
 ## Code Conventions
 
@@ -93,9 +93,11 @@ Each file follows: header comment → imports → MARK sections → extensions �
 
 ### Testing
 
-- Unit tests for `SoundEngine` are the highest priority
+- 261+ iOS unit tests and 17 Watch tests must all pass before submitting a PR
 - Test pure functions with known inputs and expected output ranges
 - Aim for 80%+ coverage on the Engine layer
+- Use test-driven development: write tests first (RED), implement (GREEN), refactor
+- Run: `xcodebuild test -scheme SanctuarySound -destination 'platform=iOS Simulator,name=iPhone 17 Pro Max'`
 
 ## Audio Engineering Notes
 
