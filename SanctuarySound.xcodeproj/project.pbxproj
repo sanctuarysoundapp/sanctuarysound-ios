@@ -62,9 +62,11 @@
 		AA000056 /* WatchSessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000056 /* WatchSessionManager.swift */; };
 		AA000057 /* DrumKitTemplatePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000057 /* DrumKitTemplatePicker.swift */; };
 		AA000058 /* PCOTeamImportPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000058 /* PCOTeamImportPreviewView.swift */; };
+		AA000059 /* AppLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000059 /* AppLogger.swift */; };
 		AA100001 /* SoundEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB100001 /* SoundEngineTests.swift */; };
 		AA100002 /* PCOTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB100002 /* PCOTests.swift */; };
 		AA100003 /* FrequencyAnalysisTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB100003 /* FrequencyAnalysisTests.swift */; };
+		AA100004 /* ForceUnwrapSafetyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB100004 /* ForceUnwrapSafetyTests.swift */; };
 		AA200001 /* SanctuarySoundWatchApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB200001 /* SanctuarySoundWatchApp.swift */; };
 		AA200002 /* WatchSPLView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB200002 /* WatchSPLView.swift */; };
 		AA200003 /* WatchSPLViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB200003 /* WatchSPLViewModel.swift */; };
@@ -172,9 +174,11 @@
 		AB000056 /* WatchSessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchSessionManager.swift; sourceTree = "<group>"; };
 		AB000057 /* DrumKitTemplatePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrumKitTemplatePicker.swift; sourceTree = "<group>"; };
 		AB000058 /* PCOTeamImportPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PCOTeamImportPreviewView.swift; sourceTree = "<group>"; };
+		AB000059 /* AppLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLogger.swift; sourceTree = "<group>"; };
 		AB100001 /* SoundEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundEngineTests.swift; sourceTree = "<group>"; };
 		AB100002 /* PCOTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PCOTests.swift; sourceTree = "<group>"; };
 		AB100003 /* FrequencyAnalysisTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrequencyAnalysisTests.swift; sourceTree = "<group>"; };
+		AB100004 /* ForceUnwrapSafetyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForceUnwrapSafetyTests.swift; sourceTree = "<group>"; };
 		AB200001 /* SanctuarySoundWatchApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SanctuarySoundWatchApp.swift; sourceTree = "<group>"; };
 		AB200002 /* WatchSPLView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchSPLView.swift; sourceTree = "<group>"; };
 		AB200003 /* WatchSPLViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchSPLViewModel.swift; sourceTree = "<group>"; };
@@ -276,6 +280,7 @@
 			children = (
 				AB000001 /* SanctuarySoundApp.swift */,
 				AB000019 /* AppConfig.swift */,
+				AB000059 /* AppLogger.swift */,
 				AB000014 /* Info.plist */,
 				AE000003 /* Models */,
 				AE000004 /* Engine */,
@@ -432,6 +437,7 @@
 				AB100001 /* SoundEngineTests.swift */,
 				AB100002 /* PCOTests.swift */,
 				AB100003 /* FrequencyAnalysisTests.swift */,
+				AB100004 /* ForceUnwrapSafetyTests.swift */,
 			);
 			path = SanctuarySoundTests;
 			sourceTree = "<group>";
@@ -691,6 +697,7 @@
 				AA000056 /* WatchSessionManager.swift in Sources */,
 				AA000057 /* DrumKitTemplatePicker.swift in Sources */,
 				AA000058 /* PCOTeamImportPreviewView.swift in Sources */,
+				AA000059 /* AppLogger.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -701,6 +708,7 @@
 				AA100001 /* SoundEngineTests.swift in Sources */,
 				AA100002 /* PCOTests.swift in Sources */,
 				AA100003 /* FrequencyAnalysisTests.swift in Sources */,
+				AA100004 /* ForceUnwrapSafetyTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -12,6 +12,8 @@
 
 import AVFoundation
 import Combine
+import OSLog
+import QuartzCore
 
 // MARK: - ─── SPL Meter ──────────────────────────────────────────────────────
 
@@ -45,7 +47,7 @@ final class SPLMeter: ObservableObject {
     private var sessionReadingCount: Int = 0
 
     // ── Watch Connectivity Hook ──
-    /// Called on every SPL update (~50Hz). WatchSessionManager throttles to 10Hz.
+    /// Called on every UI update (~10Hz after throttle). WatchSessionManager may throttle further.
     var onSPLUpdate: ((SPLSnapshot) -> Void)?
 
     // ── Internal ──
@@ -57,7 +59,13 @@ final class SPLMeter: ObservableObject {
     /// The iPhone mic measures in dBFS. To approximate dB SPL:
     /// SPL ≈ dBFS + referenceOffset
     /// This is a rough factory calibration; the calibration flow refines it.
-    private let referenceOffset: Double = 90.0  // Approximate: 0 dBFS ≈ ~90 dB SPL on iPhone
+    /// Static so it is accessible from the nonisolated processBuffer() method.
+    private static let referenceOffset: Double = 90.0  // Approximate: 0 dBFS ≈ ~90 dB SPL on iPhone
+
+    /// Throttle UI dispatches from ~50Hz (audio callback rate) to 10Hz
+    /// to reduce main-thread pressure and prevent UI jank.
+    private static let uiUpdateInterval: TimeInterval = 0.1  // 10Hz
+    private nonisolated(unsafe) var lastUIUpdateTime: TimeInterval = 0
 
     // MARK: - Public API
 
@@ -101,6 +109,7 @@ final class SPLMeter: ObservableObject {
             currentBreachPeak = 0.0
 
         } catch {
+            Logger.audio.error("Failed to start audio engine: \(error.localizedDescription)")
             isRunning = false
         }
     }
@@ -116,7 +125,11 @@ final class SPLMeter: ObservableObject {
         isRunning = false
 
         // Deactivate audio session
-        try? AVAudioSession.sharedInstance().setActive(false)
+        do {
+            try AVAudioSession.sharedInstance().setActive(false)
+        } catch {
+            Logger.audio.warning("Failed to deactivate audio session: \(error.localizedDescription)")
+        }
     }
 
     /// Reset peak and average readings.
@@ -140,7 +153,7 @@ final class SPLMeter: ObservableObject {
     func calculateCalibrationOffset(knownSPL: Double) -> Double {
         // offset = knownSPL - currentDB_raw (before offset)
         // So that: SPL = dBFS_reading + offset = knownSPL
-        let rawReading = currentDB - referenceOffset
+        let rawReading = currentDB - Self.referenceOffset
         return knownSPL - rawReading
     }
 
@@ -172,8 +185,14 @@ final class SPLMeter: ObservableObject {
         }
 
         // Convert to approximate SPL
-        let refOffset = 90.0  // referenceOffset value (can't access actor property here)
-        let spl = max(dbFS + refOffset, 0)
+        let spl = max(dbFS + Self.referenceOffset, 0)
+
+        // Throttle main-thread dispatches to 10Hz (every 100ms).
+        // Audio callbacks fire ~50x/sec; dispatching each one creates
+        // excessive main-thread pressure and can cause UI jank.
+        let currentTime = CACurrentMediaTime()
+        guard currentTime - lastUIUpdateTime >= Self.uiUpdateInterval else { return }
+        lastUIUpdateTime = currentTime
 
         Task { @MainActor [weak self] in
             guard let self else { return }
@@ -230,7 +249,8 @@ final class SPLMeter: ObservableObject {
             if currentBreachStart == nil { currentBreachStart = now }
             if spl > currentBreachPeak { currentBreachPeak = spl }
 
-            if now.timeIntervalSince(breachStartTime!) >= breachDebounce {
+            // Safe unwrap — guards against nil breachStartTime
+            if let breachStart = breachStartTime, now.timeIntervalSince(breachStart) >= breachDebounce {
                 if overThreshold > 0 {
                     alertState = .alert(
                         currentDB: Int(spl),
@@ -255,7 +275,8 @@ final class SPLMeter: ObservableObject {
             if alertState.isActive {
                 if safeStartTime == nil { safeStartTime = now }
 
-                if now.timeIntervalSince(safeStartTime!) >= safeDebounce {
+                // Safe unwrap — guards against nil safeStartTime
+                if let safeStart = safeStartTime, now.timeIntervalSince(safeStart) >= safeDebounce {
                     alertState = .safe
                     safeStartTime = nil
                 }

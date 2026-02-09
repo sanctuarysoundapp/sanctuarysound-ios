@@ -11,6 +11,7 @@
 import Foundation
 import AuthenticationServices
 import CryptoKit
+import OSLog
 import UIKit
 
 
@@ -48,7 +49,7 @@ final class PCOClient: ObservableObject {
         let codeVerifier = generateCodeVerifier()
         let codeChallenge = generateCodeChallenge(from: codeVerifier)
 
-        let authURL = buildAuthURL(codeChallenge: codeChallenge)
+        let authURL = try buildAuthURL(codeChallenge: codeChallenge)
 
         let callbackURL = try await performWebAuth(url: authURL)
 
@@ -64,12 +65,14 @@ final class PCOClient: ObservableObject {
         tokens = newTokens
         isAuthenticated = true
         try SecureStorage.saveTokens(newTokens)
+        Logger.network.info("Planning Center authentication succeeded")
     }
 
     /// Disconnect — clear tokens from Keychain.
     func disconnect() {
         tokens = nil
         isAuthenticated = false
+        Logger.network.info("Planning Center disconnected — tokens cleared")
         SecureStorage.clearTokens()
     }
 
@@ -168,12 +171,19 @@ final class PCOClient: ObservableObject {
             throw PCOError.notAuthenticated
         }
 
-        var components = URLComponents(string: baseURL + path)!
+        // Safe unwrap — guards against malformed URL path
+        guard var components = URLComponents(string: baseURL + path) else {
+            throw PCOError.invalidURL(baseURL + path)
+        }
         if !query.isEmpty {
             components.queryItems = query.map { URLQueryItem(name: $0.key, value: $0.value) }
         }
 
-        var request = URLRequest(url: components.url!)
+        // Safe unwrap — guards against malformed URL components
+        guard let url = components.url else {
+            throw PCOError.invalidURL(path)
+        }
+        var request = URLRequest(url: url)
         request.setValue("Bearer \(tokens.accessToken)", forHTTPHeaderField: "Authorization")
         request.setValue("application/json", forHTTPHeaderField: "Accept")
 
@@ -188,8 +198,10 @@ final class PCOClient: ObservableObject {
 
         guard httpResponse.statusCode == 200 else {
             if httpResponse.statusCode == 401 {
+                Logger.network.error("PCO API returned 401 Unauthorized for \(path)")
                 throw PCOError.unauthorized
             }
+            Logger.network.error("PCO API returned HTTP \(httpResponse.statusCode) for \(path)")
             throw PCOError.httpError(httpResponse.statusCode)
         }
 
@@ -202,21 +214,30 @@ final class PCOClient: ObservableObject {
     private func refreshTokenIfNeeded() async throws {
         guard let tokens, tokens.expiresAt < Date() else { return }
 
+        Logger.network.info("PCO token expired — refreshing")
         let newTokens = try await refreshTokens(refreshToken: tokens.refreshToken)
         self.tokens = newTokens
         isAuthenticated = true
         try SecureStorage.saveTokens(newTokens)
+        Logger.network.info("PCO token refresh succeeded")
     }
 
     private func refreshTokens(refreshToken: String) async throws -> PCOTokens {
-        var components = URLComponents(string: "https://api.planningcenteronline.com/oauth/token")!
+        // Safe unwrap — guards against malformed OAuth token URL
+        guard var components = URLComponents(string: "https://api.planningcenteronline.com/oauth/token") else {
+            throw PCOError.invalidURL("oauth/token")
+        }
         components.queryItems = [
             URLQueryItem(name: "grant_type", value: "refresh_token"),
             URLQueryItem(name: "client_id", value: AppConfig.pcoClientID),
             URLQueryItem(name: "refresh_token", value: refreshToken),
         ]
 
-        var request = URLRequest(url: components.url!)
+        // Safe unwrap — guards against malformed URL components
+        guard let url = components.url else {
+            throw PCOError.invalidURL("oauth/token")
+        }
+        var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Accept")
 
@@ -225,7 +246,10 @@ final class PCOClient: ObservableObject {
     }
 
     private func exchangeCodeForTokens(code: String, codeVerifier: String) async throws -> PCOTokens {
-        var components = URLComponents(string: "https://api.planningcenteronline.com/oauth/token")!
+        // Safe unwrap — guards against malformed OAuth token URL
+        guard var components = URLComponents(string: "https://api.planningcenteronline.com/oauth/token") else {
+            throw PCOError.invalidURL("oauth/token")
+        }
         components.queryItems = [
             URLQueryItem(name: "grant_type", value: "authorization_code"),
             URLQueryItem(name: "code", value: code),
@@ -234,7 +258,11 @@ final class PCOClient: ObservableObject {
             URLQueryItem(name: "code_verifier", value: codeVerifier),
         ]
 
-        var request = URLRequest(url: components.url!)
+        // Safe unwrap — guards against malformed URL components
+        guard let url = components.url else {
+            throw PCOError.invalidURL("oauth/token")
+        }
+        var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Accept")
 
@@ -280,8 +308,11 @@ final class PCOClient: ObservableObject {
             .replacingOccurrences(of: "=", with: "")
     }
 
-    private func buildAuthURL(codeChallenge: String) -> URL {
-        var components = URLComponents(string: "https://api.planningcenteronline.com/oauth/authorize")!
+    private func buildAuthURL(codeChallenge: String) throws -> URL {
+        // Safe unwrap — guards against malformed OAuth authorize URL
+        guard var components = URLComponents(string: "https://api.planningcenteronline.com/oauth/authorize") else {
+            throw PCOError.invalidURL("oauth/authorize")
+        }
         components.queryItems = [
             URLQueryItem(name: "client_id", value: AppConfig.pcoClientID),
             URLQueryItem(name: "redirect_uri", value: AppConfig.pcoRedirectURI),
@@ -290,7 +321,11 @@ final class PCOClient: ObservableObject {
             URLQueryItem(name: "code_challenge", value: codeChallenge),
             URLQueryItem(name: "code_challenge_method", value: "S256"),
         ]
-        return components.url!
+        // Safe unwrap — guards against malformed URL components
+        guard let url = components.url else {
+            throw PCOError.invalidURL("oauth/authorize")
+        }
+        return url
     }
 
     private func performWebAuth(url: URL) async throws -> URL {
@@ -356,6 +391,7 @@ enum PCOError: LocalizedError {
     case authCancelled
     case unauthorized
     case invalidResponse
+    case invalidURL(String)
     case httpError(Int)
 
     var errorDescription: String? {
@@ -365,6 +401,7 @@ enum PCOError: LocalizedError {
         case .authCancelled:    return "Authentication was cancelled"
         case .unauthorized:     return "Session expired — please reconnect"
         case .invalidResponse:  return "Invalid response from Planning Center"
+        case .invalidURL(let detail): return "Failed to construct URL: \(detail)"
         case .httpError(let code): return "Planning Center error (HTTP \(code))"
         }
     }
