@@ -515,7 +515,7 @@ struct ServicesView: View {
             room: service.room,
             channels: service.channels,
             setlist: service.setlist,
-            experienceLevel: service.experienceLevel,
+            detailLevel: service.detailLevel,
             venueID: service.venueID,
             roomID: service.roomID,
             consoleProfileID: service.consoleProfileID
@@ -1082,7 +1082,7 @@ struct ServiceDetailView: View {
             HStack(spacing: 12) {
                 InfoBadge(label: "Date", value: formatDate(service.date))
                 InfoBadge(label: "Mixer", value: service.mixer.shortName)
-                InfoBadge(label: "Level", value: service.experienceLevel.shortName)
+                InfoBadge(label: "Level", value: service.detailLevel.shortName)
             }
 
             HStack(spacing: 12) {
@@ -1262,7 +1262,7 @@ struct ServiceDetailView: View {
             room: service.room,
             channels: service.channels,
             setlist: service.setlist,
-            experienceLevel: service.experienceLevel,
+            detailLevel: service.detailLevel,
             venueID: service.venueID,
             roomID: service.roomID,
             consoleProfileID: service.consoleProfileID

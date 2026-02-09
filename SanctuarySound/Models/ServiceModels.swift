@@ -133,40 +133,40 @@ enum MixerModel: String, CaseIterable, Identifiable, Codable {
 }
 
 
-// MARK: - ─── User Experience Level ────────────────────────────────────────
+// MARK: - ─── Detail Level ─────────────────────────────────────────────────
 
 /// Controls the depth of recommendations shown to the user.
 /// Maps directly to the 3-level system defined in the spec.
-enum ExperienceLevel: String, CaseIterable, Identifiable, Codable {
-    case beginner       = "Beginner"       // Level 1: Gain & Fader only
-    case intermediate   = "Intermediate"   // Level 2: + EQ & HPF
-    case advanced       = "Advanced"       // Level 3: Full channel strip
-    
+enum DetailLevel: String, CaseIterable, Identifiable, Codable {
+    case essentials = "Essentials"   // Level 1: Gain & Fader only
+    case detailed   = "Detailed"     // Level 2: + EQ & HPF
+    case full       = "Full"         // Level 3: Full channel strip
+
     var id: String { rawValue }
-    
+
     var description: String {
         switch self {
-        case .beginner:
+        case .essentials:
             return "Gain & fader start-points only"
-        case .intermediate:
+        case .detailed:
             return "Adds EQ suggestions & high-pass filter"
-        case .advanced:
+        case .full:
             return "Full channel strip: EQ, compression, HPF, & gain staging"
         }
     }
-    
+
     /// Abbreviated label for compact badges
     var shortName: String {
         switch self {
-        case .beginner:     return "Begin"
-        case .intermediate: return "Inter"
-        case .advanced:     return "Adv"
+        case .essentials: return "Ess"
+        case .detailed:   return "Det"
+        case .full:       return "Full"
         }
     }
 
-    var showsEQ: Bool { self != .beginner }
-    var showsCompression: Bool { self == .advanced }
-    var showsHPF: Bool { self != .beginner }
+    var showsEQ: Bool { self != .essentials }
+    var showsCompression: Bool { self == .full }
+    var showsHPF: Bool { self != .essentials }
 }
 
 
@@ -814,12 +814,21 @@ struct WorshipService: Codable, Identifiable {
     var room: RoomProfile
     var channels: [InputChannel]
     var setlist: [SetlistSong]
-    var experienceLevel: ExperienceLevel
+    var detailLevel: DetailLevel
 
     // ── Venue/Room/Console References (optional for backward compat) ──
     var venueID: UUID?
     var roomID: UUID?
     var consoleProfileID: UUID?
+
+    // ── Backward-Compatible CodingKeys ──
+
+    private enum CodingKeys: String, CodingKey {
+        case id, name, date, mixer, bandComposition, drumConfig, room
+        case channels, setlist, detailLevel
+        case experienceLevel    // Legacy key for reading old data
+        case venueID, roomID, consoleProfileID
+    }
 
     init(
         id: UUID = UUID(),
@@ -831,7 +840,7 @@ struct WorshipService: Codable, Identifiable {
         room: RoomProfile = RoomProfile(),
         channels: [InputChannel] = [],
         setlist: [SetlistSong] = [],
-        experienceLevel: ExperienceLevel = .intermediate,
+        detailLevel: DetailLevel = .detailed,
         venueID: UUID? = nil,
         roomID: UUID? = nil,
         consoleProfileID: UUID? = nil
@@ -845,10 +854,60 @@ struct WorshipService: Codable, Identifiable {
         self.room = room
         self.channels = channels
         self.setlist = setlist
-        self.experienceLevel = experienceLevel
+        self.detailLevel = detailLevel
         self.venueID = venueID
         self.roomID = roomID
         self.consoleProfileID = consoleProfileID
+    }
+
+    // ── Backward-Compatible Decoder ──
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decode(UUID.self, forKey: .id)
+        name = try container.decode(String.self, forKey: .name)
+        date = try container.decode(Date.self, forKey: .date)
+        mixer = try container.decode(MixerModel.self, forKey: .mixer)
+        bandComposition = try container.decode(BandComposition.self, forKey: .bandComposition)
+        drumConfig = try container.decode(DrumConfiguration.self, forKey: .drumConfig)
+        room = try container.decode(RoomProfile.self, forKey: .room)
+        channels = try container.decode([InputChannel].self, forKey: .channels)
+        setlist = try container.decode([SetlistSong].self, forKey: .setlist)
+
+        // Migration: try new key first, then fall back to legacy key with value mapping
+        if let detail = try container.decodeIfPresent(DetailLevel.self, forKey: .detailLevel) {
+            detailLevel = detail
+        } else if let legacyRaw = try container.decodeIfPresent(String.self, forKey: .experienceLevel) {
+            switch legacyRaw {
+            case "Beginner":     detailLevel = .essentials
+            case "Intermediate": detailLevel = .detailed
+            case "Advanced":     detailLevel = .full
+            default:             detailLevel = .detailed
+            }
+        } else {
+            detailLevel = .detailed
+        }
+
+        venueID = try container.decodeIfPresent(UUID.self, forKey: .venueID)
+        roomID = try container.decodeIfPresent(UUID.self, forKey: .roomID)
+        consoleProfileID = try container.decodeIfPresent(UUID.self, forKey: .consoleProfileID)
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(id, forKey: .id)
+        try container.encode(name, forKey: .name)
+        try container.encode(date, forKey: .date)
+        try container.encode(mixer, forKey: .mixer)
+        try container.encode(bandComposition, forKey: .bandComposition)
+        try container.encode(drumConfig, forKey: .drumConfig)
+        try container.encode(room, forKey: .room)
+        try container.encode(channels, forKey: .channels)
+        try container.encode(setlist, forKey: .setlist)
+        try container.encode(detailLevel, forKey: .detailLevel)
+        try container.encodeIfPresent(venueID, forKey: .venueID)
+        try container.encodeIfPresent(roomID, forKey: .roomID)
+        try container.encodeIfPresent(consoleProfileID, forKey: .consoleProfileID)
     }
 }
 
@@ -1362,7 +1421,7 @@ extension MixerModel {
     }
 }
 
-extension ExperienceLevel {
+extension DetailLevel {
     var localizedName: String {
         String(localized: String.LocalizationValue(rawValue))
     }

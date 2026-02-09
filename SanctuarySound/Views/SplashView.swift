@@ -91,10 +91,11 @@ struct SplashView: View {
                         .opacity(titleOpacity)
                         .offset(y: titleOffset)
 
-                    Text("For The Church, By The Church")
-                        .font(.system(size: 15, weight: .semibold))
-                        .tracking(1.5)
+                    Text("Built For The Church, By The Church, Free Forever.")
+                        .font(.system(size: 12, weight: .semibold))
+                        .tracking(1.0)
                         .foregroundStyle(BoothColors.accent)
+                        .minimumScaleFactor(0.8)
                         .opacity(taglineOpacity)
                         .offset(y: taglineOffset)
 

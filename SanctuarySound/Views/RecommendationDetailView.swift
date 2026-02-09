@@ -35,7 +35,7 @@ struct RecommendationDetailView: View {
                         ForEach(recommendation.channelRecommendations) { channelRec in
                             ChannelRecommendationCard(
                                 channelRec: channelRec,
-                                experienceLevel: recommendation.service.experienceLevel
+                                detailLevel: recommendation.service.detailLevel
                             )
                         }
                     }
@@ -71,7 +71,7 @@ private struct RecommendationHeader: View {
                 InfoBadge(label: "Console", value: service.mixer.shortName)
                 InfoBadge(label: "Channels", value: "\(recommendation.channelRecommendations.count)")
                 InfoBadge(label: "Songs", value: "\(service.setlist.count)")
-                InfoBadge(label: "Level", value: service.experienceLevel.shortName)
+                InfoBadge(label: "Level", value: service.detailLevel.shortName)
             }
 
             HStack(spacing: 12) {
@@ -113,7 +113,7 @@ private struct GlobalNotesCard: View {
 
 private struct ChannelRecommendationCard: View {
     let channelRec: ChannelRecommendation
-    let experienceLevel: ExperienceLevel
+    let detailLevel: DetailLevel
 
     @State private var isExpanded: Bool = false
 
@@ -131,17 +131,17 @@ private struct ChannelRecommendationCard: View {
             if isExpanded {
                 VStack(spacing: 12) {
                     // HPF
-                    if experienceLevel.showsHPF, let hpf = channelRec.hpfFrequency {
+                    if detailLevel.showsHPF, let hpf = channelRec.hpfFrequency {
                         hpfSection(hpf: hpf)
                     }
 
                     // EQ
-                    if experienceLevel.showsEQ, !channelRec.eqBands.isEmpty {
+                    if detailLevel.showsEQ, !channelRec.eqBands.isEmpty {
                         eqSection
                     }
 
                     // Compression
-                    if experienceLevel.showsCompression, let comp = channelRec.compressor {
+                    if detailLevel.showsCompression, let comp = channelRec.compressor {
                         compressorSection(comp: comp)
                     }
 

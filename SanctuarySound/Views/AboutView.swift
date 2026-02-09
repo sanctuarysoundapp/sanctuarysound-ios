@@ -176,7 +176,7 @@ struct AboutView: View {
             ShareLink(
                 item: AppConfig.githubURL,
                 subject: Text("SanctuarySound"),
-                message: Text("Check out SanctuarySound — a free, open-source app that calculates mixer settings for church audio volunteers.")
+                message: Text("Check out SanctuarySound — a free, open-source app that calculates mixer settings for church production & worship teams.")
             ) {
                 HStack(spacing: 12) {
                     Image(systemName: "square.and.arrow.up")

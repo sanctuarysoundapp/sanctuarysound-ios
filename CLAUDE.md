@@ -8,7 +8,7 @@
 
 ## 🎯 What Is SanctuarySound?
 
-SanctuarySound is a native iOS app that acts as a **"Virtual Audio Director"** for church audio volunteers. It takes complex variables (band composition, room acoustics, vocal profiles, setlist keys, mixer model) and outputs **precise, actionable mixer settings** — gain ranges, EQ curves, compressor parameters, HPF frequencies, and fader start-points — tailored to a specific Sunday service.
+SanctuarySound is a native iOS app that acts as a **"Virtual Audio Director"** for church production & worship teams. It takes complex variables (band composition, room acoustics, vocal profiles, setlist keys, mixer model) and outputs **precise, actionable mixer settings** — gain ranges, EQ curves, compressor parameters, HPF frequencies, and fader start-points — tailored to a specific Sunday service.
 
 **The core problem:** Church sound is run by volunteers who rotate weekly. They struggle with gain staging (too low = hiss, too high = distortion), EQ decisions, and adapting to changing variables (different singers, songs, room conditions). This app calculates the optimal "safe zone" so they start each service with a solid foundation instead of guessing.
 
@@ -33,7 +33,7 @@ SanctuarySound/
 │   ├── AnalysisView.swift               # Delta analysis display
 │   ├── SPLCalibrationView.swift         # SPL monitor + calibration + alerting + session reports
 │   ├── AboutView.swift                  # Mission, donation links, community, legal
-│   ├── OnboardingView.swift             # 3-screen welcome (mission + workflow + experience levels)
+│   ├── OnboardingView.swift             # 3-screen welcome (mission + workflow + detail levels)
 │   └── SplashView.swift                 # Animated launch + RootView (splash → onboarding → home)
 ├── ViewModels/
 │   └── (ServiceSetupViewModel lives in InputEntryView.swift currently)
@@ -112,17 +112,17 @@ Each mixer is defined in the `MixerModel` enum with: gain range, fader range, un
 
 ---
 
-## 👤 Experience Level System (Configurable Depth)
+## 👤 Detail Level System (Configurable Depth)
 
-The user selects their experience level, which gates what recommendations are shown:
+The user selects their detail level, which gates what recommendations are shown:
 
 | Level | Gain/Fader | HPF | EQ | Compression | Key Warnings |
 |---|---|---|---|---|---|
-| **Beginner** | ✅ | ❌ | ❌ | ❌ | ✅ (simplified) |
-| **Intermediate** | ✅ | ✅ | ✅ | ❌ | ✅ |
-| **Advanced** | ✅ | ✅ | ✅ | ✅ | ✅ (detailed) |
+| **Essentials** | ✅ | ❌ | ❌ | ❌ | ✅ (simplified) |
+| **Detailed** | ✅ | ✅ | ✅ | ❌ | ✅ |
+| **Full** | ✅ | ✅ | ✅ | ✅ | ✅ (detailed) |
 
-The engine **always calculates everything** — the experience level only controls what the View displays. This means if a user upgrades their level mid-session, all data is already computed.
+The engine **always calculates everything** — the detail level only controls what the View displays. This means if a user upgrades their level mid-session, all data is already computed.
 
 ---
 
