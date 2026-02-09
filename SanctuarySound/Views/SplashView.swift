@@ -214,6 +214,9 @@ struct RootView: View {
         }
         .environmentObject(themeProvider)
         .onAppear {
+            // Activate WatchConnectivity session
+            WatchSessionManager.shared.activate()
+
             // Dismiss splash after the animation completes
             DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
                 withAnimation(.easeInOut(duration: 0.4)) {

@@ -53,6 +53,7 @@ final class ServiceStore: ObservableObject {
         loadAll()
         migrateIfNeeded()
         splMeter.updateAlertThresholds(preference: splPreference)
+        configureWatchConnectivity()
     }
 
     // MARK: - Services
@@ -164,6 +165,12 @@ final class ServiceStore: ObservableObject {
         splPreference = preference
         splMeter.updateAlertThresholds(preference: preference)
         persist(splPreference, to: preferencesFile)
+        WatchSessionManager.shared.sendPreferences(
+            targetDB: preference.targetDB,
+            flaggingMode: preference.flaggingMode,
+            themeID: userPreferences.colorTheme.rawValue,
+            calibrationOffset: preference.calibrationOffset
+        )
     }
 
     // MARK: - SPL Session Reports
@@ -171,6 +178,7 @@ final class ServiceStore: ObservableObject {
     func saveReport(_ report: SPLSessionReport) {
         savedReports.insert(report, at: 0)  // Most recent first
         persist(savedReports, to: reportsFile)
+        WatchSessionManager.shared.sendReport(report)
     }
 
     func deleteReport(id: UUID) {
@@ -354,6 +362,35 @@ final class ServiceStore: ObservableObject {
         persist(consoleProfiles, to: consolesFile)
         if updated {
             persist(savedServices, to: servicesFile)
+        }
+    }
+
+    // MARK: - ─── Watch Connectivity ──────────────────────────────────────────
+
+    /// Wire up SPLMeter → WatchSessionManager data flow and Watch → iPhone commands.
+    private func configureWatchConnectivity() {
+        let watchManager = WatchSessionManager.shared
+
+        // Forward SPL updates to Watch
+        splMeter.onSPLUpdate = { snapshot in
+            watchManager.sendSPLSnapshot(snapshot)
+        }
+
+        // Handle Watch start command
+        watchManager.onStartCommand = { [weak self] in
+            guard let self else { return }
+            Task { @MainActor in
+                await self.splMeter.requestPermission()
+                self.splMeter.start()
+            }
+        }
+
+        // Handle Watch stop command
+        watchManager.onStopCommand = { [weak self] in
+            guard let self else { return }
+            Task { @MainActor in
+                self.stopMonitoringAndSaveReport()
+            }
         }
     }
 
