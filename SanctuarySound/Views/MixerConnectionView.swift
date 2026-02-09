@@ -18,6 +18,11 @@ struct MixerConnectionView: View {
     @ObservedObject var connectionManager: MixerConnectionManager
     @ObservedObject var store: ServiceStore
 
+    /// Optional initial values when navigated from a ConsoleProfile.
+    var initialHost: String?
+    var initialPort: String?
+    var initialMixer: MixerModel?
+
     @State private var hostInput: String = ""
     @State private var portInput: String = "51325"
     @State private var selectedMixer: MixerModel = .allenHeathAvantis
@@ -65,6 +70,17 @@ struct MixerConnectionView: View {
                     }
                     .foregroundStyle(BoothColors.accent)
                     .fontWeight(.semibold)
+                }
+            }
+            .onAppear {
+                if let host = initialHost, hostInput.isEmpty {
+                    hostInput = host
+                }
+                if let port = initialPort, portInput == "51325" {
+                    portInput = port
+                }
+                if let mixer = initialMixer {
+                    selectedMixer = mixer
                 }
             }
         }
