@@ -22,6 +22,23 @@ enum PCOImportMode {
 }
 
 
+// MARK: - ─── Song Import Item ────────────────────────────────────────────
+
+/// Wrapper around SetlistSong for the import preview, adding selection state.
+/// Keeps `isIncluded` scoped to the import flow — SetlistSong stays a pure domain model.
+struct PCOSongImportItem: Identifiable {
+    let id: UUID
+    let song: SetlistSong
+    var isIncluded: Bool
+
+    init(id: UUID = UUID(), song: SetlistSong, isIncluded: Bool = true) {
+        self.id = id
+        self.song = song
+        self.isIncluded = isIncluded
+    }
+}
+
+
 // MARK: - ─── Full Service Import Data ───────────────────────────────────
 
 struct PCOFullServiceImport {
@@ -48,7 +65,7 @@ struct PCOImportSheet: View {
     @State private var selectedServiceTypeID: String?
     @State private var selectedPlanID: String?
     @State private var selectedPlanAttributes: PCOPlanAttributes?
-    @State private var importedSongs: [SetlistSong] = []
+    @State private var importedSongItems: [PCOSongImportItem] = []
     @State private var importedTeamItems: [PCOTeamImportItem] = []
     @State private var matchedVenueID: UUID?
     @State private var step: ImportStep = .folder
@@ -79,6 +96,14 @@ struct PCOImportSheet: View {
         case serviceType
         case plan
         case preview
+    }
+
+    private var includedSongs: [SetlistSong] {
+        importedSongItems.filter(\.isIncluded).map(\.song)
+    }
+
+    private var includedSongCount: Int {
+        importedSongItems.filter(\.isIncluded).count
     }
 
     var body: some View {
@@ -513,26 +538,27 @@ struct PCOImportSheet: View {
                         }
 
                         // Setlist-only import button
-                        if mode == .setlist && !importedSongs.isEmpty {
+                        if mode == .setlist && !importedSongItems.isEmpty {
                             Button {
-                                onImportSetlist(importedSongs)
+                                onImportSetlist(includedSongs)
                                 dismiss()
                             } label: {
                                 HStack(spacing: 8) {
                                     Image(systemName: "arrow.down.circle.fill")
-                                    Text("Import \(importedSongs.count) Songs")
+                                    Text("Import \(includedSongCount) Songs")
                                 }
                                 .font(.system(size: 14, weight: .bold))
                                 .frame(maxWidth: .infinity)
                                 .frame(height: 48)
                                 .foregroundStyle(BoothColors.background)
-                                .background(BoothColors.accent)
+                                .background(includedSongCount > 0 ? BoothColors.accent : BoothColors.textMuted)
                                 .clipShape(RoundedRectangle(cornerRadius: 10))
                             }
+                            .disabled(includedSongCount == 0)
                         }
 
                         // Full service import button (songs only — team has its own button)
-                        if mode == .fullService && importedTeamItems.isEmpty && !importedSongs.isEmpty {
+                        if mode == .fullService && importedTeamItems.isEmpty && !importedSongItems.isEmpty {
                             Button {
                                 let serviceImport = buildFullServiceImport(channels: [])
                                 onImportService?(serviceImport)
@@ -540,15 +566,16 @@ struct PCOImportSheet: View {
                             } label: {
                                 HStack(spacing: 8) {
                                     Image(systemName: "arrow.down.circle.fill")
-                                    Text("Import Service (\(importedSongs.count) Songs)")
+                                    Text("Import Service (\(includedSongCount) Songs)")
                                 }
                                 .font(.system(size: 14, weight: .bold))
                                 .frame(maxWidth: .infinity)
                                 .frame(height: 48)
                                 .foregroundStyle(BoothColors.background)
-                                .background(BoothColors.accent)
+                                .background(includedSongCount > 0 ? BoothColors.accent : BoothColors.textMuted)
                                 .clipShape(RoundedRectangle(cornerRadius: 10))
                             }
+                            .disabled(includedSongCount == 0)
                         }
                     }
                     .padding()
@@ -562,26 +589,51 @@ struct PCOImportSheet: View {
 
     private var setlistPreview: some View {
         SectionCard(title: "Songs to Import") {
-            if importedSongs.isEmpty {
+            if importedSongItems.isEmpty {
                 emptyInline(message: "No songs found in this plan")
             } else {
-                ForEach(importedSongs) { song in
-                    HStack {
-                        Text(song.title)
+                ForEach(Array(importedSongItems.enumerated()), id: \.element.id) { index, item in
+                    HStack(spacing: 10) {
+                        // Include toggle (matches team import checkbox style)
+                        Button {
+                            importedSongItems[index].isIncluded.toggle()
+                        } label: {
+                            Image(systemName: item.isIncluded ? "checkmark.square.fill" : "square")
+                                .font(.system(size: 16))
+                                .foregroundStyle(
+                                    item.isIncluded ? BoothColors.accent : BoothColors.textMuted
+                                )
+                        }
+
+                        Text(item.song.title)
                             .font(.system(size: 13, weight: .medium))
-                            .foregroundStyle(BoothColors.textPrimary)
+                            .foregroundStyle(
+                                item.isIncluded ? BoothColors.textPrimary : BoothColors.textMuted
+                            )
+
                         Spacer()
-                        Text(song.key.localizedName)
+
+                        Text(item.song.key.localizedName)
                             .font(.system(size: 11, weight: .bold, design: .monospaced))
-                            .foregroundStyle(BoothColors.accent)
+                            .foregroundStyle(
+                                item.isIncluded ? BoothColors.accent : BoothColors.textMuted
+                            )
                             .padding(.horizontal, 6)
                             .padding(.vertical, 2)
-                            .background(BoothColors.accent.opacity(0.15))
+                            .background(
+                                (item.isIncluded ? BoothColors.accent : BoothColors.textMuted)
+                                    .opacity(0.15)
+                            )
                             .clipShape(RoundedRectangle(cornerRadius: 3))
-                        Text(song.bpm.map { "\($0) BPM" } ?? "— BPM")
+
+                        Text(item.song.bpm.map { "\($0) BPM" } ?? "— BPM")
                             .font(.system(size: 11, design: .monospaced))
-                            .foregroundStyle(BoothColors.textSecondary)
+                            .foregroundStyle(
+                                item.isIncluded ? BoothColors.textSecondary : BoothColors.textMuted
+                            )
                     }
+                    .padding(.vertical, 4)
+                    .opacity(item.isIncluded ? 1.0 : 0.5)
                 }
             }
         }
@@ -595,10 +647,11 @@ struct PCOImportSheet: View {
 
         switch mode {
         case .setlist:
-            importedSongs = await manager.importSetlist(
+            let songs = await manager.importSetlist(
                 serviceTypeID: serviceTypeID,
                 planID: planID
             )
+            importedSongItems = songs.map { PCOSongImportItem(song: $0) }
 
         case .team:
             importedTeamItems = await manager.importTeamRoster(
@@ -609,7 +662,7 @@ struct PCOImportSheet: View {
 
         case .fullService:
             // Fetch both in parallel
-            async let songs = manager.importSetlist(
+            async let fetchedSongs = manager.importSetlist(
                 serviceTypeID: serviceTypeID,
                 planID: planID
             )
@@ -619,7 +672,8 @@ struct PCOImportSheet: View {
                 drumTemplate: activeDrumTemplate
             )
 
-            importedSongs = await songs
+            let songs = await fetchedSongs
+            importedSongItems = songs.map { PCOSongImportItem(song: $0) }
             importedTeamItems = await team
         }
 
@@ -638,7 +692,7 @@ struct PCOImportSheet: View {
         return PCOFullServiceImport(
             name: planName,
             date: planDate,
-            songs: importedSongs,
+            songs: includedSongs,
             channels: channels,
             venueID: matchedVenueID
         )
