@@ -57,6 +57,7 @@ struct BoothTextField: View {
                 .padding(.vertical, 10)
                 .background(BoothColors.surfaceElevated)
                 .clipShape(RoundedRectangle(cornerRadius: 8))
+                .accessibilityLabel(label)
         }
     }
 }
@@ -85,6 +86,8 @@ struct InfoBadge: View {
         .padding(.vertical, 8)
         .background(color.opacity(0.08))
         .clipShape(RoundedRectangle(cornerRadius: 6))
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(label): \(value)")
     }
 }
 
@@ -114,6 +117,8 @@ struct EmptyStateView: View {
             Spacer()
         }
         .frame(maxWidth: .infinity)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(title). \(subtitle)")
     }
 }
 
@@ -135,6 +140,8 @@ struct SummaryRow: View {
                 .foregroundStyle(BoothColors.textPrimary)
         }
         .padding(.vertical, 2)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(label): \(value)")
     }
 }
 
@@ -182,6 +189,8 @@ struct ChannelRow: View {
             }
         }
         .padding(.vertical, 4)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(channel.label), \(channel.source.localizedName), \(channel.source.isLineLevel ? "line level" : "microphone")")
     }
 }
 
@@ -227,6 +236,8 @@ struct SongRow: View {
             }
         }
         .padding(.vertical, 4)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("Song \(index), \(song.title), key of \(song.key.localizedName), \(song.intensity.localizedName)\(song.bpm.map { ", \($0) BPM" } ?? "")")
     }
 }
 
@@ -302,5 +313,7 @@ struct IconPicker<T: Hashable>: View {
             )
         }
         .buttonStyle(.plain)
+        .accessibilityLabel(item.label)
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
 }

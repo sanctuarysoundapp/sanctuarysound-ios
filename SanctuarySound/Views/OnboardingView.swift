@@ -243,6 +243,8 @@ struct OnboardingView: View {
                         .background(BoothColors.surface)
                         .clipShape(RoundedRectangle(cornerRadius: 10))
                     }
+                    .accessibilityLabel("Console: \(selectedMixer.shortName)")
+                    .accessibilityHint("Select your mixing console")
                 }
 
                 // Experience level
@@ -409,6 +411,8 @@ struct OnboardingView: View {
             )
         }
         .buttonStyle(.plain)
+        .accessibilityLabel("\(label) detail level")
+        .accessibilityAddTraits(selectedLevel == level ? .isSelected : [])
     }
 
     private func roomSizeButton(
@@ -441,6 +445,8 @@ struct OnboardingView: View {
             )
         }
         .buttonStyle(.plain)
+        .accessibilityLabel("\(label) room, \(detail) seats")
+        .accessibilityAddTraits(selectedRoomSize == size ? .isSelected : [])
     }
 
     private var pageIndicators: some View {
@@ -459,6 +465,8 @@ struct OnboardingView: View {
                     .animation(.easeInOut(duration: 0.2), value: currentPage)
             }
         }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("Page \(currentPage + 1) of \(totalPages)")
     }
 
     private var navigationButton: some View {
@@ -477,6 +485,8 @@ struct OnboardingView: View {
                 .background(BoothColors.accent)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
         }
+        .accessibilityLabel(currentPage < totalPages - 1 ? "Continue to next page" : "Get Started")
+        .accessibilityHint(currentPage < totalPages - 1 ? "Advances to the next onboarding screen" : "Saves your preferences and opens the app")
     }
 
 

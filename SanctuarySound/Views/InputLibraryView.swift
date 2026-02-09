@@ -166,6 +166,7 @@ struct InputLibraryView: View {
                     .font(.system(size: 14))
                     .foregroundStyle(BoothColors.textPrimary)
                     .textInputAutocapitalization(.never)
+                    .accessibilityLabel("Search inputs")
                 if !searchText.isEmpty {
                     Button {
                         searchText = ""
@@ -174,6 +175,7 @@ struct InputLibraryView: View {
                             .font(.system(size: 14))
                             .foregroundStyle(BoothColors.textMuted)
                     }
+                    .accessibilityLabel("Clear search")
                 }
             }
             .padding(10)
@@ -203,6 +205,8 @@ struct InputLibraryView: View {
                 .background(selectedCategory == category ? BoothColors.accent : BoothColors.surfaceElevated)
                 .clipShape(Capsule())
         }
+        .accessibilityLabel("Filter: \(category.label)")
+        .accessibilityAddTraits(selectedCategory == category ? .isSelected : [])
     }
 
 
@@ -235,6 +239,8 @@ struct InputLibraryView: View {
                 .background(BoothColors.surfaceElevated)
                 .clipShape(RoundedRectangle(cornerRadius: 8))
             }
+            .accessibilityLabel("Add Vocalist")
+            .accessibilityHint("Opens form to create a new vocalist profile")
         }
     }
 
@@ -264,6 +270,9 @@ struct InputLibraryView: View {
             .clipShape(RoundedRectangle(cornerRadius: 8))
         }
         .buttonStyle(.plain)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(vocalist.name), \(vocalist.range.localizedName), \(vocalist.style.localizedName)")
+        .accessibilityHint("Opens vocalist details")
         .contextMenu {
             Button(role: .destructive) {
                 deleteConfirmVocalist = vocalist
@@ -303,6 +312,8 @@ struct InputLibraryView: View {
                 .background(BoothColors.surfaceElevated)
                 .clipShape(RoundedRectangle(cornerRadius: 8))
             }
+            .accessibilityLabel("Add Input")
+            .accessibilityHint("Opens form to create a new input")
         }
     }
 
@@ -358,6 +369,9 @@ struct InputLibraryView: View {
             .clipShape(RoundedRectangle(cornerRadius: 8))
         }
         .buttonStyle(.plain)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(input.name), \(input.source.localizedName), \(input.source.isLineLevel ? "line level" : "microphone")")
+        .accessibilityHint("Opens input details")
         .contextMenu {
             Button(role: .destructive) {
                 deleteConfirmInput = input
@@ -543,6 +557,7 @@ struct InputDetailSheet: View {
                                                 Image(systemName: "xmark")
                                                     .font(.system(size: 8, weight: .bold))
                                             }
+                                            .accessibilityLabel("Remove tag \(tag)")
                                         }
                                         .foregroundStyle(BoothColors.accent)
                                         .padding(.horizontal, 8)
@@ -561,6 +576,7 @@ struct InputDetailSheet: View {
                                     .textInputAutocapitalization(.never)
                                     .autocorrectionDisabled()
                                     .onSubmit { addTag() }
+                                    .accessibilityLabel("Add tag")
                                 Button {
                                     addTag()
                                 } label: {
@@ -569,6 +585,8 @@ struct InputDetailSheet: View {
                                         .foregroundStyle(newTag.isEmpty ? BoothColors.textMuted : BoothColors.accent)
                                 }
                                 .disabled(newTag.isEmpty)
+                                .accessibilityLabel("Add tag")
+                                .accessibilityHint("Adds the entered text as a tag")
                             }
                             .padding(8)
                             .background(BoothColors.surfaceElevated)
@@ -595,6 +613,7 @@ struct InputDetailSheet: View {
                                                     .background(BoothColors.surfaceElevated)
                                                     .clipShape(Capsule())
                                             }
+                                            .accessibilityLabel("Add \(suggestion) tag")
                                         }
                                     }
                                 }

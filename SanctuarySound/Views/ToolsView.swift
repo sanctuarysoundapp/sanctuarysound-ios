@@ -72,6 +72,8 @@ struct ToolsView: View {
             )
         }
         .buttonStyle(.plain)
+        .accessibilityLabel("SPL Meter\(store.splMeter.isRunning ? ", active" : "")")
+        .accessibilityHint("Monitor sound levels in real-time with calibration and alerts")
     }
 
 
@@ -92,6 +94,8 @@ struct ToolsView: View {
                 )
             }
             .buttonStyle(.plain)
+            .accessibilityLabel("EQ Analyzer")
+            .accessibilityHint("Real-time frequency spectrum for room and mix analysis")
 
             NavigationLink {
                 RT60MeasurementView()
@@ -106,6 +110,8 @@ struct ToolsView: View {
                 )
             }
             .buttonStyle(.plain)
+            .accessibilityLabel("Room Acoustics")
+            .accessibilityHint("Measure RT60 reverb time using a clap test")
         }
     }
 
@@ -126,6 +132,8 @@ struct ToolsView: View {
             )
         }
         .buttonStyle(.plain)
+        .accessibilityLabel("Sound Engineer Q&A")
+        .accessibilityHint("Audio engineering knowledge base")
     }
 
 
@@ -175,6 +183,8 @@ struct ToolsView: View {
         .padding(10)
         .background(BoothColors.surfaceElevated)
         .clipShape(RoundedRectangle(cornerRadius: 8))
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(formatDate(report.sessionStart)), average \(Int(report.overallAverageDB)) dB, peak \(Int(report.overallPeakDB)) dB, \(gradeLabel(for: report))")
     }
 
 
@@ -236,10 +246,14 @@ struct ToolsView: View {
 
     // MARK: - Helpers
 
-    private func formatDate(_ date: Date) -> String {
+    private static let dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateFormat = "MMM d, h:mm a"
-        return formatter.string(from: date)
+        return formatter
+    }()
+
+    private func formatDate(_ date: Date) -> String {
+        Self.dateFormatter.string(from: date)
     }
 
     private func gradeLabel(for report: SPLSessionReport) -> String {

@@ -109,6 +109,13 @@ private struct OverallScoreCard: View {
                         StatusRow(label: "Need attention", value: "\(attention)", color: BoothColors.accentDanger)
                     }
                 }
+                .accessibilityElement(children: .combine)
+                .accessibilityLabel({
+                    let total = analysis.channelDeltas.count
+                    let optimal = analysis.channelDeltas.filter { $0.overallScore == .excellent || $0.overallScore == .good }.count
+                    let attention = analysis.channelDeltas.filter { $0.overallScore == .poor }.count
+                    return "\(total) channels analyzed, \(optimal) looking good\(attention > 0 ? ", \(attention) need attention" : "")"
+                }())
             }
         }
     }
@@ -203,6 +210,7 @@ private struct SPLEstimateCard: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .background(color.opacity(0.06))
                 .clipShape(RoundedRectangle(cornerRadius: 6))
+                .accessibilityLabel(estimate.message)
         }
     }
 }
@@ -368,11 +376,15 @@ private struct ChannelDeltaCard: View {
         }
         .background(BoothColors.surface)
         .clipShape(RoundedRectangle(cornerRadius: 12))
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel("Channel \(delta.channelNumber) \(delta.channelName), \(delta.overallScore.localizedName)")
         .onTapGesture {
             withAnimation(.easeInOut(duration: 0.2)) {
                 isExpanded.toggle()
             }
         }
+        .accessibilityHint(isExpanded ? "Collapse details" : "Expand to see gain, fader, HPF, and EQ deltas")
+        .accessibilityAddTraits(.isButton)
     }
 }
 
@@ -405,6 +417,8 @@ private struct DeltaStatusPill: View {
         .padding(.vertical, 6)
         .background(color.opacity(0.06))
         .clipShape(RoundedRectangle(cornerRadius: 6))
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(label): \(status == .optimal ? "optimal" : status == .close ? "close" : status == .attention ? "needs attention" : "missing")")
     }
 }
 
@@ -448,6 +462,8 @@ private struct DeltaRow: View {
         .padding(.horizontal, 8)
         .background(BoothColors.surfaceElevated)
         .clipShape(RoundedRectangle(cornerRadius: 6))
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(param): actual \(actual), recommended \(recommended)")
     }
 }
 
@@ -497,5 +513,7 @@ private struct EQDeltaRow: View {
         .padding(.horizontal, 8)
         .background(BoothColors.surfaceElevated)
         .clipShape(RoundedRectangle(cornerRadius: 6))
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("EQ \(eqDelta.frequency >= 1000 ? String(format: "%.1fk Hz", eqDelta.frequency / 1000) : "\(Int(eqDelta.frequency)) Hz"): actual \(String(format: "%+.1f", eqDelta.actualGainDB)) dB, recommended \(String(format: "%+.1f", eqDelta.recommendedGainDB)) dB, delta \(String(format: "%+.1f", eqDelta.deltaDB)) dB")
     }
 }

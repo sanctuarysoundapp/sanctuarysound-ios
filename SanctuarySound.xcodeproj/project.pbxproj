@@ -78,6 +78,8 @@
 		AA100002 /* PCOTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB100002 /* PCOTests.swift */; };
 		AA100003 /* FrequencyAnalysisTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB100003 /* FrequencyAnalysisTests.swift */; };
 		AA100004 /* ForceUnwrapSafetyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB100004 /* ForceUnwrapSafetyTests.swift */; };
+		AA100005 /* SPLCalibrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB100005 /* SPLCalibrationTests.swift */; };
+		AA100006 /* SPLFormattingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB100006 /* SPLFormattingTests.swift */; };
 		AA200001 /* SanctuarySoundWatchApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB200001 /* SanctuarySoundWatchApp.swift */; };
 		AA200002 /* WatchSPLView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB200002 /* WatchSPLView.swift */; };
 		AA200003 /* WatchSPLViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB200003 /* WatchSPLViewModel.swift */; };
@@ -201,6 +203,8 @@
 		AB100002 /* PCOTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PCOTests.swift; sourceTree = "<group>"; };
 		AB100003 /* FrequencyAnalysisTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrequencyAnalysisTests.swift; sourceTree = "<group>"; };
 		AB100004 /* ForceUnwrapSafetyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForceUnwrapSafetyTests.swift; sourceTree = "<group>"; };
+		AB100005 /* SPLCalibrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SPLCalibrationTests.swift; sourceTree = "<group>"; };
+		AB100006 /* SPLFormattingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SPLFormattingTests.swift; sourceTree = "<group>"; };
 		AB200001 /* SanctuarySoundWatchApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SanctuarySoundWatchApp.swift; sourceTree = "<group>"; };
 		AB200002 /* WatchSPLView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchSPLView.swift; sourceTree = "<group>"; };
 		AB200003 /* WatchSPLViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchSPLViewModel.swift; sourceTree = "<group>"; };
@@ -479,6 +483,8 @@
 				AB100002 /* PCOTests.swift */,
 				AB100003 /* FrequencyAnalysisTests.swift */,
 				AB100004 /* ForceUnwrapSafetyTests.swift */,
+				AB100005 /* SPLCalibrationTests.swift */,
+				AB100006 /* SPLFormattingTests.swift */,
 			);
 			path = SanctuarySoundTests;
 			sourceTree = "<group>";
@@ -761,6 +767,8 @@
 				AA100002 /* PCOTests.swift in Sources */,
 				AA100003 /* FrequencyAnalysisTests.swift in Sources */,
 				AA100004 /* ForceUnwrapSafetyTests.swift in Sources */,
+				AA100005 /* SPLCalibrationTests.swift in Sources */,
+				AA100006 /* SPLFormattingTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

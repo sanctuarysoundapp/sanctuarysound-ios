@@ -162,11 +162,15 @@ private struct ChannelRecommendationCard: View {
         }
         .background(BoothColors.surface)
         .clipShape(RoundedRectangle(cornerRadius: 12))
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel("\(channel.label), \(channel.source.localizedName), \(channel.source.isLineLevel ? "line level" : "microphone")")
         .onTapGesture {
             withAnimation(.easeInOut(duration: 0.2)) {
                 isExpanded.toggle()
             }
         }
+        .accessibilityHint(isExpanded ? "Collapse details" : "Expand to see EQ, compression, and key warnings")
+        .accessibilityAddTraits(.isButton)
     }
 
     // ── Channel Header ──
@@ -419,6 +423,8 @@ private struct GainRangeIndicator: View {
         .padding(.vertical, 10)
         .background(BoothColors.accent.opacity(0.08))
         .clipShape(RoundedRectangle(cornerRadius: 8))
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(label): \(Int(range.lowerBound)) to \(Int(range.upperBound)) dB range")
     }
 }
 
@@ -478,6 +484,8 @@ private struct EQBandRow: View {
         .padding(12)
         .background(BoothColors.surfaceElevated)
         .clipShape(RoundedRectangle(cornerRadius: 8))
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("EQ band at \(formatFrequency(band.frequency)) Hz, \(actionLabel) \(formatDB(band.gainDB)) dB, Q \(String(format: "%.1f", band.q))\(band.reason.isEmpty ? "" : ", \(band.reason)")")
     }
 }
 
@@ -544,6 +552,8 @@ private struct CompressorBadge: View {
         .padding(.vertical, 10)
         .background(BoothColors.background)
         .clipShape(RoundedRectangle(cornerRadius: 6))
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(label): \(value)")
     }
 }
 
@@ -596,6 +606,8 @@ private struct KeyWarningRow: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(severityColor.opacity(0.06))
         .clipShape(RoundedRectangle(cornerRadius: 8))
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(warning.song.title), key of \(warning.song.key.localizedName), \(Int(warning.conflictFrequency)) Hz conflict, \(warning.suggestion)")
     }
 }
 

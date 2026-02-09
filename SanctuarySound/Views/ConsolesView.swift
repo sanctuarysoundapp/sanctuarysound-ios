@@ -137,6 +137,8 @@ struct ConsolesView: View {
                 .background(BoothColors.accent)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
             }
+            .accessibilityLabel("Add Console")
+            .accessibilityHint("Opens a form to add a new mixer console")
             .padding(.top, 8)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -237,6 +239,9 @@ struct ConsolesView: View {
                 .padding(10)
             }
             .buttonStyle(.plain)
+            .accessibilityElement(children: .combine)
+            .accessibilityLabel("\(profile.name.isEmpty ? profile.model.shortName : profile.name), \(profile.model.localizedName), \(profile.connectionType == .tcpMIDI ? "TCP" : "CSV")")
+            .accessibilityHint("Opens console details")
 
             // TCP Connect button for TCP-capable consoles
             if profile.connectionType == .tcpMIDI {
@@ -262,6 +267,8 @@ struct ConsolesView: View {
                     .clipShape(RoundedRectangle(cornerRadius: 6))
                 }
                 .buttonStyle(.plain)
+                .accessibilityLabel("Connect Live to \(profile.name.isEmpty ? profile.model.shortName : profile.name)")
+                .accessibilityHint("Opens TCP/MIDI connection to the console")
                 .padding(.horizontal, 10)
                 .padding(.bottom, 8)
             }
@@ -331,6 +338,8 @@ struct ConsolesView: View {
                 .background(BoothColors.accent)
                 .clipShape(RoundedRectangle(cornerRadius: 10))
             }
+            .accessibilityLabel("Import CSV File")
+            .accessibilityHint("Import a CSV export from your mixer software")
 
             Text("Import a CSV export from Allen & Heath Director to compare your current mix against engine recommendations.")
                 .font(.system(size: 11))
@@ -411,6 +420,9 @@ struct ConsolesView: View {
             .clipShape(RoundedRectangle(cornerRadius: 8))
         }
         .buttonStyle(.plain)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(snapshot.name), \(snapshot.channels.count) channels, \(snapshot.mixer.shortName)")
+        .accessibilityHint("Runs delta analysis on this snapshot")
         .contextMenu {
             Button(role: .destructive) {
                 deleteConfirmSnapshot = snapshot
