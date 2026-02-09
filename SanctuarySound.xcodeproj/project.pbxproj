@@ -73,10 +73,12 @@
 		AA200008 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AB200008 /* Assets.xcassets */; };
 		AA200009 /* SPLSharedTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000054 /* SPLSharedTypes.swift */; };
 		AA200010 /* WatchConnectivityDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000055 /* WatchConnectivityDTO.swift */; };
+		AA300001 /* WatchSPLViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB300001 /* WatchSPLViewModelTests.swift */; };
 		AA400001 /* WatchComplicationProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB400001 /* WatchComplicationProvider.swift */; };
 		AA400002 /* SPLSharedTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000054 /* SPLSharedTypes.swift */; };
 		AA400003 /* WatchConnectivityDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000055 /* WatchConnectivityDTO.swift */; };
-		AA300001 /* WatchSPLViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB300001 /* WatchSPLViewModelTests.swift */; };
+		AA500001 /* SanctuarySoundWatch.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = AC200001 /* SanctuarySoundWatch.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		AA500002 /* SanctuarySoundWatchWidgetExt.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = AC400001 /* SanctuarySoundWatchWidgetExt.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -86,6 +88,27 @@
 			proxyType = 1;
 			remoteGlobalIDString = AF000001;
 			remoteInfo = SanctuarySound;
+		};
+		C1000002 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B0000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = AF200001;
+			remoteInfo = SanctuarySoundWatch;
+		};
+		C1000003 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B0000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = AF400001;
+			remoteInfo = SanctuarySoundWatchWidgetExt;
+		};
+		C1000004 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B0000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = AF200001;
+			remoteInfo = SanctuarySoundWatch;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -156,14 +179,14 @@
 		AB200007 /* WatchReportDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchReportDetailView.swift; sourceTree = "<group>"; };
 		AB200008 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		AB200009 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		AB300001 /* WatchSPLViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchSPLViewModelTests.swift; sourceTree = "<group>"; };
 		AB400001 /* WatchComplicationProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchComplicationProvider.swift; sourceTree = "<group>"; };
 		AB400002 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		AB300001 /* WatchSPLViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchSPLViewModelTests.swift; sourceTree = "<group>"; };
 		AC000001 /* SanctuarySound.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SanctuarySound.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AC100001 /* SanctuarySoundTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SanctuarySoundTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		AC200001 /* SanctuarySoundWatch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SanctuarySoundWatch.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		AC400001 /* SanctuarySoundWatchWidgetExt.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = SanctuarySoundWatchWidgetExt.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		AC300001 /* SanctuarySoundWatchTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SanctuarySoundWatchTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		AC400001 /* SanctuarySoundWatchWidgetExt.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = SanctuarySoundWatchWidgetExt.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -188,13 +211,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		AD400001 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		AD300001 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -202,7 +218,39 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		AD400001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		AD000004 /* Embed Watch Content */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
+			dstSubfolderSpec = 16;
+			files = (
+				AA500001 /* SanctuarySoundWatch.app in Embed Watch Content */,
+			);
+			name = "Embed Watch Content";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AD200004 /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				AA500002 /* SanctuarySoundWatchWidgetExt.appex in Embed App Extensions */,
+			);
+			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXGroup section */
 		AE000001 = {
@@ -298,20 +346,6 @@
 			path = ViewModels;
 			sourceTree = "<group>";
 		};
-		AE000009 /* Network */ = {
-			isa = PBXGroup;
-			children = (
-				AB000025 /* MIDIMessageTypes.swift */,
-				AB000026 /* MIDIProtocol.swift */,
-				AB000027 /* AvantisMIDIProfile.swift */,
-				AB000028 /* SQMIDIProfile.swift */,
-				AB000029 /* MixerConnectionManager.swift */,
-				AB000032 /* PCOModels.swift */,
-				AB000033 /* PCOClient.swift */,
-			);
-			path = Network;
-			sourceTree = "<group>";
-		};
 		AE000007 /* Audio */ = {
 			isa = PBXGroup;
 			children = (
@@ -331,6 +365,20 @@
 				AB000050 /* QAStore.swift */,
 			);
 			path = Store;
+			sourceTree = "<group>";
+		};
+		AE000009 /* Network */ = {
+			isa = PBXGroup;
+			children = (
+				AB000025 /* MIDIMessageTypes.swift */,
+				AB000026 /* MIDIProtocol.swift */,
+				AB000027 /* AvantisMIDIProfile.swift */,
+				AB000028 /* SQMIDIProfile.swift */,
+				AB000029 /* MixerConnectionManager.swift */,
+				AB000032 /* PCOModels.swift */,
+				AB000033 /* PCOClient.swift */,
+			);
+			path = Network;
 			sourceTree = "<group>";
 		};
 		AE000010 /* Tips */ = {
@@ -358,6 +406,28 @@
 			path = Connectivity;
 			sourceTree = "<group>";
 		};
+		AE000099 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				AC000001 /* SanctuarySound.app */,
+				AC100001 /* SanctuarySoundTests.xctest */,
+				AC200001 /* SanctuarySoundWatch.app */,
+				AC400001 /* SanctuarySoundWatchWidgetExt.appex */,
+				AC300001 /* SanctuarySoundWatchTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		AE100001 /* SanctuarySoundTests */ = {
+			isa = PBXGroup;
+			children = (
+				AB100001 /* SoundEngineTests.swift */,
+				AB100002 /* PCOTests.swift */,
+				AB100003 /* FrequencyAnalysisTests.swift */,
+			);
+			path = SanctuarySoundTests;
+			sourceTree = "<group>";
+		};
 		AE200001 /* SanctuarySoundWatch */ = {
 			isa = PBXGroup;
 			children = (
@@ -374,25 +444,6 @@
 			path = SanctuarySoundWatch;
 			sourceTree = "<group>";
 		};
-		AE400001 /* SanctuarySoundWatchWidgetExt */ = {
-			isa = PBXGroup;
-			children = (
-				AB400001 /* WatchComplicationProvider.swift */,
-				AB400002 /* Info.plist */,
-			);
-			path = SanctuarySoundWatchWidgetExt;
-			sourceTree = "<group>";
-		};
-		AE100001 /* SanctuarySoundTests */ = {
-			isa = PBXGroup;
-			children = (
-				AB100001 /* SoundEngineTests.swift */,
-				AB100002 /* PCOTests.swift */,
-				AB100003 /* FrequencyAnalysisTests.swift */,
-			);
-			path = SanctuarySoundTests;
-			sourceTree = "<group>";
-		};
 		AE300001 /* SanctuarySoundWatchTests */ = {
 			isa = PBXGroup;
 			children = (
@@ -401,16 +452,13 @@
 			path = SanctuarySoundWatchTests;
 			sourceTree = "<group>";
 		};
-		AE000099 /* Products */ = {
+		AE400001 /* SanctuarySoundWatchWidgetExt */ = {
 			isa = PBXGroup;
 			children = (
-				AC000001 /* SanctuarySound.app */,
-				AC100001 /* SanctuarySoundTests.xctest */,
-				AC200001 /* SanctuarySoundWatch.app */,
-				AC400001 /* SanctuarySoundWatchWidgetExt.appex */,
-				AC300001 /* SanctuarySoundWatchTests.xctest */,
+				AB400001 /* WatchComplicationProvider.swift */,
+				AB400002 /* Info.plist */,
 			);
-			name = Products;
+			path = SanctuarySoundWatchWidgetExt;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -423,10 +471,12 @@
 				AD000002 /* Sources */,
 				AD000001 /* Frameworks */,
 				AD000003 /* Resources */,
+				AD000004 /* Embed Watch Content */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				D1000002 /* PBXTargetDependency */,
 			);
 			name = SanctuarySound;
 			productName = SanctuarySound;
@@ -457,15 +507,34 @@
 				AD200002 /* Sources */,
 				AD200001 /* Frameworks */,
 				AD200003 /* Resources */,
+				AD200004 /* Embed App Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				D1000003 /* PBXTargetDependency */,
 			);
 			name = SanctuarySoundWatch;
 			productName = SanctuarySoundWatch;
 			productReference = AC200001 /* SanctuarySoundWatch.app */;
 			productType = "com.apple.product-type.application";
+		};
+		AF300001 /* SanctuarySoundWatchTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B1300001 /* Build configuration list for PBXNativeTarget "SanctuarySoundWatchTests" */;
+			buildPhases = (
+				AD300002 /* Sources */,
+				AD300001 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				D1000004 /* PBXTargetDependency */,
+			);
+			name = SanctuarySoundWatchTests;
+			productName = SanctuarySoundWatchTests;
+			productReference = AC300001 /* SanctuarySoundWatchTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
 		};
 		AF400001 /* SanctuarySoundWatchWidgetExt */ = {
 			isa = PBXNativeTarget;
@@ -482,22 +551,6 @@
 			productName = SanctuarySoundWatchWidgetExt;
 			productReference = AC400001 /* SanctuarySoundWatchWidgetExt.appex */;
 			productType = "com.apple.product-type.app-extension";
-		};
-		AF300001 /* SanctuarySoundWatchTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = B1300001 /* Build configuration list for PBXNativeTarget "SanctuarySoundWatchTests" */;
-			buildPhases = (
-				AD300002 /* Sources */,
-				AD300001 /* Frameworks */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = SanctuarySoundWatchTests;
-			productName = SanctuarySoundWatchTests;
-			productReference = AC300001 /* SanctuarySoundWatchTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
 
@@ -519,12 +572,12 @@
 					AF200001 = {
 						CreatedOnToolsVersion = 16.2;
 					};
-					AF400001 = {
-						CreatedOnToolsVersion = 16.2;
-					};
 					AF300001 = {
 						CreatedOnToolsVersion = 16.2;
 						TestTargetID = AF200001;
+					};
+					AF400001 = {
+						CreatedOnToolsVersion = 16.2;
 					};
 				};
 			};
@@ -656,6 +709,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		AD300002 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AA300001 /* WatchSPLViewModelTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		AD400002 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -663,14 +724,6 @@
 				AA400001 /* WatchComplicationProvider.swift in Sources */,
 				AA400002 /* SPLSharedTypes.swift in Sources */,
 				AA400003 /* WatchConnectivityDTO.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		AD300002 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				AA300001 /* WatchSPLViewModelTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -682,6 +735,21 @@
 			target = AF000001 /* SanctuarySound */;
 			targetProxy = C1000001 /* PBXContainerItemProxy */;
 		};
+		D1000002 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = AF200001 /* SanctuarySoundWatch */;
+			targetProxy = C1000002 /* PBXContainerItemProxy */;
+		};
+		D1000003 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = AF400001 /* SanctuarySoundWatchWidgetExt */;
+			targetProxy = C1000003 /* PBXContainerItemProxy */;
+		};
+		D1000004 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = AF200001 /* SanctuarySoundWatch */;
+			targetProxy = C1000004 /* PBXContainerItemProxy */;
+		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
@@ -690,6 +758,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
 				CLANG_ENABLE_MODULES = YES;
@@ -743,6 +812,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
 				CLANG_ENABLE_MODULES = YES;
@@ -896,6 +966,7 @@
 		B2200001 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -920,6 +991,7 @@
 		B2200002 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -930,48 +1002,6 @@
 				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.sanctuarysound.app;
 				MARKETING_VERSION = 0.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.sanctuarysound.app.watchkitapp;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = watchos;
-				SKIP_INSTALL = YES;
-				SUPPORTED_PLATFORMS = "watchos watchsimulator";
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 4;
-				WATCHOS_DEPLOYMENT_TARGET = 10.0;
-			};
-			name = Release;
-		};
-		B2400001 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = M2739G49TS;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = SanctuarySoundWatchWidgetExt/Info.plist;
-				MARKETING_VERSION = 0.2.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.sanctuarysound.app.watchkitapp.widget;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = watchos;
-				SKIP_INSTALL = YES;
-				SUPPORTED_PLATFORMS = "watchos watchsimulator";
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 4;
-				WATCHOS_DEPLOYMENT_TARGET = 10.0;
-			};
-			name = Debug;
-		};
-		B2400002 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = M2739G49TS;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = SanctuarySoundWatchWidgetExt/Info.plist;
-				MARKETING_VERSION = 0.2.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.sanctuarysound.app.watchkitapp.widget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
@@ -1021,6 +1051,48 @@
 			};
 			name = Release;
 		};
+		B2400001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = M2739G49TS;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = SanctuarySoundWatchWidgetExt/Info.plist;
+				MARKETING_VERSION = 0.2.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sanctuarysound.app.watchkitapp.widget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "watchos watchsimulator";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 10.0;
+			};
+			name = Debug;
+		};
+		B2400002 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = M2739G49TS;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = SanctuarySoundWatchWidgetExt/Info.plist;
+				MARKETING_VERSION = 0.2.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sanctuarysound.app.watchkitapp.widget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "watchos watchsimulator";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 10.0;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -1060,20 +1132,20 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		B1400001 /* Build configuration list for PBXNativeTarget "SanctuarySoundWatchWidgetExt" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				B2400001 /* Debug */,
-				B2400002 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 		B1300001 /* Build configuration list for PBXNativeTarget "SanctuarySoundWatchTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				B2300001 /* Debug */,
 				B2300002 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B1400001 /* Build configuration list for PBXNativeTarget "SanctuarySoundWatchWidgetExt" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B2400001 /* Debug */,
+				B2400002 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "1620"
+   LastUpgradeVersion = "2620"
    version = "1.7">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -22,11 +22,11 @@
             </BuildableReference>
          </BuildActionEntry>
          <BuildActionEntry
-            buildForTesting = "YES"
+            buildForTesting = "NO"
             buildForRunning = "YES"
             buildForProfiling = "YES"
             buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
+            buildForAnalyzing = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "AF200001"
@@ -51,16 +51,6 @@
                BlueprintIdentifier = "AF100001"
                BuildableName = "SanctuarySoundTests.xctest"
                BlueprintName = "SanctuarySoundTests"
-               ReferencedContainer = "container:SanctuarySound.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "AF300001"
-               BuildableName = "SanctuarySoundWatchTests.xctest"
-               BlueprintName = "SanctuarySoundWatchTests"
                ReferencedContainer = "container:SanctuarySound.xcodeproj">
             </BuildableReference>
          </TestableReference>

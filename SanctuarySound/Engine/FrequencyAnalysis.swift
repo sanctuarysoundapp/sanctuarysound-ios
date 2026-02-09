@@ -119,24 +119,31 @@ struct FFTProcessor {
         // Convert real input to split complex (even/odd interleave)
         windowed.withUnsafeBufferPointer { ptr in
             ptr.baseAddress!.withMemoryRebound(to: DSPComplex.self, capacity: halfN) { complexPtr in
-                var splitComplex = DSPSplitComplex(realp: &realPart, imagp: &imagPart)
-                vDSP_ctoz(complexPtr, 2, &splitComplex, 1, vDSP_Length(halfN))
+                realPart.withUnsafeMutableBufferPointer { realBuf in
+                    imagPart.withUnsafeMutableBufferPointer { imagBuf in
+                        var split = DSPSplitComplex(realp: realBuf.baseAddress!, imagp: imagBuf.baseAddress!)
+                        vDSP_ctoz(complexPtr, 2, &split, 1, vDSP_Length(halfN))
+                    }
+                }
             }
         }
 
         // Perform FFT
-        var splitComplex = DSPSplitComplex(realp: &realPart, imagp: &imagPart)
-        vDSP_fft_zrip(fftSetup, &splitComplex, 1, log2n, FFTDirection(FFT_FORWARD))
-
-        // Scale (vDSP FFT result is scaled by 2)
-        var scale: Float = 1.0 / Float(2 * n)
-        vDSP_vsmul(realPart, 1, &scale, &realPart, 1, vDSP_Length(halfN))
-        vDSP_vsmul(imagPart, 1, &scale, &imagPart, 1, vDSP_Length(halfN))
-
-        // Compute magnitudes: sqrt(real² + imag²)
         var magnitudes = [Float](repeating: 0, count: halfN)
-        splitComplex = DSPSplitComplex(realp: &realPart, imagp: &imagPart)
-        vDSP_zvabs(&splitComplex, 1, &magnitudes, 1, vDSP_Length(halfN))
+        realPart.withUnsafeMutableBufferPointer { realBuf in
+            imagPart.withUnsafeMutableBufferPointer { imagBuf in
+                var split = DSPSplitComplex(realp: realBuf.baseAddress!, imagp: imagBuf.baseAddress!)
+                vDSP_fft_zrip(fftSetup, &split, 1, log2n, FFTDirection(FFT_FORWARD))
+
+                // Scale (vDSP FFT result is scaled by 2)
+                var scale: Float = 1.0 / Float(2 * n)
+                vDSP_vsmul(realBuf.baseAddress!, 1, &scale, realBuf.baseAddress!, 1, vDSP_Length(halfN))
+                vDSP_vsmul(imagBuf.baseAddress!, 1, &scale, imagBuf.baseAddress!, 1, vDSP_Length(halfN))
+
+                // Compute magnitudes: sqrt(real² + imag²)
+                vDSP_zvabs(&split, 1, &magnitudes, 1, vDSP_Length(halfN))
+            }
+        }
 
         return magnitudes
     }
