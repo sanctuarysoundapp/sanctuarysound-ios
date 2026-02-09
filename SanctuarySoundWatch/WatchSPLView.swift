@@ -3,8 +3,9 @@
 // SanctuarySound Watch — SPL Monitor Companion
 // ============================================================================
 // Architecture: MVVM View Layer
-// Purpose: Main watch interface showing a circular gauge for real-time SPL,
-//          start/stop controls, alert mode display, and recent reports.
+// Purpose: Watch-face style dashboard with Activity Ring gauge and four
+//          corner "complication" slots. Single-screen, no scrolling.
+//          Digital Crown adjusts target SPL threshold in real-time.
 // ============================================================================
 
 import SwiftUI
@@ -17,183 +18,191 @@ struct WatchSPLView: View {
 
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(spacing: 12) {
-                    // ── Live Gauge ──
-                    splGauge
+            ZStack {
+                WatchColors.background
+                    .ignoresSafeArea()
 
-                    // ── Controls ──
-                    controlsSection
-
-                    // ── Reports ──
-                    reportsSection
-                }
-                .padding(.horizontal, 4)
+                dashboardContent
             }
-            .navigationTitle("SPL")
-            .navigationBarTitleDisplayMode(.inline)
+            .focusable()
+            .digitalCrownRotation(
+                $viewModel.crownTargetDB,
+                from: 70.0,
+                through: 100.0,
+                by: 1.0,
+                sensitivity: .low,
+                isContinuous: false,
+                isHapticFeedbackEnabled: true
+            )
+            .onChange(of: viewModel.crownTargetDB) { _, _ in
+                viewModel.onCrownTargetChanged()
+            }
         }
     }
 
 
-    // MARK: - Live Gauge
+    // MARK: - ─── Dashboard Layout ───────────────────────────────────────────
 
-    private var splGauge: some View {
-        VStack(spacing: 4) {
+    private var dashboardContent: some View {
+        GeometryReader { geo in
+            let size = geo.size
+
             ZStack {
-                // Background ring
-                Circle()
-                    .stroke(WatchColors.surface, lineWidth: 8)
-                    .frame(width: 120, height: 120)
+                // ── Central Activity Ring Gauge ──
+                activityRingGauge(size: size)
+                    .position(x: size.width / 2, y: size.height / 2)
 
-                // Colored gauge ring
+                // ── Top-Left: Peak dB ──
+                complicationPeakDB
+                    .position(x: 28, y: 24)
+
+                // ── Top-Right: Target dB (Crown) ──
+                complicationTargetDB
+                    .position(x: size.width - 28, y: 24)
+
+                // ── Bottom-Left: Alert Mode ──
+                complicationAlertMode
+                    .position(x: 28, y: size.height - 24)
+
+                // ── Bottom-Right: Start/Stop ──
+                complicationStartStop
+                    .position(x: size.width - 28, y: size.height - 24)
+
+                // ── Connection indicator ──
+                connectionDot
+                    .position(x: size.width / 2, y: size.height - 8)
+            }
+        }
+    }
+
+
+    // MARK: - ─── Activity Ring Gauge ────────────────────────────────────────
+
+    private func activityRingGauge(size: CGSize) -> some View {
+        let ringDiameter = min(size.width, size.height) * 0.6
+        let ringWidth: CGFloat = 10
+
+        return NavigationLink {
+            WatchReportsListView(reports: viewModel.reports)
+        } label: {
+            ZStack {
+                // Background track ring
                 Circle()
-                    .trim(from: 0, to: gaugeProgress)
                     .stroke(
-                        gaugeColor,
-                        style: StrokeStyle(lineWidth: 8, lineCap: .round)
+                        WatchColors.surface,
+                        style: StrokeStyle(lineWidth: ringWidth, lineCap: .round)
                     )
-                    .frame(width: 120, height: 120)
+                    .frame(width: ringDiameter, height: ringDiameter)
+
+                // Filled arc — Activity Ring style
+                Circle()
+                    .trim(from: 0, to: min(viewModel.ringFillFraction, 1.0))
+                    .stroke(
+                        viewModel.ringColor,
+                        style: StrokeStyle(lineWidth: ringWidth, lineCap: .round)
+                    )
+                    .frame(width: ringDiameter, height: ringDiameter)
                     .rotationEffect(.degrees(-90))
                     .animation(.easeOut(duration: 0.15), value: viewModel.currentDB)
 
-                // dB readout
-                VStack(spacing: 2) {
+                // Overshoot glow ring (when over target)
+                if viewModel.ringFillFraction > 1.0 {
+                    Circle()
+                        .stroke(
+                            WatchColors.accentDanger.opacity(0.3),
+                            lineWidth: ringWidth + 4
+                        )
+                        .frame(width: ringDiameter, height: ringDiameter)
+                        .blur(radius: 4)
+                }
+
+                // Center dB readout
+                VStack(spacing: 0) {
                     Text("\(Int(viewModel.currentDB))")
-                        .font(.system(size: 36, weight: .bold, design: .rounded))
-                        .foregroundStyle(gaugeColor)
+                        .font(.system(size: 34, weight: .heavy, design: .rounded))
+                        .foregroundStyle(viewModel.ringColor)
                         .contentTransition(.numericText())
 
                     Text("dB")
-                        .font(.system(size: 11, weight: .medium))
+                        .font(.system(size: 10, weight: .semibold))
                         .foregroundStyle(WatchColors.textSecondary)
                 }
             }
+        }
+        .buttonStyle(.plain)
+    }
 
-            // Peak / Average badges
-            HStack(spacing: 12) {
-                badge(label: "PEAK", value: "\(Int(viewModel.peakDB))")
-                badge(label: "AVG", value: "\(Int(viewModel.averageDB))")
-            }
 
-            // Connection status
-            connectionIndicator
+    // MARK: - ─── Complication Slots ─────────────────────────────────────────
+
+    /// Top-left: Peak dB reading
+    private var complicationPeakDB: some View {
+        VStack(spacing: 1) {
+            Text("PEAK")
+                .font(.system(size: 7, weight: .bold, design: .monospaced))
+                .foregroundStyle(WatchColors.textMuted)
+            Text("\(Int(viewModel.peakDB))")
+                .font(.system(size: 16, weight: .bold, design: .rounded))
+                .foregroundStyle(WatchColors.textPrimary)
+                .contentTransition(.numericText())
         }
     }
 
-    private func badge(label: String, value: String) -> some View {
+    /// Top-right: Target dB (Crown-adjustable)
+    private var complicationTargetDB: some View {
         VStack(spacing: 1) {
-            Text(label)
-                .font(.system(size: 8, weight: .bold, design: .monospaced))
+            Image(systemName: "crown.fill")
+                .font(.system(size: 7))
+                .foregroundStyle(WatchColors.accentWarm)
+            Text("\(Int(viewModel.crownTargetDB))")
+                .font(.system(size: 16, weight: .bold, design: .rounded))
+                .foregroundStyle(WatchColors.accentWarm)
+                .contentTransition(.numericText())
+        }
+    }
+
+    /// Bottom-left: Alert mode indicator
+    private var complicationAlertMode: some View {
+        VStack(spacing: 1) {
+            Text("MODE")
+                .font(.system(size: 7, weight: .bold, design: .monospaced))
                 .foregroundStyle(WatchColors.textMuted)
-            Text(value)
-                .font(.system(size: 14, weight: .semibold, design: .monospaced))
+            Text(shortModeName)
+                .font(.system(size: 11, weight: .semibold))
                 .foregroundStyle(WatchColors.textPrimary)
         }
     }
 
-    private var connectionIndicator: some View {
-        HStack(spacing: 4) {
-            Circle()
-                .fill(viewModel.isPhoneReachable ? WatchColors.accent : WatchColors.textMuted)
-                .frame(width: 6, height: 6)
-            Text(viewModel.isPhoneReachable ? "Connected" : "Disconnected")
-                .font(.system(size: 10, weight: .medium))
-                .foregroundStyle(WatchColors.textSecondary)
+    /// Bottom-right: Start/Stop button
+    private var complicationStartStop: some View {
+        Button {
+            viewModel.toggleMonitoring()
+        } label: {
+            Image(systemName: viewModel.isRunning ? "stop.circle.fill" : "play.circle.fill")
+                .font(.system(size: 24))
+                .foregroundStyle(viewModel.isRunning ? WatchColors.accentDanger : WatchColors.accent)
         }
+        .buttonStyle(.plain)
     }
 
 
-    // MARK: - Controls
+    // MARK: - ─── Helpers ────────────────────────────────────────────────────
 
-    private var controlsSection: some View {
-        VStack(spacing: 8) {
-            // Start / Stop button
-            Button {
-                viewModel.toggleMonitoring()
-            } label: {
-                HStack {
-                    Image(systemName: viewModel.isRunning ? "stop.fill" : "play.fill")
-                    Text(viewModel.isRunning ? "Stop" : "Start")
-                        .fontWeight(.semibold)
-                }
-                .frame(maxWidth: .infinity)
-            }
-            .tint(viewModel.isRunning ? WatchColors.accentDanger : WatchColors.accent)
-
-            // Alert mode + target
-            HStack {
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("TARGET")
-                        .font(.system(size: 8, weight: .bold, design: .monospaced))
-                        .foregroundStyle(WatchColors.textMuted)
-                    Text("\(Int(viewModel.targetDB)) dB")
-                        .font(.system(size: 13, weight: .semibold, design: .monospaced))
-                        .foregroundStyle(WatchColors.textPrimary)
-                }
-                Spacer()
-                VStack(alignment: .trailing, spacing: 2) {
-                    Text("MODE")
-                        .font(.system(size: 8, weight: .bold, design: .monospaced))
-                        .foregroundStyle(WatchColors.textMuted)
-                    Text(viewModel.flaggingModeName)
-                        .font(.system(size: 13, weight: .semibold))
-                        .foregroundStyle(WatchColors.textPrimary)
-                }
-            }
-            .padding(.horizontal, 8)
+    /// Shortened mode name for compact complication display.
+    private var shortModeName: String {
+        switch viewModel.flaggingModeName {
+        case "Balanced": return "BAL"
+        case "Strict": return "STR"
+        case "Variable": return "VAR"
+        default: return String(viewModel.flaggingModeName.prefix(3)).uppercased()
         }
     }
 
-
-    // MARK: - Reports
-
-    private var reportsSection: some View {
-        Group {
-            if !viewModel.reports.isEmpty {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("RECENT REPORTS")
-                        .font(.system(size: 9, weight: .bold, design: .monospaced))
-                        .foregroundStyle(WatchColors.textMuted)
-                        .padding(.horizontal, 4)
-
-                    ForEach(viewModel.reports.prefix(3)) { report in
-                        NavigationLink {
-                            WatchReportDetailView(report: report)
-                        } label: {
-                            WatchReportRow(report: report)
-                        }
-                    }
-
-                    if viewModel.reports.count > 3 {
-                        NavigationLink("View All") {
-                            WatchReportsListView(reports: viewModel.reports)
-                        }
-                        .font(.system(size: 12, weight: .medium))
-                        .foregroundStyle(WatchColors.accent)
-                    }
-                }
-            }
-        }
-    }
-
-
-    // MARK: - Helpers
-
-    private var gaugeProgress: CGFloat {
-        let clamped = min(max(viewModel.currentDB, 40), 110)
-        return (clamped - 40) / 70.0
-    }
-
-    private var gaugeColor: Color {
-        switch viewModel.alertStateCodable.rawValue {
-        case "alert":
-            return WatchColors.accentDanger
-        case "warning":
-            return WatchColors.accentWarm
-        default:
-            return WatchColors.accent
-        }
+    /// Tiny dot showing phone connection status.
+    private var connectionDot: some View {
+        Circle()
+            .fill(viewModel.isPhoneReachable ? WatchColors.accent : WatchColors.textMuted)
+            .frame(width: 4, height: 4)
     }
 }
 

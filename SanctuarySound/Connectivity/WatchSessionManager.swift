@@ -30,6 +30,8 @@ final class WatchSessionManager: NSObject, ObservableObject {
     var onStartCommand: (() -> Void)?
     /// Called when the Watch sends a stop command.
     var onStopCommand: (() -> Void)?
+    /// Called when the Watch sends an updated target dB (from Digital Crown).
+    var onTargetDBUpdate: ((Double) -> Void)?
 
     // ── Throttle ──
     private var lastSendTime: Date = .distantPast
@@ -137,29 +139,50 @@ extension WatchSessionManager: WCSessionDelegate {
     }
 
     /// Receive messages from Watch (start/stop commands).
+    /// Watch sends commands without a replyHandler, so this no-reply variant is required.
+    nonisolated func session(
+        _ session: WCSession,
+        didReceiveMessage message: [String: Any]
+    ) {
+        handleWatchMessage(message)
+    }
+
+    /// Receive messages from Watch with a reply expected (future use).
     nonisolated func session(
         _ session: WCSession,
         didReceiveMessage message: [String: Any],
         replyHandler: @escaping ([String: Any]) -> Void
     ) {
-        guard let type = message[WCMessageKey.messageType] as? String,
-              type == WCMessageKey.typeCommand,
-              let command = message[WCMessageKey.command] as? String
-        else {
-            replyHandler(["status": "unknown"])
+        handleWatchMessage(message)
+        replyHandler(["status": "ok"])
+    }
+
+    /// Shared handler for Watch messages regardless of reply expectation.
+    private nonisolated func handleWatchMessage(_ message: [String: Any]) {
+        guard let type = message[WCMessageKey.messageType] as? String else { return }
+
+        // Handle preference updates from Watch (e.g., Crown-adjusted target dB)
+        if type == WCMessageKey.typePreferenceUpdate,
+           let newTarget = message[WCMessageKey.targetDB] as? Double {
+            Task { @MainActor in
+                self.onTargetDBUpdate?(newTarget)
+            }
             return
         }
+
+        // Handle start/stop commands from Watch
+        guard type == WCMessageKey.typeCommand,
+              let command = message[WCMessageKey.command] as? String
+        else { return }
 
         Task { @MainActor in
             switch command {
             case WCMessageKey.commandStart:
                 self.onStartCommand?()
-                replyHandler(["status": "started"])
             case WCMessageKey.commandStop:
                 self.onStopCommand?()
-                replyHandler(["status": "stopped"])
             default:
-                replyHandler(["status": "unknown"])
+                break
             }
         }
     }

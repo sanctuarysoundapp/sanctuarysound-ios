@@ -35,6 +35,20 @@ final class WatchSessionReceiver: NSObject, ObservableObject {
         self.session = wcSession
     }
 
+    // MARK: - Send Preference Update
+
+    /// Send an updated target dB to the iPhone when the Crown adjusts it.
+    func sendPreferenceUpdate(targetDB: Double) {
+        guard let session = session, session.isReachable else { return }
+
+        let message: [String: Any] = [
+            WCMessageKey.messageType: WCMessageKey.typePreferenceUpdate,
+            WCMessageKey.targetDB: targetDB
+        ]
+
+        session.sendMessage(message, replyHandler: nil, errorHandler: nil)
+    }
+
     // MARK: - Send Commands
 
     /// Send a command to the iPhone (e.g., "start" or "stop").
