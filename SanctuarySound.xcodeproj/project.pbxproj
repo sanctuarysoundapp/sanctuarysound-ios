@@ -63,6 +63,17 @@
 		AA000057 /* DrumKitTemplatePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000057 /* DrumKitTemplatePicker.swift */; };
 		AA000058 /* PCOTeamImportPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000058 /* PCOTeamImportPreviewView.swift */; };
 		AA000059 /* AppLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000059 /* AppLogger.swift */; };
+		AA00005A /* AudioConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB00005A /* AudioConstants.swift */; };
+		AA00005B /* MixerModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB00005B /* MixerModel.swift */; };
+		AA00005C /* VocalModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB00005C /* VocalModels.swift */; };
+		AA00005D /* RecommendationModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB00005D /* RecommendationModels.swift */; };
+		AA00005E /* AnalysisModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB00005E /* AnalysisModels.swift */; };
+		AA00005F /* ServiceSetupViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB00005F /* ServiceSetupViewModel.swift */; };
+		AA000060 /* SharedComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000060 /* SharedComponents.swift */; };
+		AA000061 /* StepNavigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000061 /* StepNavigation.swift */; };
+		AA000062 /* SPLReportFormatting.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000062 /* SPLReportFormatting.swift */; };
+		AA000063 /* SPLSessionReportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000063 /* SPLSessionReportView.swift */; };
+		AA000064 /* SPLReportExportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000064 /* SPLReportExportView.swift */; };
 		AA100001 /* SoundEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB100001 /* SoundEngineTests.swift */; };
 		AA100002 /* PCOTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB100002 /* PCOTests.swift */; };
 		AA100003 /* FrequencyAnalysisTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB100003 /* FrequencyAnalysisTests.swift */; };
@@ -175,6 +186,17 @@
 		AB000057 /* DrumKitTemplatePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrumKitTemplatePicker.swift; sourceTree = "<group>"; };
 		AB000058 /* PCOTeamImportPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PCOTeamImportPreviewView.swift; sourceTree = "<group>"; };
 		AB000059 /* AppLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLogger.swift; sourceTree = "<group>"; };
+		AB00005A /* AudioConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioConstants.swift; sourceTree = "<group>"; };
+		AB00005B /* MixerModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MixerModel.swift; sourceTree = "<group>"; };
+		AB00005C /* VocalModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VocalModels.swift; sourceTree = "<group>"; };
+		AB00005D /* RecommendationModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecommendationModels.swift; sourceTree = "<group>"; };
+		AB00005E /* AnalysisModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalysisModels.swift; sourceTree = "<group>"; };
+		AB00005F /* ServiceSetupViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceSetupViewModel.swift; sourceTree = "<group>"; };
+		AB000060 /* SharedComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedComponents.swift; sourceTree = "<group>"; };
+		AB000061 /* StepNavigation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StepNavigation.swift; sourceTree = "<group>"; };
+		AB000062 /* SPLReportFormatting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SPLReportFormatting.swift; sourceTree = "<group>"; };
+		AB000063 /* SPLSessionReportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SPLSessionReportView.swift; sourceTree = "<group>"; };
+		AB000064 /* SPLReportExportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SPLReportExportView.swift; sourceTree = "<group>"; };
 		AB100001 /* SoundEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundEngineTests.swift; sourceTree = "<group>"; };
 		AB100002 /* PCOTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PCOTests.swift; sourceTree = "<group>"; };
 		AB100003 /* FrequencyAnalysisTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrequencyAnalysisTests.swift; sourceTree = "<group>"; };
@@ -302,12 +324,18 @@
 		AE000003 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				AB00005A /* AudioConstants.swift */,
+				AB00005B /* MixerModel.swift */,
+				AB00005C /* VocalModels.swift */,
+				AB00005D /* RecommendationModels.swift */,
+				AB00005E /* AnalysisModels.swift */,
 				AB000002 /* ServiceModels.swift */,
 				AB000021 /* UserPreferences.swift */,
 				AB000023 /* ColorTheme.swift */,
 				AB000038 /* VenueModels.swift */,
 				AB000039 /* ConsoleProfile.swift */,
 				AB000049 /* QAContent.swift */,
+				AB000062 /* SPLReportFormatting.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -327,6 +355,7 @@
 		AE000005 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				AE000013 /* Components */,
 				AB000012 /* HomeView.swift */,
 				AB000004 /* InputEntryView.swift */,
 				AB000005 /* RecommendationDetailView.swift */,
@@ -347,14 +376,26 @@
 				AB000053 /* QABrowserView.swift */,
 				AB000057 /* DrumKitTemplatePicker.swift */,
 				AB000058 /* PCOTeamImportPreviewView.swift */,
+				AB000063 /* SPLSessionReportView.swift */,
+				AB000064 /* SPLReportExportView.swift */,
 			);
 			path = Views;
+			sourceTree = "<group>";
+		};
+		AE000013 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				AB000060 /* SharedComponents.swift */,
+				AB000061 /* StepNavigation.swift */,
+			);
+			path = Components;
 			sourceTree = "<group>";
 		};
 		AE000006 /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
 				AB000024 /* ThemeProvider.swift */,
+				AB00005F /* ServiceSetupViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -698,6 +739,17 @@
 				AA000057 /* DrumKitTemplatePicker.swift in Sources */,
 				AA000058 /* PCOTeamImportPreviewView.swift in Sources */,
 				AA000059 /* AppLogger.swift in Sources */,
+				AA00005A /* AudioConstants.swift in Sources */,
+				AA00005B /* MixerModel.swift in Sources */,
+				AA00005C /* VocalModels.swift in Sources */,
+				AA00005D /* RecommendationModels.swift in Sources */,
+				AA00005E /* AnalysisModels.swift in Sources */,
+				AA00005F /* ServiceSetupViewModel.swift in Sources */,
+				AA000060 /* SharedComponents.swift in Sources */,
+				AA000061 /* StepNavigation.swift in Sources */,
+				AA000062 /* SPLReportFormatting.swift in Sources */,
+				AA000063 /* SPLSessionReportView.swift in Sources */,
+				AA000064 /* SPLReportExportView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
