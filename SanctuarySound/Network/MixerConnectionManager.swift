@@ -11,6 +11,7 @@
 
 import Foundation
 import Network
+import OSLog
 import SwiftUI
 
 
@@ -71,10 +72,12 @@ final class MixerConnectionManager: ObservableObject {
         self.reconnectAttempt = 0
 
         guard profile != nil else {
+            Logger.network.error("Unsupported mixer model: \(mixerModel.rawValue)")
             status = .error("Unsupported mixer: \(mixerModel.rawValue)")
             return
         }
 
+        Logger.network.info("Connecting to \(mixerModel.shortName) at \(host):\(port)")
         liveSnapshot = MixerSnapshot(
             name: "Live — \(mixerModel.shortName)",
             importedAt: Date(),
@@ -114,7 +117,11 @@ final class MixerConnectionManager: ObservableObject {
 
     private func establishConnection() {
         let nwHost = NWEndpoint.Host(host)
-        let nwPort = NWEndpoint.Port(rawValue: port)!
+        // Safe unwrap — guards against invalid port number
+        guard let nwPort = NWEndpoint.Port(rawValue: port) else {
+            status = .error("Invalid port: \(port)")
+            return
+        }
         let params = NWParameters.tcp
 
         status = .connecting
@@ -134,6 +141,7 @@ final class MixerConnectionManager: ObservableObject {
     private func handleConnectionState(_ state: NWConnection.State) {
         switch state {
         case .ready:
+            Logger.network.info("Mixer connection established to \(self.host):\(self.port)")
             status = .connected
             lastError = nil
             reconnectAttempt = 0
@@ -142,6 +150,7 @@ final class MixerConnectionManager: ObservableObject {
 
         case .failed(let error):
             let msg = error.localizedDescription
+            Logger.network.error("Mixer connection failed: \(msg)")
             lastError = msg
             connection?.cancel()
             connection = nil
@@ -165,6 +174,7 @@ final class MixerConnectionManager: ObservableObject {
 
     private func scheduleReconnect() {
         guard reconnectAttempt < maxReconnectAttempts else {
+            Logger.network.error("Mixer reconnect exhausted after \(self.maxReconnectAttempts) attempts")
             status = .error("Connection failed after \(maxReconnectAttempts) attempts")
             return
         }
@@ -174,6 +184,7 @@ final class MixerConnectionManager: ObservableObject {
 
         // Exponential backoff: 1s, 2s, 4s, 8s, ... capped at maxReconnectDelay
         let delay = min(pow(2.0, Double(reconnectAttempt - 1)), maxReconnectDelay)
+        Logger.network.info("Mixer reconnect attempt \(self.reconnectAttempt) in \(delay, format: .fixed(precision: 1))s")
 
         reconnectTask = Task {
             try? await Task.sleep(for: .seconds(delay))

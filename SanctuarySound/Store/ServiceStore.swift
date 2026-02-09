@@ -10,6 +10,7 @@
 // ============================================================================
 
 import Foundation
+import OSLog
 
 // MARK: - ─── Service Store ──────────────────────────────────────────────────
 
@@ -125,12 +126,13 @@ final class ServiceStore: ObservableObject {
 
     /// Auto-save vocalist profiles from channels that have vocal data.
     func autoSaveVocalists(from channels: [InputChannel]) {
-        for channel in channels where channel.vocalProfile != nil {
+        // Safe unwrap — guards against nil vocal profile
+        for channel in channels {
+            guard let profile = channel.vocalProfile else { continue }
             let isDuplicate = savedVocalists.contains { existing in
                 existing.name == channel.label
             }
             if !isDuplicate {
-                let profile = channel.vocalProfile!
                 let vocalist = SavedVocalist(
                     name: channel.label,
                     range: profile.range,
@@ -320,7 +322,11 @@ final class ServiceStore: ObservableObject {
                      preferencesFile, reportsFile, userPreferencesFile, venuesFile, consolesFile]
         for file in files {
             let url = documentsURL.appendingPathComponent(file)
-            try? FileManager.default.removeItem(at: url)
+            do {
+                try FileManager.default.removeItem(at: url)
+            } catch {
+                Logger.persistence.warning("Failed to remove \(url.lastPathComponent): \(error.localizedDescription)")
+            }
         }
 
         // Re-run migration to create default venue/room/console
@@ -434,7 +440,7 @@ final class ServiceStore: ObservableObject {
             let jsonData = try encoder.encode(data)
             try jsonData.write(to: url, options: .atomic)
         } catch {
-            // Silent failure for MVP — production should log this
+            Logger.persistence.error("Failed to persist \(filename): \(error.localizedDescription)")
         }
     }
 
@@ -447,6 +453,7 @@ final class ServiceStore: ObservableObject {
             decoder.dateDecodingStrategy = .iso8601
             return try decoder.decode(type, from: data)
         } catch {
+            Logger.persistence.error("Failed to load \(filename): \(error.localizedDescription)")
             return nil
         }
     }

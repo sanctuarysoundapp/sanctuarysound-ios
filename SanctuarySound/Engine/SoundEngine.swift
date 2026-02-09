@@ -761,14 +761,15 @@ final class SoundEngine {
         
         // Key diversity check
         let uniqueKeys = Set(service.setlist.map { $0.key })
-        if uniqueKeys.count == 1 && !service.setlist.isEmpty {
-            let key = service.setlist.first!.key
+        // Safe unwrap — guards against empty setlist access
+        if uniqueKeys.count == 1, let firstSong = service.setlist.first {
+            let key = firstSong.key
             notes.append("📎 All songs are in the key of \(key.localizedName). This means harmonic buildup at \(Int(key.bassRangeHz)) Hz and \(Int(key.lowMidRangeHz)) Hz will be persistent throughout the set. Monitor these frequencies closely.")
         }
-        
+
         // Intensity progression
-        if service.setlist.count >= 3 {
-            let lastSong = service.setlist.last!
+        // Safe unwrap — guards against empty setlist access
+        if service.setlist.count >= 3, let lastSong = service.setlist.last {
             if lastSong.intensity == .allOut || lastSong.intensity == .driving {
                 notes.append("🎵 Your set builds to high energy. Consider pulling faders back -3 dB at the start and riding them up gradually to create dynamic range across the entire set.")
             }
