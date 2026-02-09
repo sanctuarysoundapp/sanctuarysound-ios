@@ -21,6 +21,20 @@
                ReferencedContainer = "container:SanctuarySound.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "AF200001"
+               BuildableName = "SanctuarySoundWatch.app"
+               BlueprintName = "SanctuarySoundWatch"
+               ReferencedContainer = "container:SanctuarySound.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
       </BuildActionEntries>
    </BuildAction>
    <TestAction
@@ -37,6 +51,16 @@
                BlueprintIdentifier = "AF100001"
                BuildableName = "SanctuarySoundTests.xctest"
                BlueprintName = "SanctuarySoundTests"
+               ReferencedContainer = "container:SanctuarySound.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "AF300001"
+               BuildableName = "SanctuarySoundWatchTests.xctest"
+               BlueprintName = "SanctuarySoundWatchTests"
                ReferencedContainer = "container:SanctuarySound.xcodeproj">
             </BuildableReference>
          </TestableReference>

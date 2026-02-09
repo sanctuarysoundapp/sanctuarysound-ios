@@ -44,6 +44,10 @@ final class SPLMeter: ObservableObject {
     private var sessionReadingSum: Double = 0.0
     private var sessionReadingCount: Int = 0
 
+    // ── Watch Connectivity Hook ──
+    /// Called on every SPL update (~50Hz). WatchSessionManager throttles to 10Hz.
+    var onSPLUpdate: ((SPLSnapshot) -> Void)?
+
     // ── Internal ──
     private var audioEngine: AVAudioEngine?
     private var recentReadings: [Double] = []
@@ -187,6 +191,16 @@ final class SPLMeter: ObservableObject {
 
             // ── Alert State Evaluation + Breach Logging ──
             self.evaluateAlertState(spl: spl)
+
+            // ── Notify Watch Connectivity ──
+            let snapshot = SPLSnapshot(
+                currentDB: spl,
+                peakDB: self.peakDB,
+                averageDB: self.averageDB,
+                alertState: SPLAlertStateCodable(from: self.alertState),
+                isRunning: self.isRunning
+            )
+            self.onSPLUpdate?(snapshot)
         }
     }
 
