@@ -23,6 +23,12 @@ struct MixerConnectionView: View {
     @State private var selectedMixer: MixerModel = .allenHeathAvantis
     @State private var showingSaveSheet = false
     @State private var snapshotName: String = ""
+    @FocusState private var focusedField: ConnectionField?
+
+    private enum ConnectionField {
+        case ipAddress
+        case port
+    }
 
     private var supportedMixers: [MixerModel] {
         MixerModel.allCases.filter { MixerConnectionManager.supportsTCPMIDI($0) }
@@ -51,6 +57,16 @@ struct MixerConnectionView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbarColorScheme(.dark, for: .navigationBar)
             .preferredColorScheme(.dark)
+            .toolbar {
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+                    Button("Done") {
+                        focusedField = nil
+                    }
+                    .foregroundStyle(BoothColors.accent)
+                    .fontWeight(.semibold)
+                }
+            }
         }
     }
 
@@ -87,6 +103,7 @@ struct MixerConnectionView: View {
                     .multilineTextAlignment(.trailing)
                     .textFieldStyle(.plain)
                     .keyboardType(.decimalPad)
+                    .focused($focusedField, equals: .ipAddress)
                     .disabled(connectionManager.status.isConnected)
                     .frame(maxWidth: 160)
             }
@@ -103,6 +120,7 @@ struct MixerConnectionView: View {
                     .multilineTextAlignment(.trailing)
                     .textFieldStyle(.plain)
                     .keyboardType(.numberPad)
+                    .focused($focusedField, equals: .port)
                     .disabled(connectionManager.status.isConnected)
                     .frame(maxWidth: 80)
             }

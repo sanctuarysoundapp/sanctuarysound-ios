@@ -275,9 +275,9 @@ struct InputEntryView: View {
                     TabView(selection: $vm.currentStep) {
                         BasicsStepView(vm: vm)
                             .tag(SetupStep.basics)
-                        ChannelsStepView(vm: vm, store: store)
+                        ChannelsStepView(vm: vm, store: store, pcoManager: pcoManager)
                             .tag(SetupStep.channels)
-                        SetlistStepView(vm: vm)
+                        SetlistStepView(vm: vm, pcoManager: pcoManager)
                             .tag(SetupStep.setlist)
                         ReviewStepView(vm: vm, store: store)
                             .tag(SetupStep.review)
@@ -536,7 +536,9 @@ struct BasicsStepView: View {
 struct ChannelsStepView: View {
     @ObservedObject var vm: ServiceSetupViewModel
     @ObservedObject var store: ServiceStore
+    @ObservedObject var pcoManager: PlanningCenterManager
     @State private var showSavedInputs = false
+    @State private var showPCOImport = false
 
     var body: some View {
         VStack(spacing: 0) {
@@ -546,6 +548,16 @@ struct ChannelsStepView: View {
                     .foregroundStyle(BoothColors.accent)
 
                 Spacer()
+
+                if pcoManager.client.isAuthenticated {
+                    Button {
+                        showPCOImport = true
+                    } label: {
+                        Label("Import", systemImage: "arrow.down.circle")
+                            .font(.system(size: 13, weight: .medium))
+                            .foregroundStyle(BoothColors.accentWarm)
+                    }
+                }
 
                 if !store.savedInputs.isEmpty {
                     Button {
@@ -635,6 +647,16 @@ struct ChannelsStepView: View {
             SavedInputsSheet(store: store) { input in
                 vm.service.channels.append(input.toInputChannel())
             }
+        }
+        .sheet(isPresented: $showPCOImport) {
+            PCOImportSheet(
+                manager: pcoManager,
+                mode: .team,
+                onImportSetlist: { _ in },
+                onImportTeam: { channels in
+                    vm.service.channels.append(contentsOf: channels)
+                }
+            )
         }
     }
 }
@@ -897,6 +919,8 @@ private func vocalRangeIcon(_ range: VocalRange) -> String {
 
 struct SetlistStepView: View {
     @ObservedObject var vm: ServiceSetupViewModel
+    @ObservedObject var pcoManager: PlanningCenterManager
+    @State private var showPCOImport = false
 
     var body: some View {
         VStack(spacing: 0) {
@@ -906,6 +930,16 @@ struct SetlistStepView: View {
                     .foregroundStyle(BoothColors.accent)
 
                 Spacer()
+
+                if pcoManager.client.isAuthenticated {
+                    Button {
+                        showPCOImport = true
+                    } label: {
+                        Label("Import", systemImage: "arrow.down.circle")
+                            .font(.system(size: 13, weight: .medium))
+                            .foregroundStyle(BoothColors.accentWarm)
+                    }
+                }
 
                 Button {
                     vm.resetSongDraft()
@@ -979,6 +1013,16 @@ struct SetlistStepView: View {
         }
         .sheet(isPresented: $vm.showAddSong, onDismiss: { vm.editingSongIndex = nil }) {
             AddSongSheet(vm: vm)
+        }
+        .sheet(isPresented: $showPCOImport) {
+            PCOImportSheet(
+                manager: pcoManager,
+                mode: .setlist,
+                onImportSetlist: { songs in
+                    vm.service.setlist.append(contentsOf: songs)
+                },
+                onImportTeam: { _ in }
+            )
         }
     }
 }

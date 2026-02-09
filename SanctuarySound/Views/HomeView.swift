@@ -59,7 +59,7 @@ struct HomeView: View {
                 .tag(AppTab.mixer)
 
                 // ── Tab 5: Saved Data ──
-                SavedDataView(store: store, selectedTab: $selectedTab)
+                SavedDataView(store: store)
                     .tabItem {
                         Label("Saved", systemImage: "folder.fill")
                     }
@@ -752,61 +752,10 @@ private struct SavedItemActionBar: View {
 }
 
 
-// MARK: - ─── SPL Preference Row ─────────────────────────────────────────────
-
-/// Tappable row for SPL preferences — shows icon, title, value, and subtitle.
-/// Tapping navigates to the SPL Monitor tab for editing.
-private struct SPLPreferenceRow: View {
-    let icon: String
-    let title: String
-    let value: String
-    let subtitle: String
-    var valueColor: Color = BoothColors.accent
-    var onTap: () -> Void
-
-    var body: some View {
-        Button {
-            onTap()
-        } label: {
-            HStack(spacing: 12) {
-                Image(systemName: icon)
-                    .font(.system(size: 16))
-                    .foregroundStyle(valueColor)
-                    .frame(width: 28, height: 28)
-
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(title)
-                        .font(.system(size: 13, weight: .medium))
-                        .foregroundStyle(BoothColors.textPrimary)
-                    Text(subtitle)
-                        .font(.system(size: 10))
-                        .foregroundStyle(BoothColors.textSecondary)
-                }
-
-                Spacer()
-
-                Text(value)
-                    .font(.system(size: 14, weight: .bold, design: .monospaced))
-                    .foregroundStyle(valueColor)
-
-                Image(systemName: "chevron.right")
-                    .font(.system(size: 11, weight: .semibold))
-                    .foregroundStyle(BoothColors.textMuted)
-            }
-            .padding(12)
-            .background(BoothColors.surfaceElevated)
-            .clipShape(RoundedRectangle(cornerRadius: 8))
-        }
-        .buttonStyle(.plain)
-    }
-}
-
-
 // MARK: - ─── Saved Data View ────────────────────────────────────────────────
 
 struct SavedDataView: View {
     @ObservedObject var store: ServiceStore
-    @Binding var selectedTab: AppTab
 
     var body: some View {
         NavigationStack {
@@ -823,9 +772,6 @@ struct SavedDataView: View {
 
                         // ── Saved Services ──
                         servicesSection
-
-                        // ── SPL Settings ──
-                        splSection
                     }
                     .padding()
                     .padding(.bottom, 20)
@@ -958,76 +904,6 @@ struct SavedDataView: View {
                 }
             }
         }
-    }
-
-    private var splSection: some View {
-        SectionCard(title: "SPL Preferences") {
-            // ── Target SPL ──
-            SPLPreferenceRow(
-                icon: "speaker.wave.2.fill",
-                title: "Target SPL",
-                value: "\(Int(store.splPreference.targetDB)) dB",
-                subtitle: splTargetDescription,
-                valueColor: splTargetColor
-            ) {
-                selectedTab = .spl
-            }
-
-            // ── Alert Mode ──
-            SPLPreferenceRow(
-                icon: "bell.badge.fill",
-                title: "Alert Mode",
-                value: store.splPreference.flaggingMode.localizedName,
-                subtitle: "Flags when \(Int(store.splPreference.flagThresholdDB)) dB over target",
-                valueColor: BoothColors.accentWarm
-            ) {
-                selectedTab = .spl
-            }
-
-            // ── Calibration ──
-            SPLPreferenceRow(
-                icon: "tuningfork",
-                title: "Mic Calibration",
-                value: calibrationValueText,
-                subtitle: calibrationSubtitle,
-                valueColor: store.splPreference.calibrationOffset != nil
-                    ? BoothColors.accent
-                    : BoothColors.textMuted
-            ) {
-                selectedTab = .spl
-            }
-        }
-    }
-
-    // MARK: - SPL Helpers
-
-    private var splTargetDescription: String {
-        let db = store.splPreference.targetDB
-        if db <= 75 { return "Quiet — Spoken Word" }
-        if db <= 82 { return "Conversational" }
-        if db <= 88 { return "Moderate Worship" }
-        if db <= 93 { return "Energetic Worship" }
-        return "Full Band — Loud"
-    }
-
-    private var splTargetColor: Color {
-        let db = store.splPreference.targetDB
-        if db <= 82 { return BoothColors.accent }
-        if db <= 93 { return BoothColors.accentWarm }
-        return BoothColors.accentDanger
-    }
-
-    private var calibrationValueText: String {
-        if let offset = store.splPreference.calibrationOffset {
-            return String(format: "%+.1f dB", offset)
-        }
-        return "Not Set"
-    }
-
-    private var calibrationSubtitle: String {
-        store.splPreference.calibrationOffset != nil
-            ? "iPhone mic calibrated to reference meter"
-            : "Tap to calibrate with a reference SPL meter"
     }
 
     private func formatDate(_ date: Date) -> String {

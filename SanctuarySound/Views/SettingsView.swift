@@ -25,25 +25,24 @@ struct SettingsView: View {
             ScrollView {
                 VStack(spacing: 20) {
                     // ── Service Defaults ──
-                    defaultsSection
+                    consoleSection
+                    bandRoomSection
+                    splTargetSection
 
-                    // ── Planning Center ──
+                    // ── Integrations ──
                     planningCenterSection
 
                     // ── Appearance ──
                     appearanceSection
 
-                    // ── About ──
-                    aboutSection
-
-                    // ── Support ──
-                    supportSection
+                    // ── About & Support ──
+                    aboutSupportSection
 
                     // ── Community ──
                     communitySection
 
                     // ── Legal ──
-                    legalSection
+                    legalFooter
                 }
                 .padding()
                 .padding(.bottom, 20)
@@ -59,15 +58,10 @@ struct SettingsView: View {
     }
 
 
-    // MARK: - ─── Service Defaults ─────────────────────────────────────────────
+    // MARK: - ─── Console & Experience ───────────────────────────────────────
 
-    private var defaultsSection: some View {
-        SectionCard(title: "Service Defaults") {
-            Text("New services will start with these settings. You can always change them per service.")
-                .font(.system(size: 12))
-                .foregroundStyle(BoothColors.textSecondary)
-                .lineSpacing(3)
-
+    private var consoleSection: some View {
+        SectionCard(title: "Console & Experience") {
             // ── Console ──
             settingsRow(label: "Console") {
                 Picker("Console", selection: $prefs.defaultMixer) {
@@ -81,7 +75,7 @@ struct SettingsView: View {
             }
 
             // ── Experience Level ──
-            settingsRow(label: "Experience Level") {
+            settingsRow(label: "Level") {
                 Picker("Level", selection: $prefs.defaultExperienceLevel) {
                     ForEach(ExperienceLevel.allCases) { level in
                         Text(level.localizedName).tag(level)
@@ -91,7 +85,14 @@ struct SettingsView: View {
                 .tint(BoothColors.accent)
                 .onChange(of: prefs.defaultExperienceLevel) { _, _ in savePrefs() }
             }
+        }
+    }
 
+
+    // MARK: - ─── Band & Room ────────────────────────────────────────────────
+
+    private var bandRoomSection: some View {
+        SectionCard(title: "Band & Room") {
             // ── Band Composition ──
             settingsRow(label: "Band") {
                 Picker("Band", selection: $prefs.defaultBandComposition) {
@@ -116,8 +117,11 @@ struct SettingsView: View {
                 .onChange(of: prefs.defaultDrumConfig) { _, _ in savePrefs() }
             }
 
+            Divider()
+                .background(BoothColors.divider)
+
             // ── Room Size ──
-            settingsRow(label: "Room Size") {
+            settingsRow(label: "Size") {
                 Picker("Size", selection: $prefs.defaultRoomSize) {
                     ForEach(RoomSize.allCases) { size in
                         Text(size.localizedName).tag(size)
@@ -129,7 +133,7 @@ struct SettingsView: View {
             }
 
             // ── Room Surface ──
-            settingsRow(label: "Room Surface") {
+            settingsRow(label: "Surfaces") {
                 Picker("Surface", selection: $prefs.defaultRoomSurface) {
                     ForEach(RoomSurface.allCases) { surface in
                         Text(surface.localizedName).tag(surface)
@@ -139,8 +143,19 @@ struct SettingsView: View {
                 .tint(BoothColors.accent)
                 .onChange(of: prefs.defaultRoomSurface) { _, _ in savePrefs() }
             }
+        }
+    }
 
-            // ── Target SPL ──
+
+    // MARK: - ─── SPL Target ─────────────────────────────────────────────────
+
+    private var splTargetSection: some View {
+        SectionCard(title: "SPL Target") {
+            Text("Preferred maximum SPL during the loudest moments of worship.")
+                .font(.system(size: 12))
+                .foregroundStyle(BoothColors.textSecondary)
+                .lineSpacing(3)
+
             VStack(alignment: .leading, spacing: 6) {
                 HStack {
                     Text("Target SPL")
@@ -166,7 +181,7 @@ struct SettingsView: View {
     }
 
 
-    // MARK: - ─── Planning Center ────────────────────────────────────────────────
+    // MARK: - ─── Planning Center ────────────────────────────────────────────
 
     private var planningCenterSection: some View {
         SectionCard(title: "Planning Center") {
@@ -227,7 +242,7 @@ struct SettingsView: View {
     }
 
 
-    // MARK: - ─── Appearance ───────────────────────────────────────────────────
+    // MARK: - ─── Appearance ─────────────────────────────────────────────────
 
     private var appearanceSection: some View {
         SectionCard(title: "Appearance") {
@@ -278,10 +293,10 @@ struct SettingsView: View {
     }
 
 
-    // MARK: - ─── About ────────────────────────────────────────────────────────
+    // MARK: - ─── About & Support ────────────────────────────────────────────
 
-    private var aboutSection: some View {
-        SectionCard(title: "About") {
+    private var aboutSupportSection: some View {
+        SectionCard(title: "About & Support") {
             VStack(spacing: 12) {
                 // App icon with glow
                 ZStack {
@@ -299,7 +314,7 @@ struct SettingsView: View {
                         )
                         .frame(width: 90, height: 90)
 
-                    Image("AppIcon")
+                    Image("AppIconImage")
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                         .frame(width: 60, height: 60)
@@ -331,23 +346,12 @@ struct SettingsView: View {
                 .font(.system(size: 12))
                 .foregroundStyle(BoothColors.textSecondary)
                 .lineSpacing(3)
-        }
-    }
 
-
-    // MARK: - ─── Support ──────────────────────────────────────────────────────
-
-    private var supportSection: some View {
-        SectionCard(title: "Support This Ministry") {
-            Text("Your generosity keeps this app free for every church. Donations are tax-deductible through our church's 501(c)(3).")
-                .font(.system(size: 12))
-                .foregroundStyle(BoothColors.textSecondary)
-                .lineSpacing(3)
-
+            // ── Hero Donation CTA ──
             Link(destination: AppConfig.donationURL) {
                 HStack(spacing: 8) {
                     Image(systemName: "heart.fill")
-                    Text("Support Development")
+                    Text("Support This Ministry")
                 }
                 .font(.system(size: 14, weight: .bold))
                 .frame(maxWidth: .infinity)
@@ -367,10 +371,10 @@ struct SettingsView: View {
     }
 
 
-    // MARK: - ─── Community ────────────────────────────────────────────────────
+    // MARK: - ─── Community & Open Source ─────────────────────────────────────
 
     private var communitySection: some View {
-        SectionCard(title: "Community") {
+        SectionCard(title: "Community & Open Source") {
             settingsLink(
                 icon: "curlybraces",
                 title: "View Source Code",
@@ -419,42 +423,34 @@ struct SettingsView: View {
     }
 
 
-    // MARK: - ─── Legal ────────────────────────────────────────────────────────
+    // MARK: - ─── Legal Footer ───────────────────────────────────────────────
 
-    private var legalSection: some View {
-        SectionCard(title: "Legal") {
-            settingsLink(
-                icon: "hand.raised.fill",
-                title: "Privacy Policy",
-                subtitle: "No data collected, ever",
-                url: AppConfig.privacyPolicyURL
-            )
+    private var legalFooter: some View {
+        VStack(spacing: 8) {
+            HStack(spacing: 16) {
+                Link("Privacy Policy", destination: AppConfig.privacyPolicyURL)
+                    .font(.system(size: 11, weight: .medium))
+                    .foregroundStyle(BoothColors.textSecondary)
 
-            HStack(spacing: 12) {
-                Image(systemName: "doc.text")
-                    .font(.system(size: 14))
-                    .foregroundStyle(BoothColors.accent)
-                    .frame(width: 28, height: 28)
+                Text("·")
+                    .font(.system(size: 11))
+                    .foregroundStyle(BoothColors.textMuted)
 
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("License")
-                        .font(.system(size: 13, weight: .medium))
-                        .foregroundStyle(BoothColors.textPrimary)
-                    Text("MIT — Free to use, modify, and distribute")
-                        .font(.system(size: 11))
-                        .foregroundStyle(BoothColors.textSecondary)
-                }
-
-                Spacer()
+                Text("MIT License")
+                    .font(.system(size: 11, weight: .medium))
+                    .foregroundStyle(BoothColors.textSecondary)
             }
-            .padding(12)
-            .background(BoothColors.surfaceElevated)
-            .clipShape(RoundedRectangle(cornerRadius: 8))
+
+            Text("No data collected, ever.")
+                .font(.system(size: 10))
+                .foregroundStyle(BoothColors.textMuted)
         }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 12)
     }
 
 
-    // MARK: - ─── Components ───────────────────────────────────────────────────
+    // MARK: - ─── Components ─────────────────────────────────────────────────
 
     private func settingsRow<Content: View>(
         label: String,
