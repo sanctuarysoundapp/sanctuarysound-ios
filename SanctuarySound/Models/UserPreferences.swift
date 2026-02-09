@@ -28,6 +28,10 @@ struct UserPreferences: Codable, Equatable {
     // ── Appearance ──
 
     var colorTheme: ColorThemeID = .darkBooth
+
+    // ── Layout ──
+
+    var useNewTabLayout: Bool = false
 }
 
 

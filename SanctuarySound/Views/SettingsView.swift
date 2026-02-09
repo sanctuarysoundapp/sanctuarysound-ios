@@ -19,30 +19,34 @@ struct SettingsView: View {
     @State private var prefs: UserPreferences = UserPreferences()
 
     var body: some View {
-        ZStack {
-            BoothColors.background.ignoresSafeArea()
+        NavigationStack {
+            ZStack {
+                BoothColors.background.ignoresSafeArea()
 
-            ScrollView {
-                VStack(spacing: 20) {
-                    // ── Service Defaults ──
-                    consoleSection
-                    bandRoomSection
-                    splTargetSection
+                ScrollView {
+                    VStack(spacing: 20) {
+                        // ── Service Defaults ──
+                        consoleSection
+                        bandRoomSection
+                        splTargetSection
 
-                    // ── Integrations ──
-                    planningCenterSection
+                        // ── Integrations ──
+                        planningCenterSection
 
-                    // ── Appearance ──
-                    appearanceSection
+                        // ── Appearance ──
+                        appearanceSection
 
-                    // ── About & Support ──
-                    aboutSupportSection
+                        // ── Layout ──
+                        layoutSection
 
-                    // ── Community ──
-                    communitySection
+                        // ── About & Support ──
+                        aboutSupportSection
 
-                    // ── Legal ──
-                    legalFooter
+                        // ── Community ──
+                        communitySection
+
+                        // ── Legal ──
+                        legalFooter
                 }
                 .padding()
                 .padding(.bottom, 20)
@@ -51,6 +55,7 @@ struct SettingsView: View {
         .navigationTitle("Settings")
         .navigationBarTitleDisplayMode(.inline)
         .toolbarColorScheme(.dark, for: .navigationBar)
+        }
         .preferredColorScheme(.dark)
         .onAppear {
             prefs = store.userPreferences
@@ -289,6 +294,31 @@ struct SettingsView: View {
             .padding(12)
             .background(isSelected ? BoothColors.surfaceElevated : Color.clear)
             .clipShape(RoundedRectangle(cornerRadius: 8))
+        }
+    }
+
+
+    // MARK: - ─── Layout ──────────────────────────────────────────────────────
+
+    private var layoutSection: some View {
+        SectionCard(title: "Layout") {
+            Toggle(isOn: Binding(
+                get: { prefs.useNewTabLayout },
+                set: { newValue in
+                    prefs.useNewTabLayout = newValue
+                    savePrefs()
+                }
+            )) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("New Tab Layout")
+                        .font(.system(size: 14, weight: .medium))
+                        .foregroundStyle(BoothColors.textPrimary)
+                    Text("Services, Inputs, Consoles, Tools, Settings")
+                        .font(.system(size: 11))
+                        .foregroundStyle(BoothColors.textSecondary)
+                }
+            }
+            .tint(BoothColors.accent)
         }
     }
 

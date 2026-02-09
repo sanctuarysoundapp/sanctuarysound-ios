@@ -41,6 +41,12 @@
 		AA000035 /* PCOImportSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000035 /* PCOImportSheet.swift */; };
 		AA000036 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = AB000036 /* Localizable.xcstrings */; };
 		AA000037 /* InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = AB000037 /* InfoPlist.xcstrings */; };
+		AA000038 /* VenueModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000038 /* VenueModels.swift */; };
+		AA000039 /* ConsoleProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000039 /* ConsoleProfile.swift */; };
+		AA000040 /* ServicesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000040 /* ServicesView.swift */; };
+		AA000041 /* InputLibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000041 /* InputLibraryView.swift */; };
+		AA000042 /* ConsolesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000042 /* ConsolesView.swift */; };
+		AA000043 /* ToolsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000043 /* ToolsView.swift */; };
 		AA100001 /* SoundEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB100001 /* SoundEngineTests.swift */; };
 		AA100002 /* PCOTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB100002 /* PCOTests.swift */; };
 /* End PBXBuildFile section */
@@ -91,6 +97,12 @@
 		AB000035 /* PCOImportSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PCOImportSheet.swift; sourceTree = "<group>"; };
 		AB000036 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		AB000037 /* InfoPlist.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = InfoPlist.xcstrings; sourceTree = "<group>"; };
+		AB000038 /* VenueModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VenueModels.swift; sourceTree = "<group>"; };
+		AB000039 /* ConsoleProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsoleProfile.swift; sourceTree = "<group>"; };
+		AB000040 /* ServicesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServicesView.swift; sourceTree = "<group>"; };
+		AB000041 /* InputLibraryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputLibraryView.swift; sourceTree = "<group>"; };
+		AB000042 /* ConsolesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsolesView.swift; sourceTree = "<group>"; };
+		AB000043 /* ToolsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolsView.swift; sourceTree = "<group>"; };
 		AB100001 /* SoundEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundEngineTests.swift; sourceTree = "<group>"; };
 		AB100002 /* PCOTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PCOTests.swift; sourceTree = "<group>"; };
 		AC000001 /* SanctuarySound.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SanctuarySound.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -150,6 +162,8 @@
 				AB000002 /* ServiceModels.swift */,
 				AB000021 /* UserPreferences.swift */,
 				AB000023 /* ColorTheme.swift */,
+				AB000038 /* VenueModels.swift */,
+				AB000039 /* ConsoleProfile.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -178,6 +192,10 @@
 				AB000022 /* SettingsView.swift */,
 				AB000030 /* MixerConnectionView.swift */,
 				AB000035 /* PCOImportSheet.swift */,
+				AB000040 /* ServicesView.swift */,
+				AB000041 /* InputLibraryView.swift */,
+				AB000042 /* ConsolesView.swift */,
+				AB000043 /* ToolsView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -365,6 +383,12 @@
 				AA000033 /* PCOClient.swift in Sources */,
 				AA000034 /* PlanningCenterManager.swift in Sources */,
 				AA000035 /* PCOImportSheet.swift in Sources */,
+				AA000038 /* VenueModels.swift in Sources */,
+				AA000039 /* ConsoleProfile.swift in Sources */,
+				AA000040 /* ServicesView.swift in Sources */,
+				AA000041 /* InputLibraryView.swift in Sources */,
+				AA000042 /* ConsolesView.swift in Sources */,
+				AA000043 /* ToolsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

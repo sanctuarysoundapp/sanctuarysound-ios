@@ -815,7 +815,12 @@ struct WorshipService: Codable, Identifiable {
     var channels: [InputChannel]
     var setlist: [SetlistSong]
     var experienceLevel: ExperienceLevel
-    
+
+    // ── Venue/Room/Console References (optional for backward compat) ──
+    var venueID: UUID?
+    var roomID: UUID?
+    var consoleProfileID: UUID?
+
     init(
         id: UUID = UUID(),
         name: String = "New Service",
@@ -826,7 +831,10 @@ struct WorshipService: Codable, Identifiable {
         room: RoomProfile = RoomProfile(),
         channels: [InputChannel] = [],
         setlist: [SetlistSong] = [],
-        experienceLevel: ExperienceLevel = .intermediate
+        experienceLevel: ExperienceLevel = .intermediate,
+        venueID: UUID? = nil,
+        roomID: UUID? = nil,
+        consoleProfileID: UUID? = nil
     ) {
         self.id = id
         self.name = name
@@ -838,6 +846,9 @@ struct WorshipService: Codable, Identifiable {
         self.channels = channels
         self.setlist = setlist
         self.experienceLevel = experienceLevel
+        self.venueID = venueID
+        self.roomID = roomID
+        self.consoleProfileID = consoleProfileID
     }
 }
 
@@ -1030,19 +1041,41 @@ struct SavedInput: Codable, Identifiable {
     var source: InputSource
     var vocalProfile: VocalProfile?     // Only for vocal/speech sources
     var notes: String
+    var tags: [String]                  // Filterable tags: "lead", "backing", "electric", etc.
+    var micModel: String?               // e.g., "Shure SM58", "Neumann U87"
+    var lastUsed: Date?
 
     init(
         id: UUID = UUID(),
         name: String = "",
         source: InputSource = .leadVocal,
         vocalProfile: VocalProfile? = nil,
-        notes: String = ""
+        notes: String = "",
+        tags: [String] = [],
+        micModel: String? = nil,
+        lastUsed: Date? = nil
     ) {
         self.id = id
         self.name = name
         self.source = source
         self.vocalProfile = vocalProfile
         self.notes = notes
+        self.tags = tags
+        self.micModel = micModel
+        self.lastUsed = lastUsed
+    }
+
+    // Backward-compatible decoder — old JSON without tags/micModel/lastUsed still loads
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decode(UUID.self, forKey: .id)
+        name = try container.decode(String.self, forKey: .name)
+        source = try container.decode(InputSource.self, forKey: .source)
+        vocalProfile = try container.decodeIfPresent(VocalProfile.self, forKey: .vocalProfile)
+        notes = try container.decodeIfPresent(String.self, forKey: .notes) ?? ""
+        tags = try container.decodeIfPresent([String].self, forKey: .tags) ?? []
+        micModel = try container.decodeIfPresent(String.self, forKey: .micModel)
+        lastUsed = try container.decodeIfPresent(Date.self, forKey: .lastUsed)
     }
 
     /// Convert to an InputChannel for use in a service

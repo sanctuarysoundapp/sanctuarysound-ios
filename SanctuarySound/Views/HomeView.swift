@@ -20,67 +20,37 @@ struct HomeView: View {
     @State private var bannerHapticTrigger = false
     @Environment(\.scenePhase) private var scenePhase
 
+    /// Whether to show the new 5-tab layout (Services/Inputs/Consoles/Tools/Settings)
+    private var useNewLayout: Bool {
+        store.userPreferences.useNewTabLayout
+    }
+
+    /// The SPL tab identifier for the current layout mode
+    private var splTab: AppTab {
+        useNewLayout ? .tools : .spl
+    }
+
     var body: some View {
         ZStack(alignment: .top) {
-            TabView(selection: $selectedTab) {
-                // ── Tab 1: Service Setup ──
-                InputEntryView(store: store, pcoManager: pcoManager)
-                    .tabItem {
-                        Label("Setup", systemImage: "slider.horizontal.3")
-                    }
-                    .tag(AppTab.setup)
-
-                // ── Tab 2: Import & Analysis ──
-                ImportAnalysisView(store: store)
-                    .tabItem {
-                        Label("Analysis", systemImage: "waveform.badge.magnifyingglass")
-                    }
-                    .tag(AppTab.analysis)
-
-                // ── Tab 3: SPL Monitor ──
-                SPLCalibrationView(
-                    store: store,
-                    splPreference: $store.splPreference,
-                    onSave: { pref in store.updateSPLPreference(pref) }
-                )
-                .tabItem {
-                    Label("SPL", systemImage: "speaker.wave.2.fill")
-                }
-                .tag(AppTab.spl)
-
-                // ── Tab 4: Mixer ──
-                MixerConnectionView(
-                    connectionManager: mixerConnection,
-                    store: store
-                )
-                .tabItem {
-                    Label("Mixer", systemImage: "cable.connector.horizontal")
-                }
-                .tag(AppTab.mixer)
-
-                // ── Tab 5: Saved Data ──
-                SavedDataView(store: store)
-                    .tabItem {
-                        Label("Saved", systemImage: "folder.fill")
-                    }
-                    .tag(AppTab.saved)
+            if useNewLayout {
+                newTabLayout
+            } else {
+                legacyTabLayout
             }
-            .tint(BoothColors.accent)
 
             // ── Cross-Tab SPL Alert Banner ──
-            // Visible on ALL tabs when SPL meter is running and threshold is breached
-            if selectedTab != .spl && store.splMeter.alertState.isActive {
+            // Visible on ALL tabs (except SPL/Tools) when threshold is breached
+            if selectedTab != splTab && store.splMeter.alertState.isActive {
                 SPLAlertBanner(
                     alertState: store.splMeter.alertState,
-                    onTap: { selectedTab = .spl }
+                    onTap: { selectedTab = splTab }
                 )
                 .transition(.move(edge: .top).combined(with: .opacity))
             }
         }
         .preferredColorScheme(.dark)
         .onChange(of: store.splMeter.alertState) { _, newState in
-            // Haptic on non-SPL tabs when alert triggers
-            if selectedTab != .spl && newState.isActive {
+            if selectedTab != splTab && newState.isActive {
                 bannerHapticTrigger.toggle()
             }
         }
@@ -97,14 +67,104 @@ struct HomeView: View {
             }
         }
     }
+
+
+    // MARK: - ─── New Tab Layout ──────────────────────────────────────────────
+
+    private var newTabLayout: some View {
+        TabView(selection: $selectedTab) {
+            ServicesView(store: store, pcoManager: pcoManager)
+                .tabItem {
+                    Label("Services", systemImage: "music.note.list")
+                }
+                .tag(AppTab.services)
+
+            InputLibraryView(store: store)
+                .tabItem {
+                    Label("Inputs", systemImage: "pianokeys")
+                }
+                .tag(AppTab.inputs)
+
+            ConsolesView(store: store, connectionManager: mixerConnection)
+                .tabItem {
+                    Label("Consoles", systemImage: "slider.horizontal.below.rectangle")
+                }
+                .tag(AppTab.consoles)
+
+            ToolsView(store: store, splPreference: $store.splPreference)
+                .tabItem {
+                    Label("Tools", systemImage: "wrench.and.screwdriver")
+                }
+                .tag(AppTab.tools)
+
+            SettingsView(store: store, pcoManager: pcoManager)
+                .tabItem {
+                    Label("Settings", systemImage: "gearshape")
+                }
+                .tag(AppTab.settings)
+        }
+        .tint(BoothColors.accent)
+    }
+
+
+    // MARK: - ─── Legacy Tab Layout ───────────────────────────────────────────
+
+    private var legacyTabLayout: some View {
+        TabView(selection: $selectedTab) {
+            InputEntryView(store: store, pcoManager: pcoManager)
+                .tabItem {
+                    Label("Setup", systemImage: "slider.horizontal.3")
+                }
+                .tag(AppTab.setup)
+
+            ImportAnalysisView(store: store)
+                .tabItem {
+                    Label("Analysis", systemImage: "waveform.badge.magnifyingglass")
+                }
+                .tag(AppTab.analysis)
+
+            SPLCalibrationView(
+                store: store,
+                splPreference: $store.splPreference,
+                onSave: { pref in store.updateSPLPreference(pref) }
+            )
+            .tabItem {
+                Label("SPL", systemImage: "speaker.wave.2.fill")
+            }
+            .tag(AppTab.spl)
+
+            MixerConnectionView(
+                connectionManager: mixerConnection,
+                store: store
+            )
+            .tabItem {
+                Label("Mixer", systemImage: "cable.connector.horizontal")
+            }
+            .tag(AppTab.mixer)
+
+            SavedDataView(store: store)
+                .tabItem {
+                    Label("Saved", systemImage: "folder.fill")
+                }
+                .tag(AppTab.saved)
+        }
+        .tint(BoothColors.accent)
+    }
 }
 
 enum AppTab: String {
+    // Legacy tabs
     case setup
     case analysis
     case spl
     case mixer
     case saved
+    // New tabs
+    case services
+    case inputs
+    case consoles
+    case tools
+    case settings
 }
 
 
