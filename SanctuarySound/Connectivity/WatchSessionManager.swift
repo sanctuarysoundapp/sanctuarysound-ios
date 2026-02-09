@@ -58,13 +58,16 @@ final class WatchSessionManager: NSObject, ObservableObject {
 
     // MARK: - Send SPL Snapshot
 
-    /// Send an SPL snapshot to the Watch. Throttled to ~10Hz.
-    func sendSPLSnapshot(_ snapshot: SPLSnapshot) {
+    /// Send an SPL snapshot to the Watch. Throttled to ~10Hz unless `force` is true.
+    /// Use `force: true` for critical state transitions (e.g., stop) that must not be dropped.
+    func sendSPLSnapshot(_ snapshot: SPLSnapshot, force: Bool = false) {
         guard let session = session,
               session.isReachable else { return }
 
         let now = Date()
-        guard now.timeIntervalSince(lastSendTime) >= sendInterval else { return }
+        if !force {
+            guard now.timeIntervalSince(lastSendTime) >= sendInterval else { return }
+        }
         lastSendTime = now
 
         let message = snapshot.toDictionary()

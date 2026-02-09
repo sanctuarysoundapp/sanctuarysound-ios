@@ -15,6 +15,7 @@ import UIKit
 
 struct SPLCalibrationView: View {
     @ObservedObject var store: ServiceStore
+    @ObservedObject var splMeter: SPLMeter
     @Binding var splPreference: SPLPreference
     var onSave: (SPLPreference) -> Void
 
@@ -25,9 +26,6 @@ struct SPLCalibrationView: View {
     @State private var hapticTrigger = false
     @State private var showSessionReport = false
     @State private var latestReport: SPLSessionReport?
-
-    /// Convenience accessor for the shared meter.
-    private var splMeter: SPLMeter { store.splMeter }
 
     var body: some View {
         NavigationStack {
@@ -64,7 +62,9 @@ struct SPLCalibrationView: View {
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Done") {
-                        splMeter.stop()
+                        if splMeter.isRunning {
+                            store.stopMonitoringAndSaveReport()
+                        }
                         onSave(splPreference)
                         dismiss()
                     }
@@ -76,7 +76,9 @@ struct SPLCalibrationView: View {
                 Task { await splMeter.requestPermission() }
             }
             .onDisappear {
-                splMeter.stop()
+                if splMeter.isRunning {
+                    store.stopMonitoringAndSaveReport()
+                }
             }
             .onChange(of: splMeter.alertState) { _, newState in
                 // Trigger haptic on state transitions to warning/alert
@@ -173,13 +175,7 @@ struct SPLCalibrationView: View {
             HStack(spacing: 12) {
                 Button {
                     if splMeter.isRunning {
-                        // Stop and auto-generate session report
-                        let report = splMeter.generateSessionReport(
-                            flaggingMode: splPreference.flaggingMode
-                        )
-                        splMeter.stop()
-                        if let report {
-                            store.saveReport(report)
+                        if let report = store.stopMonitoringAndSaveReport() {
                             latestReport = report
                             showSessionReport = true
                         }

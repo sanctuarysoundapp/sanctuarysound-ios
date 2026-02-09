@@ -57,6 +57,7 @@ struct ToolsView: View {
         NavigationLink {
             SPLCalibrationView(
                 store: store,
+                splMeter: store.splMeter,
                 splPreference: $splPreference,
                 onSave: { pref in store.updateSPLPreference(pref) }
             )
