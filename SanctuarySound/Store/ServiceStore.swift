@@ -187,11 +187,25 @@ final class ServiceStore: ObservableObject {
     }
 
     /// Stop the SPL meter and automatically generate + save a session report.
-    func stopMonitoringAndSaveReport() {
-        if let report = splMeter.generateSessionReport(flaggingMode: splPreference.flaggingMode) {
+    /// Returns the report if one was generated (for display in the calling view).
+    @discardableResult
+    func stopMonitoringAndSaveReport() -> SPLSessionReport? {
+        let report = splMeter.generateSessionReport(flaggingMode: splPreference.flaggingMode)
+        if let report {
             saveReport(report)
         }
         splMeter.stop()
+
+        // Send a final "stopped" snapshot to the Watch so it clears its UI
+        let stoppedSnapshot = SPLSnapshot(
+            currentDB: 0,
+            peakDB: 0,
+            averageDB: 0,
+            alertState: .safe,
+            isRunning: false
+        )
+        WatchSessionManager.shared.sendSPLSnapshot(stoppedSnapshot, force: true)
+        return report
     }
 
     // MARK: - User Preferences

@@ -53,9 +53,18 @@ final class WatchSPLViewModel: ObservableObject {
     // MARK: - Commands
 
     /// Toggle monitoring — sends start or stop command to iPhone.
+    /// On stop, immediately clears the Watch UI so the user sees feedback
+    /// even before the iPhone's final snapshot arrives.
     func toggleMonitoring() {
         if isRunning {
             sessionReceiver.sendCommand(WCMessageKey.commandStop)
+            // Optimistic UI update — clear values immediately
+            currentDB = 0
+            peakDB = 0
+            averageDB = 0
+            isRunning = false
+            alertStateCodable = .safe
+            previousAlertRaw = "safe"
         } else {
             sessionReceiver.sendCommand(WCMessageKey.commandStart)
         }

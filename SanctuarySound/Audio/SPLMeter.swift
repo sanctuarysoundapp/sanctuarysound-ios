@@ -147,7 +147,10 @@ final class SPLMeter: ObservableObject {
 
     // MARK: - Buffer Processing
 
-    private func processBuffer(_ buffer: AVAudioPCMBuffer) {
+    /// Called on the audio render thread — must be nonisolated so the
+    /// installTap closure can invoke it synchronously. All @MainActor
+    /// property updates are dispatched via Task.
+    nonisolated private func processBuffer(_ buffer: AVAudioPCMBuffer) {
         guard let channelData = buffer.floatChannelData else { return }
 
         let frames = Int(buffer.frameLength)
@@ -169,9 +172,11 @@ final class SPLMeter: ObservableObject {
         }
 
         // Convert to approximate SPL
-        let spl = max(dbFS + referenceOffset, 0)
+        let refOffset = 90.0  // referenceOffset value (can't access actor property here)
+        let spl = max(dbFS + refOffset, 0)
 
-        Task { @MainActor in
+        Task { @MainActor [weak self] in
+            guard let self else { return }
             self.currentDB = spl
 
             if spl > self.peakDB {
