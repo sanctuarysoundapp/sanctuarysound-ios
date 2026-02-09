@@ -127,6 +127,37 @@ final class PCOClient: ObservableObject {
         return response.data
     }
 
+    /// Fetch top-level folders (campuses) for the organization.
+    /// Returns empty array if the org doesn't use folders.
+    func fetchTopLevelFolders() async throws -> [PCOResource<PCOFolderAttributes>] {
+        // PCO docs: GET /services/v2/folders returns org-level folders.
+        // Use per_page=100 and order by name for consistent display.
+        let response: PCOResponse<PCOFolderAttributes> = try await get(
+            path: "/services/v2/folders",
+            query: ["per_page": "100", "order": "name"]
+        )
+        return response.data
+    }
+
+    /// Fetch contents of a folder: sub-folders and service types.
+    /// Returns a tuple of (subFolders, serviceTypes) for unified display.
+    func fetchFolderContents(folderID: String) async throws -> (
+        folders: [PCOResource<PCOFolderAttributes>],
+        serviceTypes: [PCOResource<PCOServiceTypeAttributes>]
+    ) {
+        async let subFolders: PCOResponse<PCOFolderAttributes> = get(
+            path: "/services/v2/folders/\(folderID)/folders",
+            query: ["per_page": "100"]
+        )
+        async let serviceTypes: PCOResponse<PCOServiceTypeAttributes> = get(
+            path: "/services/v2/folders/\(folderID)/service_types",
+            query: ["per_page": "100"]
+        )
+
+        let (foldersResponse, typesResponse) = try await (subFolders, serviceTypes)
+        return (folders: foldersResponse.data, serviceTypes: typesResponse.data)
+    }
+
 
     // MARK: - ─── HTTP ────────────────────────────────────────────────────────
 

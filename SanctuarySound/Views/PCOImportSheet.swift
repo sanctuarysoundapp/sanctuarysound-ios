@@ -3,10 +3,11 @@
 // SanctuarySound — Virtual Audio Director for House of Worship
 // ============================================================================
 // Architecture: MVVM View Layer
-// Purpose: Sheet UI for importing setlists and team rosters from Planning
-//          Center Online. Workflow: Connect → Pick Service Type → Pick Plan →
-//          Preview → Confirm Import. Accessible from SetlistStepView and
-//          ChannelsStepView in the service setup wizard.
+// Purpose: Sheet UI for importing setlists, team rosters, and full services
+//          from Planning Center Online. Workflow: Connect → Browse Folders →
+//          Pick Service Type → Pick Plan → Preview → Confirm Import.
+//          Supports folder-based navigation matching PCO's org hierarchy
+//          (campuses → nested folders → service types → plans).
 // ============================================================================
 
 import SwiftUI
@@ -17,6 +18,18 @@ import SwiftUI
 enum PCOImportMode {
     case setlist
     case team
+    case fullService
+}
+
+
+// MARK: - ─── Full Service Import Data ───────────────────────────────────
+
+struct PCOFullServiceImport {
+    let name: String
+    let date: Date
+    let songs: [SetlistSong]
+    let channels: [InputChannel]
+    let venueID: UUID?
 }
 
 
@@ -25,17 +38,44 @@ enum PCOImportMode {
 struct PCOImportSheet: View {
     @ObservedObject var manager: PlanningCenterManager
     let mode: PCOImportMode
+    let venues: [Venue]
+    let drumTemplate: DrumKitTemplate
     let onImportSetlist: ([SetlistSong]) -> Void
     let onImportTeam: ([InputChannel]) -> Void
+    let onImportService: ((PCOFullServiceImport) -> Void)?
     @Environment(\.dismiss) private var dismiss
 
     @State private var selectedServiceTypeID: String?
     @State private var selectedPlanID: String?
+    @State private var selectedPlanAttributes: PCOPlanAttributes?
     @State private var importedSongs: [SetlistSong] = []
-    @State private var importedChannels: [InputChannel] = []
-    @State private var step: ImportStep = .serviceType
+    @State private var importedTeamItems: [PCOTeamImportItem] = []
+    @State private var matchedVenueID: UUID?
+    @State private var step: ImportStep = .folder
+    @State private var showDrumPicker = false
+    @State private var activeDrumTemplate: DrumKitTemplate
+
+    init(
+        manager: PlanningCenterManager,
+        mode: PCOImportMode,
+        venues: [Venue] = [],
+        drumTemplate: DrumKitTemplate = .standard5,
+        onImportSetlist: @escaping ([SetlistSong]) -> Void = { _ in },
+        onImportTeam: @escaping ([InputChannel]) -> Void = { _ in },
+        onImportService: ((PCOFullServiceImport) -> Void)? = nil
+    ) {
+        self.manager = manager
+        self.mode = mode
+        self.venues = venues
+        self.drumTemplate = drumTemplate
+        self.onImportSetlist = onImportSetlist
+        self.onImportTeam = onImportTeam
+        self.onImportService = onImportService
+        self._activeDrumTemplate = State(initialValue: drumTemplate)
+    }
 
     private enum ImportStep {
+        case folder
         case serviceType
         case plan
         case preview
@@ -51,6 +91,8 @@ struct PCOImportSheet: View {
                         connectPrompt
                     } else {
                         switch step {
+                        case .folder:
+                            folderBrowser
                         case .serviceType:
                             serviceTypeList
                         case .plan:
@@ -71,13 +113,23 @@ struct PCOImportSheet: View {
                         .foregroundStyle(BoothColors.textSecondary)
                 }
             }
+            .sheet(isPresented: $showDrumPicker) {
+                DrumKitTemplatePicker(
+                    currentTemplate: activeDrumTemplate
+                ) { template, channels in
+                    activeDrumTemplate = template
+                    // Re-expand drum items with new template
+                    reExpandDrums(template: template, channels: channels)
+                }
+            }
         }
     }
 
     private var navigationTitle: String {
         switch mode {
-        case .setlist: return "Import Setlist"
-        case .team:    return "Import Team"
+        case .setlist:     return "Import Setlist"
+        case .team:        return "Import Team"
+        case .fullService: return "Import Service"
         }
     }
 
@@ -96,7 +148,7 @@ struct PCOImportSheet: View {
                 .font(.system(size: 18, weight: .bold))
                 .foregroundStyle(BoothColors.textPrimary)
 
-            Text("Sign in with your Planning Center account to import \(mode == .setlist ? "setlists" : "team rosters") directly.")
+            Text("Sign in with your Planning Center account to import \(importDescription) directly.")
                 .font(.system(size: 14))
                 .foregroundStyle(BoothColors.textSecondary)
                 .multilineTextAlignment(.center)
@@ -106,7 +158,11 @@ struct PCOImportSheet: View {
                 Task {
                     try? await manager.client.authenticate()
                     if manager.client.isAuthenticated {
-                        await manager.loadServiceTypes()
+                        await manager.loadTopLevelFolders()
+                        // If no folders exist, skip to service types
+                        if manager.folders.isEmpty && !manager.serviceTypes.isEmpty {
+                            step = .serviceType
+                        }
                     }
                 }
             } label: {
@@ -127,8 +183,179 @@ struct PCOImportSheet: View {
         }
     }
 
+    private var importDescription: String {
+        switch mode {
+        case .setlist:     return "setlists"
+        case .team:        return "team rosters"
+        case .fullService: return "service plans"
+        }
+    }
 
-    // MARK: - ─── Service Type List ───────────────────────────────────────────
+
+    // MARK: - ─── Folder Browser ─────────────────────────────────────────────
+
+    private var folderBrowser: some View {
+        VStack(spacing: 0) {
+            if manager.isLoading {
+                loadingView
+            } else if manager.folderItems.isEmpty && manager.serviceTypes.isEmpty {
+                emptyView(message: "No folders or service types found")
+            } else if manager.folders.isEmpty && !manager.serviceTypes.isEmpty {
+                // No folders — show flat service type list
+                serviceTypeList
+            } else {
+                ScrollView {
+                    VStack(spacing: 8) {
+                        // Breadcrumb bar
+                        if !manager.folderBreadcrumbs.isEmpty {
+                            breadcrumbBar
+                        }
+
+                        // Folder items (mixed folders + service types)
+                        ForEach(manager.folderItems) { item in
+                            switch item {
+                            case .folder(let folder):
+                                folderRow(folder)
+                            case .serviceType(let serviceType):
+                                serviceTypeRow(serviceType)
+                            }
+                        }
+                    }
+                    .padding()
+                }
+            }
+        }
+        .onAppear {
+            if manager.folderItems.isEmpty && manager.serviceTypes.isEmpty {
+                Task {
+                    await manager.loadTopLevelFolders()
+                    // If no folders, skip to service type step
+                    if manager.folders.isEmpty && !manager.serviceTypes.isEmpty {
+                        step = .serviceType
+                    }
+                }
+            }
+        }
+    }
+
+
+    // MARK: - ─── Breadcrumb Bar ─────────────────────────────────────────────
+
+    private var breadcrumbBar: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 4) {
+                // Root
+                Button {
+                    Task { await manager.navigateToRoot() }
+                } label: {
+                    Image(systemName: "house.fill")
+                        .font(.system(size: 11))
+                        .foregroundStyle(BoothColors.accent)
+                }
+
+                ForEach(Array(manager.folderBreadcrumbs.enumerated()), id: \.offset) { index, crumb in
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 8, weight: .bold))
+                        .foregroundStyle(BoothColors.textMuted)
+
+                    if index < manager.folderBreadcrumbs.count - 1 {
+                        Button {
+                            Task { await manager.navigateBackToFolder(index: index) }
+                        } label: {
+                            Text(crumb.name)
+                                .font(.system(size: 11, weight: .medium))
+                                .foregroundStyle(BoothColors.accent)
+                        }
+                    } else {
+                        Text(crumb.name)
+                            .font(.system(size: 11, weight: .semibold))
+                            .foregroundStyle(BoothColors.textPrimary)
+                    }
+                }
+            }
+            .padding(.horizontal)
+            .padding(.vertical, 8)
+        }
+        .background(BoothColors.surfaceElevated)
+        .clipShape(RoundedRectangle(cornerRadius: 6))
+    }
+
+
+    // MARK: - ─── Folder Row ─────────────────────────────────────────────────
+
+    private func folderRow(_ folder: PCOResource<PCOFolderAttributes>) -> some View {
+        Button {
+            Task {
+                await manager.loadFolderContents(
+                    folderID: folder.id,
+                    folderName: folder.attributes.name
+                )
+            }
+        } label: {
+            HStack {
+                Image(systemName: "folder.fill")
+                    .font(.system(size: 14))
+                    .foregroundStyle(BoothColors.accent)
+                    .frame(width: 24)
+
+                Text(folder.attributes.name)
+                    .font(.system(size: 14, weight: .medium))
+                    .foregroundStyle(BoothColors.textPrimary)
+
+                Spacer()
+
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(BoothColors.textMuted)
+            }
+            .padding(14)
+            .background(BoothColors.surface)
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+        }
+    }
+
+
+    // MARK: - ─── Service Type Row ───────────────────────────────────────────
+
+    private func serviceTypeRow(_ serviceType: PCOResource<PCOServiceTypeAttributes>) -> some View {
+        Button {
+            selectedServiceTypeID = serviceType.id
+            Task {
+                await manager.loadPlans(serviceTypeID: serviceType.id)
+                step = .plan
+            }
+        } label: {
+            HStack {
+                Image(systemName: "music.note.list")
+                    .font(.system(size: 14))
+                    .foregroundStyle(BoothColors.textSecondary)
+                    .frame(width: 24)
+
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(serviceType.attributes.name)
+                        .font(.system(size: 14, weight: .medium))
+                        .foregroundStyle(BoothColors.textPrimary)
+                    if let freq = serviceType.attributes.frequency {
+                        Text(freq)
+                            .font(.system(size: 11))
+                            .foregroundStyle(BoothColors.textSecondary)
+                    }
+                }
+
+                Spacer()
+
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(BoothColors.textMuted)
+            }
+            .padding(14)
+            .background(BoothColors.surface)
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+        }
+    }
+
+
+    // MARK: - ─── Service Type List (Flat Fallback) ──────────────────────────
 
     private var serviceTypeList: some View {
         VStack(spacing: 0) {
@@ -140,33 +367,7 @@ struct PCOImportSheet: View {
                 ScrollView {
                     VStack(spacing: 8) {
                         ForEach(manager.serviceTypes) { serviceType in
-                            Button {
-                                selectedServiceTypeID = serviceType.id
-                                Task {
-                                    await manager.loadPlans(serviceTypeID: serviceType.id)
-                                    step = .plan
-                                }
-                            } label: {
-                                HStack {
-                                    VStack(alignment: .leading, spacing: 4) {
-                                        Text(serviceType.attributes.name)
-                                            .font(.system(size: 14, weight: .medium))
-                                            .foregroundStyle(BoothColors.textPrimary)
-                                        if let freq = serviceType.attributes.frequency {
-                                            Text(freq)
-                                                .font(.system(size: 11))
-                                                .foregroundStyle(BoothColors.textSecondary)
-                                        }
-                                    }
-                                    Spacer()
-                                    Image(systemName: "chevron.right")
-                                        .font(.system(size: 12, weight: .semibold))
-                                        .foregroundStyle(BoothColors.textMuted)
-                                }
-                                .padding(14)
-                                .background(BoothColors.surface)
-                                .clipShape(RoundedRectangle(cornerRadius: 8))
-                            }
+                            serviceTypeRow(serviceType)
                         }
                     }
                     .padding()
@@ -174,7 +375,7 @@ struct PCOImportSheet: View {
             }
         }
         .onAppear {
-            if manager.serviceTypes.isEmpty {
+            if manager.serviceTypes.isEmpty && manager.folders.isEmpty {
                 Task { await manager.loadServiceTypes() }
             }
         }
@@ -194,12 +395,16 @@ struct PCOImportSheet: View {
                     VStack(spacing: 8) {
                         // Back button
                         Button {
-                            step = .serviceType
+                            if !manager.folderBreadcrumbs.isEmpty {
+                                step = .folder
+                            } else {
+                                step = .serviceType
+                            }
                         } label: {
                             HStack(spacing: 4) {
                                 Image(systemName: "chevron.left")
                                     .font(.system(size: 11, weight: .semibold))
-                                Text("Service Types")
+                                Text("Back")
                                     .font(.system(size: 12))
                             }
                             .foregroundStyle(BoothColors.accent)
@@ -210,6 +415,7 @@ struct PCOImportSheet: View {
                         ForEach(manager.plans) { plan in
                             Button {
                                 selectedPlanID = plan.id
+                                selectedPlanAttributes = plan.attributes
                                 Task {
                                     await performImport(planID: plan.id)
                                 }
@@ -266,63 +472,75 @@ struct PCOImportSheet: View {
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
 
-                        SectionCard(title: mode == .setlist ? "Songs to Import" : "Team to Import") {
-                            if mode == .setlist {
-                                if importedSongs.isEmpty {
-                                    emptyInline(message: "No songs found in this plan")
-                                } else {
-                                    ForEach(importedSongs) { song in
-                                        HStack {
-                                            Text(song.title)
-                                                .font(.system(size: 13, weight: .medium))
-                                                .foregroundStyle(BoothColors.textPrimary)
-                                            Spacer()
-                                            Text(song.key.localizedName)
-                                                .font(.system(size: 11, weight: .bold, design: .monospaced))
-                                                .foregroundStyle(BoothColors.accent)
-                                                .padding(.horizontal, 6)
-                                                .padding(.vertical, 2)
-                                                .background(BoothColors.accent.opacity(0.15))
-                                                .clipShape(RoundedRectangle(cornerRadius: 3))
-                                            Text("\(song.bpm ?? 120) BPM")
-                                                .font(.system(size: 11, design: .monospaced))
-                                                .foregroundStyle(BoothColors.textSecondary)
-                                        }
-                                    }
-                                }
-                            } else {
-                                if importedChannels.isEmpty {
-                                    emptyInline(message: "No team members found in this plan")
-                                } else {
-                                    ForEach(importedChannels) { channel in
-                                        HStack {
-                                            Text(channel.label)
-                                                .font(.system(size: 13, weight: .medium))
-                                                .foregroundStyle(BoothColors.textPrimary)
-                                            Spacer()
-                                            Text(channel.source.localizedName)
-                                                .font(.system(size: 11))
-                                                .foregroundStyle(BoothColors.textSecondary)
-                                        }
-                                    }
-                                }
+                        // Venue match badge
+                        if let venueID = matchedVenueID,
+                           let venue = venues.first(where: { $0.id == venueID }) {
+                            HStack(spacing: 6) {
+                                Image(systemName: "mappin.circle.fill")
+                                    .font(.system(size: 12))
+                                Text("Venue: \(venue.name)")
+                                    .font(.system(size: 11, weight: .semibold))
                             }
+                            .foregroundStyle(BoothColors.accent)
+                            .padding(.horizontal, 10)
+                            .padding(.vertical, 6)
+                            .background(BoothColors.accent.opacity(0.12))
+                            .clipShape(RoundedRectangle(cornerRadius: 6))
+                            .frame(maxWidth: .infinity, alignment: .leading)
                         }
 
-                        // Import button
-                        if (mode == .setlist && !importedSongs.isEmpty) ||
-                           (mode == .team && !importedChannels.isEmpty) {
-                            Button {
-                                if mode == .setlist {
-                                    onImportSetlist(importedSongs)
-                                } else {
-                                    onImportTeam(importedChannels)
+                        // Songs preview (setlist or fullService)
+                        if mode == .setlist || mode == .fullService {
+                            setlistPreview
+                        }
+
+                        // Team preview (team or fullService)
+                        if mode == .team || mode == .fullService {
+                            PCOTeamImportPreviewView(
+                                items: $importedTeamItems,
+                                drumTemplate: activeDrumTemplate,
+                                onChangeDrumTemplate: { showDrumPicker = true },
+                                onImport: { channels in
+                                    if mode == .fullService {
+                                        let serviceImport = buildFullServiceImport(channels: channels)
+                                        onImportService?(serviceImport)
+                                    } else {
+                                        onImportTeam(channels)
+                                    }
+                                    dismiss()
                                 }
+                            )
+                        }
+
+                        // Setlist-only import button
+                        if mode == .setlist && !importedSongs.isEmpty {
+                            Button {
+                                onImportSetlist(importedSongs)
                                 dismiss()
                             } label: {
                                 HStack(spacing: 8) {
                                     Image(systemName: "arrow.down.circle.fill")
-                                    Text("Import \(mode == .setlist ? "\(importedSongs.count) Songs" : "\(importedChannels.count) Team Members")")
+                                    Text("Import \(importedSongs.count) Songs")
+                                }
+                                .font(.system(size: 14, weight: .bold))
+                                .frame(maxWidth: .infinity)
+                                .frame(height: 48)
+                                .foregroundStyle(BoothColors.background)
+                                .background(BoothColors.accent)
+                                .clipShape(RoundedRectangle(cornerRadius: 10))
+                            }
+                        }
+
+                        // Full service import button (songs only — team has its own button)
+                        if mode == .fullService && importedTeamItems.isEmpty && !importedSongs.isEmpty {
+                            Button {
+                                let serviceImport = buildFullServiceImport(channels: [])
+                                onImportService?(serviceImport)
+                                dismiss()
+                            } label: {
+                                HStack(spacing: 8) {
+                                    Image(systemName: "arrow.down.circle.fill")
+                                    Text("Import Service (\(importedSongs.count) Songs)")
                                 }
                                 .font(.system(size: 14, weight: .bold))
                                 .frame(maxWidth: .infinity)
@@ -340,7 +558,37 @@ struct PCOImportSheet: View {
     }
 
 
-    // MARK: - ─── Import Action ───────────────────────────────────────────────
+    // MARK: - ─── Setlist Preview ────────────────────────────────────────────
+
+    private var setlistPreview: some View {
+        SectionCard(title: "Songs to Import") {
+            if importedSongs.isEmpty {
+                emptyInline(message: "No songs found in this plan")
+            } else {
+                ForEach(importedSongs) { song in
+                    HStack {
+                        Text(song.title)
+                            .font(.system(size: 13, weight: .medium))
+                            .foregroundStyle(BoothColors.textPrimary)
+                        Spacer()
+                        Text(song.key.localizedName)
+                            .font(.system(size: 11, weight: .bold, design: .monospaced))
+                            .foregroundStyle(BoothColors.accent)
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 2)
+                            .background(BoothColors.accent.opacity(0.15))
+                            .clipShape(RoundedRectangle(cornerRadius: 3))
+                        Text(song.bpm.map { "\($0) BPM" } ?? "— BPM")
+                            .font(.system(size: 11, design: .monospaced))
+                            .foregroundStyle(BoothColors.textSecondary)
+                    }
+                }
+            }
+        }
+    }
+
+
+    // MARK: - ─── Import Actions ─────────────────────────────────────────────
 
     private func performImport(planID: String) async {
         guard let serviceTypeID = selectedServiceTypeID else { return }
@@ -351,14 +599,76 @@ struct PCOImportSheet: View {
                 serviceTypeID: serviceTypeID,
                 planID: planID
             )
+
         case .team:
-            importedChannels = await manager.importTeamRoster(
+            importedTeamItems = await manager.importTeamRoster(
+                serviceTypeID: serviceTypeID,
+                planID: planID,
+                drumTemplate: activeDrumTemplate
+            )
+
+        case .fullService:
+            // Fetch both in parallel
+            async let songs = manager.importSetlist(
                 serviceTypeID: serviceTypeID,
                 planID: planID
             )
+            async let team = manager.importTeamRoster(
+                serviceTypeID: serviceTypeID,
+                planID: planID,
+                drumTemplate: activeDrumTemplate
+            )
+
+            importedSongs = await songs
+            importedTeamItems = await team
         }
 
+        // Match venue from folder breadcrumbs
+        matchedVenueID = manager.matchVenueFromBreadcrumbs(venues: venues)
+
         step = .preview
+    }
+
+    private func buildFullServiceImport(channels: [InputChannel]) -> PCOFullServiceImport {
+        let planName = selectedPlanAttributes?.title
+            ?? selectedPlanAttributes?.dates
+            ?? "Imported Service"
+        let planDate = manager.parsePlanDate(selectedPlanAttributes?.sortDate)
+
+        return PCOFullServiceImport(
+            name: planName,
+            date: planDate,
+            songs: importedSongs,
+            channels: channels,
+            venueID: matchedVenueID
+        )
+    }
+
+    private func reExpandDrums(
+        template: DrumKitTemplate,
+        channels: [(label: String, source: InputSource)]
+    ) {
+        // Find the person name from existing drum items
+        let drumPerson = importedTeamItems
+            .first(where: { $0.positionCategory == .drums })?.personName ?? ""
+        let drumPosition = importedTeamItems
+            .first(where: { $0.positionCategory == .drums })?.positionName ?? ""
+
+        // Remove existing drum items
+        importedTeamItems.removeAll(where: { $0.positionCategory == .drums })
+
+        // Add new drum items from template
+        let newDrumItems = channels.map { channel in
+            PCOTeamImportItem(
+                personName: drumPerson,
+                positionName: drumPosition,
+                positionCategory: .drums,
+                channelLabel: channel.label,
+                source: channel.source,
+                isIncluded: true
+            )
+        }
+        importedTeamItems.append(contentsOf: newDrumItems)
     }
 
 

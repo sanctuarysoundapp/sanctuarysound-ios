@@ -105,18 +105,22 @@ struct PCOPlanAttributes: Decodable {
 /// A PCO "Plan Item" — a song or other element in the service order.
 struct PCOPlanItemAttributes: Decodable {
     let title: String?
-    let itemType: String?  // "song", "header", "media", "item"
-    let length: Int?       // Duration in seconds
+    let itemType: String?       // "song", "header", "media", "item"
+    let length: Int?            // Duration in seconds
     let description: String?
     let songId: String?
-    let key: String?       // Musical key if available at plan item level
+    let keyName: String?        // Musical key assigned at the plan item level (e.g., "G", "Ab")
+    let arrangementName: String?  // Name of the selected arrangement
+    let arrangementSequence: String?  // Arrangement section sequence
 
     enum CodingKeys: String, CodingKey {
         case title
         case itemType = "item_type"
         case length, description
         case songId = "song_id"
-        case key
+        case keyName = "key_name"
+        case arrangementName = "arrangement_name"
+        case arrangementSequence = "arrangement_sequence"
     }
 }
 
@@ -146,11 +150,13 @@ struct PCOArrangementAttributes: Decodable {
     let length: Int?         // Duration in seconds
     let meterNumerator: Int?
     let meterDenominator: Int?
+    let keyName: String?     // Musical key of this arrangement (e.g., "G", "Eb")
 
     enum CodingKeys: String, CodingKey {
         case name, bpm, length
         case meterNumerator = "meter_numerator"
         case meterDenominator = "meter_denominator"
+        case keyName = "key_name"
     }
 }
 
@@ -175,6 +181,160 @@ struct PCOTeamMemberAttributes: Decodable {
 /// Represents a song's key as extracted from PCO (arrangement or plan item).
 struct PCOSongKey: Decodable {
     let name: String?   // e.g., "Ab", "F#m", "Eb"
+}
+
+
+// MARK: - ─── Folder ─────────────────────────────────────────────────────
+
+/// A PCO "Folder" — organizes service types into campus/location groups.
+/// Attributes per PCO API: name, created_at, updated_at, container.
+struct PCOFolderAttributes: Decodable {
+    let name: String
+    let container: String?
+    let createdAt: String?
+    let updatedAt: String?
+
+    enum CodingKeys: String, CodingKey {
+        case name
+        case container
+        case createdAt = "created_at"
+        case updatedAt = "updated_at"
+    }
+}
+
+/// Unified item for displaying folders and service types in a mixed list.
+enum PCOFolderItem: Identifiable {
+    case folder(PCOResource<PCOFolderAttributes>)
+    case serviceType(PCOResource<PCOServiceTypeAttributes>)
+
+    var id: String {
+        switch self {
+        case .folder(let resource):      return "folder-\(resource.id)"
+        case .serviceType(let resource): return "stype-\(resource.id)"
+        }
+    }
+
+    var name: String {
+        switch self {
+        case .folder(let resource):      return resource.attributes.name
+        case .serviceType(let resource): return resource.attributes.name
+        }
+    }
+}
+
+
+// MARK: - ─── Position Category ──────────────────────────────────────────
+
+/// Classifies a PCO team position for import filtering.
+enum PCOPositionCategory: String, Codable, CaseIterable {
+    case audio      = "Audio"
+    case production = "Production"
+    case drums      = "Drums"
+    case unknown    = "Unknown"
+}
+
+
+// MARK: - ─── Team Import Item ───────────────────────────────────────────
+
+/// A processed team member ready for import preview. Created from raw PCO
+/// team data with position-based classification and source mapping applied.
+struct PCOTeamImportItem: Identifiable, Equatable {
+    let id: UUID
+    let personName: String
+    let positionName: String
+    let positionCategory: PCOPositionCategory
+    var channelLabel: String
+    var source: InputSource
+    var isIncluded: Bool
+
+    init(
+        id: UUID = UUID(),
+        personName: String,
+        positionName: String,
+        positionCategory: PCOPositionCategory,
+        channelLabel: String,
+        source: InputSource,
+        isIncluded: Bool = true
+    ) {
+        self.id = id
+        self.personName = personName
+        self.positionName = positionName
+        self.positionCategory = positionCategory
+        self.channelLabel = channelLabel
+        self.source = source
+        self.isIncluded = isIncluded
+    }
+}
+
+
+// MARK: - ─── Drum Kit Template ──────────────────────────────────────────
+
+/// Predefined drum channel configurations for expanding a single "DRUMS"
+/// team position into multiple mixer channels.
+enum DrumKitTemplate: String, CaseIterable, Identifiable, Codable {
+    case basic3    = "Basic 3-Mic"
+    case standard5 = "Standard 5-Mic"
+    case full7     = "Full 7-Mic"
+    case custom    = "Custom"
+
+    var id: String { rawValue }
+
+    var displayName: String { rawValue }
+
+    var icon: String {
+        switch self {
+        case .basic3:    return "3.circle.fill"
+        case .standard5: return "5.circle.fill"
+        case .full7:     return "7.circle.fill"
+        case .custom:    return "slider.horizontal.3"
+        }
+    }
+
+    /// Default channels for this template.
+    var channels: [(label: String, source: InputSource)] {
+        switch self {
+        case .basic3:
+            return [
+                ("Kick", .kickDrum),
+                ("Snare", .snareDrum),
+                ("OH", .overheadL),
+            ]
+        case .standard5:
+            return [
+                ("Kick", .kickDrum),
+                ("Snare", .snareDrum),
+                ("Hi-Hat", .hiHat),
+                ("OH L", .overheadL),
+                ("OH R", .overheadR),
+            ]
+        case .full7:
+            return [
+                ("Kick", .kickDrum),
+                ("Snare", .snareDrum),
+                ("Hi-Hat", .hiHat),
+                ("Tom 1", .tomHigh),
+                ("Tom 2", .tomFloor),
+                ("OH L", .overheadL),
+                ("OH R", .overheadR),
+            ]
+        case .custom:
+            // Custom returns the standard5 as a starting point
+            return DrumKitTemplate.standard5.channels
+        }
+    }
+
+    /// All available drum sources for custom selection.
+    static let allDrumSources: [(label: String, source: InputSource)] = [
+        ("Kick", .kickDrum),
+        ("Snare", .snareDrum),
+        ("Hi-Hat", .hiHat),
+        ("Tom (High)", .tomHigh),
+        ("Tom (Mid)", .tomMid),
+        ("Tom (Floor)", .tomFloor),
+        ("OH L", .overheadL),
+        ("OH R", .overheadR),
+        ("Cajón", .cajon),
+    ]
 }
 
 
