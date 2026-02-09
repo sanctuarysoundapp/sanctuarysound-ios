@@ -3,9 +3,9 @@
 // SanctuarySound — Virtual Audio Director for House of Worship
 // ============================================================================
 // Architecture: MVVM View Layer
-// Purpose: Three-screen welcome flow shown on first launch. Introduces
-//          the app's purpose, explains the workflow, and lets the user
-//          choose their experience level before entering the main app.
+// Purpose: Five-screen welcome flow shown on first launch. Introduces the
+//          app's purpose, explains the workflow, shows the tab tour, lets the
+//          user configure quick setup defaults, and transitions to the main app.
 // ============================================================================
 
 import SwiftUI
@@ -15,7 +15,15 @@ import SwiftUI
 
 struct OnboardingView: View {
     @Binding var hasSeenOnboarding: Bool
+    @ObservedObject var store: ServiceStore
     @State private var currentPage = 0
+
+    // Quick Setup state (Screen 4)
+    @State private var selectedMixer: MixerModel = .allenHeathAvantis
+    @State private var selectedLevel: ExperienceLevel = .intermediate
+    @State private var selectedRoomSize: RoomSize = .medium
+
+    private let totalPages = 5
 
     var body: some View {
         ZStack {
@@ -26,7 +34,9 @@ struct OnboardingView: View {
                 TabView(selection: $currentPage) {
                     welcomePage.tag(0)
                     howItWorksPage.tag(1)
-                    getStartedPage.tag(2)
+                    tabTourPage.tag(2)
+                    quickSetupPage.tag(3)
+                    getStartedPage.tag(4)
                 }
                 .tabViewStyle(.page(indexDisplayMode: .never))
                 .animation(.easeInOut(duration: 0.3), value: currentPage)
@@ -67,7 +77,7 @@ struct OnboardingView: View {
                     )
                     .frame(width: 160, height: 160)
 
-                Image("AppIcon")
+                Image("AppIconImage")
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 100, height: 100)
@@ -110,21 +120,22 @@ struct OnboardingView: View {
                 .tracking(2)
                 .foregroundStyle(BoothColors.textPrimary)
 
+            Text("We do the math. You do the mixing.")
+                .font(.system(size: 14))
+                .foregroundStyle(BoothColors.accent)
+
             VStack(spacing: 24) {
                 workflowStep(
-                    number: "1",
                     icon: "slider.horizontal.3",
-                    title: "Set Up Your Service",
+                    title: "Configure Your Service",
                     description: "Add your mixer, channels, vocalist profiles, and setlist with musical keys."
                 )
                 workflowStep(
-                    number: "2",
                     icon: "bolt.fill",
                     title: "Generate Recommendations",
                     description: "The engine calculates gain, EQ, compression, and HPF for every channel."
                 )
                 workflowStep(
-                    number: "3",
                     icon: "music.mic",
                     title: "Mix with Confidence",
                     description: "Start your service with a solid foundation instead of guessing."
@@ -138,43 +149,173 @@ struct OnboardingView: View {
     }
 
 
-    // MARK: - ─── Page 3: Get Started ──────────────────────────────────────
+    // MARK: - ─── Page 3: Tab Tour ─────────────────────────────────────────
+
+    private var tabTourPage: some View {
+        VStack(spacing: 28) {
+            Spacer()
+
+            Text("YOUR WORKSPACE")
+                .font(.system(size: 18, weight: .bold, design: .monospaced))
+                .tracking(2)
+                .foregroundStyle(BoothColors.textPrimary)
+
+            Text("Five tabs designed for Sunday mornings")
+                .font(.system(size: 14))
+                .foregroundStyle(BoothColors.textSecondary)
+
+            VStack(spacing: 12) {
+                tabTourRow(
+                    icon: "music.note.list",
+                    title: "Services",
+                    description: "Plan your Sunday service"
+                )
+                tabTourRow(
+                    icon: "pianokeys",
+                    title: "Inputs",
+                    description: "Build your channel library"
+                )
+                tabTourRow(
+                    icon: "slider.horizontal.below.rectangle",
+                    title: "Consoles",
+                    description: "Connect to your mixer"
+                )
+                tabTourRow(
+                    icon: "wrench.and.screwdriver",
+                    title: "Tools",
+                    description: "Monitor sound levels"
+                )
+                tabTourRow(
+                    icon: "gearshape",
+                    title: "Settings",
+                    description: "Customize your experience"
+                )
+            }
+
+            Spacer()
+            Spacer()
+        }
+        .padding(.horizontal, 32)
+    }
+
+
+    // MARK: - ─── Page 4: Quick Setup ──────────────────────────────────────
+
+    private var quickSetupPage: some View {
+        VStack(spacing: 20) {
+            Spacer()
+
+            Text("QUICK SETUP")
+                .font(.system(size: 18, weight: .bold, design: .monospaced))
+                .tracking(2)
+                .foregroundStyle(BoothColors.textPrimary)
+
+            Text("Set your defaults — change anytime in Settings")
+                .font(.system(size: 13))
+                .foregroundStyle(BoothColors.textSecondary)
+                .multilineTextAlignment(.center)
+
+            VStack(spacing: 16) {
+                // Console picker
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("YOUR CONSOLE")
+                        .font(.system(size: 10, weight: .bold, design: .monospaced))
+                        .foregroundStyle(BoothColors.textMuted)
+                        .tracking(1)
+
+                    Menu {
+                        ForEach(MixerModel.allCases) { mixer in
+                            Button(mixer.shortName) {
+                                selectedMixer = mixer
+                            }
+                        }
+                    } label: {
+                        HStack {
+                            Text(selectedMixer.shortName)
+                                .font(.system(size: 14, weight: .medium))
+                                .foregroundStyle(BoothColors.textPrimary)
+                            Spacer()
+                            Image(systemName: "chevron.up.chevron.down")
+                                .font(.system(size: 12))
+                                .foregroundStyle(BoothColors.textMuted)
+                        }
+                        .padding(12)
+                        .background(BoothColors.surface)
+                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                    }
+                }
+
+                // Experience level
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("EXPERIENCE LEVEL")
+                        .font(.system(size: 10, weight: .bold, design: .monospaced))
+                        .foregroundStyle(BoothColors.textMuted)
+                        .tracking(1)
+
+                    HStack(spacing: 8) {
+                        experienceButton(.beginner, label: "Beginner", icon: "1.circle.fill", color: BoothColors.accent)
+                        experienceButton(.intermediate, label: "Intermediate", icon: "2.circle.fill", color: BoothColors.accentWarm)
+                        experienceButton(.advanced, label: "Advanced", icon: "3.circle.fill", color: BoothColors.accentDanger)
+                    }
+                }
+
+                // Room size
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("ROOM SIZE")
+                        .font(.system(size: 10, weight: .bold, design: .monospaced))
+                        .foregroundStyle(BoothColors.textMuted)
+                        .tracking(1)
+
+                    HStack(spacing: 8) {
+                        roomSizeButton(.small, label: "Small", detail: "<300 seats", icon: "person.2.fill")
+                        roomSizeButton(.medium, label: "Medium", detail: "300-800", icon: "person.3.fill")
+                        roomSizeButton(.large, label: "Large", detail: "800+", icon: "person.3.sequence.fill")
+                    }
+                }
+            }
+
+            Spacer()
+        }
+        .padding(.horizontal, 24)
+    }
+
+
+    // MARK: - ─── Page 5: Get Started ──────────────────────────────────────
 
     private var getStartedPage: some View {
         VStack(spacing: 32) {
             Spacer()
 
-            Text("READY TO MIX")
+            ZStack {
+                Circle()
+                    .fill(
+                        RadialGradient(
+                            colors: [
+                                BoothColors.accent.opacity(0.2),
+                                BoothColors.accent.opacity(0.0)
+                            ],
+                            center: .center,
+                            startRadius: 20,
+                            endRadius: 70
+                        )
+                    )
+                    .frame(width: 120, height: 120)
+
+                Image(systemName: "waveform.badge.plus")
+                    .font(.system(size: 48))
+                    .foregroundStyle(BoothColors.accent)
+            }
+
+            Text("YOU'RE ALL SET")
                 .font(.system(size: 18, weight: .bold, design: .monospaced))
                 .tracking(2)
                 .foregroundStyle(BoothColors.textPrimary)
 
-            Text("SanctuarySound adapts to your experience level.\nYou can change this anytime in the setup wizard.")
-                .font(.system(size: 13))
+            Text("Create your first service to get\npersonalized mixer recommendations\ntailored to your setup.")
+                .font(.system(size: 14))
                 .foregroundStyle(BoothColors.textSecondary)
                 .multilineTextAlignment(.center)
                 .lineSpacing(4)
-
-            VStack(spacing: 12) {
-                experienceLevelCard(
-                    level: "Beginner",
-                    description: "Gain & fader positions only — the essentials",
-                    icon: "1.circle.fill",
-                    color: BoothColors.accent
-                )
-                experienceLevelCard(
-                    level: "Intermediate",
-                    description: "Adds EQ curves and high-pass filters",
-                    icon: "2.circle.fill",
-                    color: BoothColors.accentWarm
-                )
-                experienceLevelCard(
-                    level: "Advanced",
-                    description: "Full channel strip with compression and key warnings",
-                    icon: "3.circle.fill",
-                    color: BoothColors.accentDanger
-                )
-            }
 
             Spacer()
             Spacer()
@@ -186,7 +327,6 @@ struct OnboardingView: View {
     // MARK: - ─── Components ───────────────────────────────────────────────
 
     private func workflowStep(
-        number: String,
         icon: String,
         title: String,
         description: String
@@ -214,20 +354,21 @@ struct OnboardingView: View {
         }
     }
 
-    private func experienceLevelCard(
-        level: String,
-        description: String,
+    private func tabTourRow(
         icon: String,
-        color: Color
+        title: String,
+        description: String
     ) -> some View {
         HStack(spacing: 14) {
             Image(systemName: icon)
-                .font(.system(size: 24))
-                .foregroundStyle(color)
-                .frame(width: 32)
+                .font(.system(size: 18))
+                .foregroundStyle(BoothColors.accent)
+                .frame(width: 36, height: 36)
+                .background(BoothColors.accent.opacity(0.12))
+                .clipShape(RoundedRectangle(cornerRadius: 8))
 
             VStack(alignment: .leading, spacing: 2) {
-                Text(level)
+                Text(title)
                     .font(.system(size: 14, weight: .semibold))
                     .foregroundStyle(BoothColors.textPrimary)
                 Text(description)
@@ -236,14 +377,75 @@ struct OnboardingView: View {
             }
             Spacer()
         }
-        .padding(14)
+        .padding(12)
         .background(BoothColors.surface)
         .clipShape(RoundedRectangle(cornerRadius: 10))
     }
 
+    private func experienceButton(
+        _ level: ExperienceLevel,
+        label: String,
+        icon: String,
+        color: Color
+    ) -> some View {
+        Button {
+            selectedLevel = level
+        } label: {
+            VStack(spacing: 6) {
+                Image(systemName: icon)
+                    .font(.system(size: 20))
+                    .foregroundStyle(selectedLevel == level ? color : BoothColors.textMuted)
+                Text(label)
+                    .font(.system(size: 10, weight: .semibold))
+                    .foregroundStyle(selectedLevel == level ? BoothColors.textPrimary : BoothColors.textMuted)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 12)
+            .background(selectedLevel == level ? color.opacity(0.12) : BoothColors.surface)
+            .clipShape(RoundedRectangle(cornerRadius: 10))
+            .overlay(
+                RoundedRectangle(cornerRadius: 10)
+                    .stroke(selectedLevel == level ? color.opacity(0.4) : Color.clear, lineWidth: 1)
+            )
+        }
+        .buttonStyle(.plain)
+    }
+
+    private func roomSizeButton(
+        _ size: RoomSize,
+        label: String,
+        detail: String,
+        icon: String
+    ) -> some View {
+        Button {
+            selectedRoomSize = size
+        } label: {
+            VStack(spacing: 4) {
+                Image(systemName: icon)
+                    .font(.system(size: 18))
+                    .foregroundStyle(selectedRoomSize == size ? BoothColors.accent : BoothColors.textMuted)
+                Text(label)
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundStyle(selectedRoomSize == size ? BoothColors.textPrimary : BoothColors.textMuted)
+                Text(detail)
+                    .font(.system(size: 9))
+                    .foregroundStyle(BoothColors.textMuted)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 10)
+            .background(selectedRoomSize == size ? BoothColors.accent.opacity(0.12) : BoothColors.surface)
+            .clipShape(RoundedRectangle(cornerRadius: 10))
+            .overlay(
+                RoundedRectangle(cornerRadius: 10)
+                    .stroke(selectedRoomSize == size ? BoothColors.accent.opacity(0.4) : Color.clear, lineWidth: 1)
+            )
+        }
+        .buttonStyle(.plain)
+    }
+
     private var pageIndicators: some View {
         HStack(spacing: 8) {
-            ForEach(0..<3, id: \.self) { index in
+            ForEach(0..<totalPages, id: \.self) { index in
                 Circle()
                     .fill(
                         index == currentPage
@@ -261,13 +463,13 @@ struct OnboardingView: View {
 
     private var navigationButton: some View {
         Button {
-            if currentPage < 2 {
+            if currentPage < totalPages - 1 {
                 withAnimation { currentPage += 1 }
             } else {
-                hasSeenOnboarding = true
+                completeOnboarding()
             }
         } label: {
-            Text(currentPage < 2 ? "Continue" : "Get Started")
+            Text(currentPage < totalPages - 1 ? "Continue" : "Get Started")
                 .font(.system(size: 16, weight: .bold))
                 .frame(maxWidth: .infinity)
                 .frame(height: 50)
@@ -276,11 +478,65 @@ struct OnboardingView: View {
                 .clipShape(RoundedRectangle(cornerRadius: 12))
         }
     }
+
+
+    // MARK: - ─── Actions ──────────────────────────────────────────────────
+
+    private func completeOnboarding() {
+        // Save quick setup choices to user preferences
+        var prefs = store.userPreferences
+        prefs.defaultMixer = selectedMixer
+        prefs.defaultExperienceLevel = selectedLevel
+        prefs.defaultRoomSize = selectedRoomSize
+        store.updatePreferences(prefs)
+
+        // Create default venue + room from selections if none exist
+        if store.venues.isEmpty {
+            let room = Room(
+                id: UUID(),
+                name: "Main Room",
+                roomSize: selectedRoomSize,
+                roomSurface: .mixed,
+                defaultMixer: selectedMixer,
+                notes: nil
+            )
+            let venue = Venue(
+                id: UUID(),
+                name: "My Church",
+                address: nil,
+                rooms: [room],
+                createdAt: Date()
+            )
+            store.saveVenue(venue)
+        }
+
+        // Create default console profile if none exist
+        if store.consoleProfiles.isEmpty {
+            let console = ConsoleProfile(
+                id: UUID(),
+                name: selectedMixer.shortName,
+                model: selectedMixer,
+                ipAddress: nil,
+                port: 51325,
+                connectionType: .csvOnly,
+                linkedVenueID: store.venues.first?.id,
+                linkedRoomID: store.venues.first?.rooms.first?.id,
+                notes: nil,
+                dateAdded: Date()
+            )
+            store.saveConsoleProfile(console)
+        }
+
+        hasSeenOnboarding = true
+    }
 }
 
 
 // MARK: - ─── Preview ─────────────────────────────────────────────────────
 
 #Preview("Onboarding") {
-    OnboardingView(hasSeenOnboarding: .constant(false))
+    OnboardingView(
+        hasSeenOnboarding: .constant(false),
+        store: ServiceStore()
+    )
 }

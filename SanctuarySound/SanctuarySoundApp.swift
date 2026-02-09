@@ -7,6 +7,7 @@
 // ============================================================================
 
 import SwiftUI
+import TipKit
 
 @main
 struct SanctuarySoundApp: App {
@@ -23,6 +24,11 @@ struct SanctuarySoundApp: App {
                 ThemeProvider.shared.apply(themeID: prefs.colorTheme)
             }
         }
+
+        // Configure TipKit — show tips at most once per week
+        try? Tips.configure([
+            .displayFrequency(.weekly)
+        ])
     }
 
     var body: some Scene {

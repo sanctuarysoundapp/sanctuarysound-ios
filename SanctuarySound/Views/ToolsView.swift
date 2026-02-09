@@ -8,6 +8,7 @@
 // ============================================================================
 
 import SwiftUI
+import TipKit
 
 
 // MARK: - ─── Tools View ──────────────────────────────────────────────────────
@@ -23,6 +24,10 @@ struct ToolsView: View {
 
                 ScrollView {
                     VStack(spacing: 20) {
+                        // ── TipKit Hint ──
+                        TipView(SPLMeterTip())
+                            .tipBackground(BoothColors.surface)
+
                         // ── SPL Meter ──
                         splMeterCard
 

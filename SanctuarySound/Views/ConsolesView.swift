@@ -9,6 +9,7 @@
 // ============================================================================
 
 import SwiftUI
+import TipKit
 
 
 // MARK: - ─── Consoles View ───────────────────────────────────────────────────
@@ -105,6 +106,10 @@ struct ConsolesView: View {
 
     private var emptyState: some View {
         VStack(spacing: 16) {
+            TipView(ConsoleConnectTip())
+                .tipBackground(BoothColors.surface)
+                .padding(.horizontal, 24)
+
             Image(systemName: "slider.horizontal.below.rectangle")
                 .font(.system(size: 48))
                 .foregroundStyle(BoothColors.textMuted)

@@ -195,6 +195,7 @@ struct RootView: View {
     @State private var showSplash = true
     @AppStorage("hasSeenOnboarding") private var hasSeenOnboarding = false
     @StateObject private var themeProvider = ThemeProvider.shared
+    @StateObject private var store = ServiceStore()
 
     var body: some View {
         ZStack {
@@ -203,11 +204,11 @@ struct RootView: View {
                     .transition(.opacity)
                     .zIndex(2)
             } else if !hasSeenOnboarding {
-                OnboardingView(hasSeenOnboarding: $hasSeenOnboarding)
+                OnboardingView(hasSeenOnboarding: $hasSeenOnboarding, store: store)
                     .transition(.opacity)
                     .zIndex(1)
             } else {
-                HomeView()
+                HomeView(store: store)
                     .transition(.opacity)
             }
         }

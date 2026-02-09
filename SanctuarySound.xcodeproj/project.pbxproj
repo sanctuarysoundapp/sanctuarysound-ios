@@ -47,6 +47,7 @@
 		AA000041 /* InputLibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000041 /* InputLibraryView.swift */; };
 		AA000042 /* ConsolesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000042 /* ConsolesView.swift */; };
 		AA000043 /* ToolsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000043 /* ToolsView.swift */; };
+		AA000044 /* AppTips.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000044 /* AppTips.swift */; };
 		AA100001 /* SoundEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB100001 /* SoundEngineTests.swift */; };
 		AA100002 /* PCOTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB100002 /* PCOTests.swift */; };
 /* End PBXBuildFile section */
@@ -103,6 +104,7 @@
 		AB000041 /* InputLibraryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputLibraryView.swift; sourceTree = "<group>"; };
 		AB000042 /* ConsolesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsolesView.swift; sourceTree = "<group>"; };
 		AB000043 /* ToolsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolsView.swift; sourceTree = "<group>"; };
+		AB000044 /* AppTips.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTips.swift; sourceTree = "<group>"; };
 		AB100001 /* SoundEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundEngineTests.swift; sourceTree = "<group>"; };
 		AB100002 /* PCOTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PCOTests.swift; sourceTree = "<group>"; };
 		AC000001 /* SanctuarySound.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SanctuarySound.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -149,6 +151,7 @@
 				AE000009 /* Network */,
 				AE000007 /* Audio */,
 				AE000008 /* Store */,
+				AE000010 /* Tips */,
 				AB000010 /* Assets.xcassets */,
 				AB000036 /* Localizable.xcstrings */,
 				AB000037 /* InfoPlist.xcstrings */,
@@ -238,6 +241,14 @@
 				AB000034 /* PlanningCenterManager.swift */,
 			);
 			path = Store;
+			sourceTree = "<group>";
+		};
+		AE000010 /* Tips */ = {
+			isa = PBXGroup;
+			children = (
+				AB000044 /* AppTips.swift */,
+			);
+			path = Tips;
 			sourceTree = "<group>";
 		};
 		AE100001 /* SanctuarySoundTests */ = {
@@ -389,6 +400,7 @@
 				AA000041 /* InputLibraryView.swift in Sources */,
 				AA000042 /* ConsolesView.swift in Sources */,
 				AA000043 /* ToolsView.swift in Sources */,
+				AA000044 /* AppTips.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

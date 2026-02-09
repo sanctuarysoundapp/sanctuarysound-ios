@@ -9,6 +9,7 @@
 // ============================================================================
 
 import SwiftUI
+import TipKit
 
 
 // MARK: - ─── Input Library View ──────────────────────────────────────────────
@@ -97,6 +98,10 @@ struct InputLibraryView: View {
 
     private var emptyState: some View {
         VStack(spacing: 16) {
+            TipView(InputLibraryTip())
+                .tipBackground(BoothColors.surface)
+                .padding(.horizontal, 24)
+
             Image(systemName: "pianokeys")
                 .font(.system(size: 48))
                 .foregroundStyle(BoothColors.textMuted)

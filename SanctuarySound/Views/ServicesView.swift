@@ -9,6 +9,7 @@
 // ============================================================================
 
 import SwiftUI
+import TipKit
 
 
 // MARK: - ─── Services View ───────────────────────────────────────────────────
@@ -127,6 +128,10 @@ struct ServicesView: View {
 
     private var emptyState: some View {
         VStack(spacing: 16) {
+            TipView(CreateServiceTip())
+                .tipBackground(BoothColors.surface)
+                .padding(.horizontal, 24)
+
             Image(systemName: "music.note.list")
                 .font(.system(size: 48))
                 .foregroundStyle(BoothColors.textMuted)
