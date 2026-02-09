@@ -99,6 +99,13 @@ struct PCOTeamImportPreviewView: View {
         source == .leadVocal || source == .backingVocal
     }
 
+    /// Returns all InputSource values in the same category as the given source.
+    /// Used for the source type picker menu — vocals see vocal options, guitars see guitar options, etc.
+    private func sourcesForCategory(_ source: InputSource) -> [InputSource] {
+        let category = source.category
+        return InputSource.allCases.filter { $0.category == category }
+    }
+
     private var includedCount: Int {
         items.filter(\.isIncluded).count
     }
@@ -143,10 +150,29 @@ struct PCOTeamImportPreviewView: View {
 
             Spacer()
 
-            // Source badge
-            Text(items[index].source.localizedName)
-                .font(.system(size: 10, weight: .bold, design: .monospaced))
-                .foregroundStyle(items[index].isIncluded ? BoothColors.accent : BoothColors.textMuted)
+            // Source badge — tappable menu picker for changing source type
+            Menu {
+                ForEach(sourcesForCategory(items[index].source)) { source in
+                    Button {
+                        items[index].source = source
+                    } label: {
+                        if source == items[index].source {
+                            Label(source.localizedName, systemImage: "checkmark")
+                        } else {
+                            Text(source.localizedName)
+                        }
+                    }
+                }
+            } label: {
+                HStack(spacing: 3) {
+                    Text(items[index].source.localizedName)
+                        .font(.system(size: 10, weight: .bold, design: .monospaced))
+                    Image(systemName: "chevron.up.chevron.down")
+                        .font(.system(size: 7, weight: .bold))
+                }
+                .foregroundStyle(
+                    items[index].isIncluded ? BoothColors.accent : BoothColors.textMuted
+                )
                 .padding(.horizontal, 6)
                 .padding(.vertical, 2)
                 .background(
@@ -154,6 +180,7 @@ struct PCOTeamImportPreviewView: View {
                         .opacity(0.12)
                 )
                 .clipShape(RoundedRectangle(cornerRadius: 3))
+            }
 
             // Person name (muted)
             if !items[index].personName.isEmpty && items[index].personName != items[index].channelLabel {

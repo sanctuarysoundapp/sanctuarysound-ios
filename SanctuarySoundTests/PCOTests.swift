@@ -2038,3 +2038,143 @@ final class PCOPositionCategoryTests: XCTestCase {
         }
     }
 }
+
+
+// MARK: - ─── PCO Song Import Item Tests ──────────────────────────────────
+
+final class PCOSongImportItemTests: XCTestCase {
+
+    func testSongImportItem_defaultIsIncluded() {
+        let song = SetlistSong(title: "Amazing Grace", key: .G)
+        let item = PCOSongImportItem(song: song)
+        XCTAssertTrue(item.isIncluded)
+    }
+
+    func testSongImportItem_toggleIsIncluded() {
+        let song = SetlistSong(title: "How Great", key: .A, bpm: 72)
+        var item = PCOSongImportItem(song: song)
+        item.isIncluded = false
+        XCTAssertFalse(item.isIncluded)
+    }
+
+    func testSongImportItem_uniqueIDs() {
+        let song = SetlistSong(title: "Same Song", key: .C)
+        let item1 = PCOSongImportItem(song: song)
+        let item2 = PCOSongImportItem(song: song)
+        XCTAssertNotEqual(item1.id, item2.id)
+    }
+
+    func testSongImportItem_preservesSongData() {
+        let song = SetlistSong(title: "Waymaker", key: .E, bpm: 68)
+        let item = PCOSongImportItem(song: song)
+        XCTAssertEqual(item.song.title, "Waymaker")
+        XCTAssertEqual(item.song.key, .E)
+        XCTAssertEqual(item.song.bpm, 68)
+    }
+}
+
+
+// MARK: - ─── PCO Source Category Filter Tests ────────────────────────────
+
+final class PCOSourceCategoryFilterTests: XCTestCase {
+
+    func testVocalSourcesReturnOnlyVocalCategory() {
+        let vocalSources = InputSource.allCases.filter { $0.category == .vocals }
+        XCTAssertEqual(vocalSources.count, 3)
+        XCTAssertTrue(vocalSources.contains(.leadVocal))
+        XCTAssertTrue(vocalSources.contains(.backingVocal))
+        XCTAssertTrue(vocalSources.contains(.choirMic))
+    }
+
+    func testGuitarSourcesReturnOnlyGuitarCategory() {
+        let guitarSources = InputSource.allCases.filter { $0.category == .guitars }
+        XCTAssertEqual(guitarSources.count, 6)
+        XCTAssertTrue(guitarSources.contains(.electricGtrAmp))
+        XCTAssertTrue(guitarSources.contains(.electricGtrModeler))
+        XCTAssertTrue(guitarSources.contains(.acousticGtrMic))
+        XCTAssertTrue(guitarSources.contains(.acousticGtrDI))
+        XCTAssertTrue(guitarSources.contains(.bassGtrAmp))
+        XCTAssertTrue(guitarSources.contains(.bassGtrDI))
+    }
+
+    func testKeysSourcesReturnOnlyKeysCategory() {
+        let keysSources = InputSource.allCases.filter { $0.category == .keys }
+        XCTAssertEqual(keysSources.count, 6)
+        XCTAssertTrue(keysSources.contains(.digitalPiano))
+        XCTAssertTrue(keysSources.contains(.grandPiano))
+        XCTAssertTrue(keysSources.contains(.synthesizer))
+    }
+
+    func testDrumSourcesReturnOnlyDrumCategory() {
+        let drumSources = InputSource.allCases.filter { $0.category == .drums }
+        XCTAssertEqual(drumSources.count, 12)
+        XCTAssertTrue(drumSources.contains(.kickDrum))
+        XCTAssertTrue(drumSources.contains(.snareDrum))
+        XCTAssertTrue(drumSources.contains(.hiHat))
+        XCTAssertTrue(drumSources.contains(.overheadL))
+    }
+}
+
+
+// MARK: - ─── PCO Source Change Tests ─────────────────────────────────────
+
+final class PCOSourceChangeTests: XCTestCase {
+
+    func testChangingSourceUpdatesValue() {
+        var item = PCOTeamImportItem(
+            personName: "Sarah",
+            positionName: "VOX 1",
+            positionCategory: .audio,
+            channelLabel: "VOX 1",
+            source: .backingVocal
+        )
+        item.source = .leadVocal
+        XCTAssertEqual(item.source, .leadVocal)
+    }
+
+    func testChangingVocalSourcePreservesOtherFields() {
+        var item = PCOTeamImportItem(
+            personName: "Sarah Jones",
+            positionName: "VOX 1",
+            positionCategory: .audio,
+            channelLabel: "VOX 1",
+            source: .backingVocal,
+            isIncluded: true
+        )
+        item.source = .leadVocal
+        XCTAssertEqual(item.personName, "Sarah Jones")
+        XCTAssertEqual(item.channelLabel, "VOX 1")
+        XCTAssertEqual(item.positionCategory, .audio)
+        XCTAssertTrue(item.isIncluded)
+    }
+
+    func testChangingInstrumentSourcePreservesFields() {
+        var item = PCOTeamImportItem(
+            personName: "Mike Smith",
+            positionName: "EG Lead",
+            positionCategory: .audio,
+            channelLabel: "EG Lead",
+            source: .electricGtrModeler
+        )
+        item.source = .electricGtrAmp
+        XCTAssertEqual(item.source, .electricGtrAmp)
+        XCTAssertEqual(item.personName, "Mike Smith")
+        XCTAssertEqual(item.channelLabel, "EG Lead")
+    }
+
+    func testVocalSourceCategoryAfterChangeToInstrument() {
+        var item = PCOTeamImportItem(
+            personName: "Player",
+            positionName: "Position",
+            positionCategory: .audio,
+            channelLabel: "Channel",
+            source: .backingVocal
+        )
+        // Source is initially vocal category
+        XCTAssertEqual(item.source.category, .vocals)
+
+        item.source = .electricGtrModeler
+        // After change, category reflects new source
+        XCTAssertEqual(item.source.category, .guitars)
+    }
+}
