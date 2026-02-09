@@ -17,6 +17,7 @@ struct SettingsView: View {
     @ObservedObject var store: ServiceStore
     @ObservedObject var pcoManager: PlanningCenterManager
     @State private var prefs: UserPreferences = UserPreferences()
+    @State private var showClearDataAlert = false
 
     var body: some View {
         NavigationStack {
@@ -38,6 +39,9 @@ struct SettingsView: View {
 
                         // ── Layout ──
                         layoutSection
+
+                        // ── Data Management ──
+                        dataManagementSection
 
                         // ── About & Support ──
                         aboutSupportSection
@@ -319,6 +323,63 @@ struct SettingsView: View {
                 }
             }
             .tint(BoothColors.accent)
+        }
+    }
+
+
+    // MARK: - ─── Data Management ──────────────────────────────────────────────
+
+    private var dataManagementSection: some View {
+        SectionCard(title: "Data Management") {
+            VStack(spacing: 8) {
+                dataRow(label: "Services", count: store.savedServices.count)
+                dataRow(label: "Inputs", count: store.savedInputs.count)
+                dataRow(label: "Vocalists", count: store.savedVocalists.count)
+                dataRow(label: "Venues", count: store.venues.count)
+                dataRow(label: "Consoles", count: store.consoleProfiles.count)
+                dataRow(label: "Snapshots", count: store.savedSnapshots.count)
+                dataRow(label: "SPL Reports", count: store.savedReports.count)
+            }
+
+            Divider()
+                .background(BoothColors.divider)
+
+            Button(role: .destructive) {
+                showClearDataAlert = true
+            } label: {
+                HStack(spacing: 8) {
+                    Image(systemName: "trash")
+                    Text("Clear All Data")
+                }
+                .font(.system(size: 14, weight: .bold))
+                .frame(maxWidth: .infinity)
+                .frame(height: 44)
+                .foregroundStyle(BoothColors.accentDanger)
+                .background(BoothColors.surfaceElevated)
+                .clipShape(RoundedRectangle(cornerRadius: 10))
+            }
+            .alert("Clear All Data?", isPresented: $showClearDataAlert) {
+                Button("Cancel", role: .cancel) { }
+                Button("Clear Everything", role: .destructive) {
+                    store.clearAllData()
+                    prefs = store.userPreferences
+                    ThemeProvider.shared.apply(themeID: prefs.colorTheme)
+                }
+            } message: {
+                Text("This will permanently delete all services, inputs, vocalists, venues, consoles, snapshots, and SPL reports. This cannot be undone.")
+            }
+        }
+    }
+
+    private func dataRow(label: String, count: Int) -> some View {
+        HStack {
+            Text(label)
+                .font(.system(size: 13, weight: .medium))
+                .foregroundStyle(BoothColors.textPrimary)
+            Spacer()
+            Text("\(count)")
+                .font(.system(size: 13, weight: .bold, design: .monospaced))
+                .foregroundStyle(count > 0 ? BoothColors.accent : BoothColors.textMuted)
         }
     }
 

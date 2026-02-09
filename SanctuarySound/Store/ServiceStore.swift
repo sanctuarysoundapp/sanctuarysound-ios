@@ -273,6 +273,39 @@ final class ServiceStore: ObservableObject {
         consoleProfiles.first { $0.id == id }
     }
 
+    // MARK: - ─── Data Management ──────────────────────────────────────────────
+
+    /// Total count of all user-created data items.
+    var totalDataCount: Int {
+        savedServices.count + savedVocalists.count + savedInputs.count +
+        savedSnapshots.count + savedReports.count + venues.count + consoleProfiles.count
+    }
+
+    /// Clear all user data and reset to defaults. Returns the store to fresh state.
+    func clearAllData() {
+        savedServices = []
+        savedVocalists = []
+        savedInputs = []
+        savedSnapshots = []
+        savedReports = []
+        venues = []
+        consoleProfiles = []
+        splPreference = SPLPreference()
+        userPreferences = UserPreferences()
+
+        // Remove all JSON files
+        let files = [servicesFile, vocalistsFile, inputsFile, snapshotsFile,
+                     preferencesFile, reportsFile, userPreferencesFile, venuesFile, consolesFile]
+        for file in files {
+            let url = documentsURL.appendingPathComponent(file)
+            try? FileManager.default.removeItem(at: url)
+        }
+
+        // Re-run migration to create default venue/room/console
+        migrateIfNeeded()
+        splMeter.updateAlertThresholds(preference: splPreference)
+    }
+
     // MARK: - ─── Data Migration ──────────────────────────────────────────────
 
     /// Migrate from flat data model to hierarchical (Venue/Room/Console).
