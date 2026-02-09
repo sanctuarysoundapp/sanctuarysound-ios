@@ -75,6 +75,7 @@
 		AA200008 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AB200008 /* Assets.xcassets */; };
 		AA200009 /* SPLSharedTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000054 /* SPLSharedTypes.swift */; };
 		AA200010 /* WatchConnectivityDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000055 /* WatchConnectivityDTO.swift */; };
+		AA200011 /* WatchSplashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB200011 /* WatchSplashView.swift */; };
 		AA300001 /* WatchSPLViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB300001 /* WatchSPLViewModelTests.swift */; };
 		AA400001 /* WatchComplicationProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB400001 /* WatchComplicationProvider.swift */; };
 		AA400002 /* SPLSharedTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000054 /* SPLSharedTypes.swift */; };
@@ -181,6 +182,7 @@
 		AB200005 /* WatchColors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchColors.swift; sourceTree = "<group>"; };
 		AB200006 /* WatchReportsListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchReportsListView.swift; sourceTree = "<group>"; };
 		AB200007 /* WatchReportDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchReportDetailView.swift; sourceTree = "<group>"; };
+		AB200011 /* WatchSplashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchSplashView.swift; sourceTree = "<group>"; };
 		AB200008 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		AB200009 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		AB300001 /* WatchSPLViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchSPLViewModelTests.swift; sourceTree = "<group>"; };
@@ -444,6 +446,7 @@
 				AB200005 /* WatchColors.swift */,
 				AB200006 /* WatchReportsListView.swift */,
 				AB200007 /* WatchReportDetailView.swift */,
+				AB200011 /* WatchSplashView.swift */,
 				AB200009 /* Info.plist */,
 				AB200008 /* Assets.xcassets */,
 			);
@@ -714,6 +717,7 @@
 				AA200007 /* WatchReportDetailView.swift in Sources */,
 				AA200009 /* SPLSharedTypes.swift in Sources */,
 				AA200010 /* WatchConnectivityDTO.swift in Sources */,
+				AA200011 /* WatchSplashView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
