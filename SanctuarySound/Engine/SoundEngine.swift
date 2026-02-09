@@ -35,7 +35,7 @@ final class SoundEngine {
                     room: service.room,
                     drumConfig: service.drumConfig,
                     setlist: service.setlist,
-                    experienceLevel: service.experienceLevel,
+                    detailLevel: service.detailLevel,
                     bandComposition: service.bandComposition
                 )
             }
@@ -59,7 +59,7 @@ final class SoundEngine {
         room: RoomProfile,
         drumConfig: DrumConfiguration,
         setlist: [SetlistSong],
-        experienceLevel: ExperienceLevel,
+        detailLevel: DetailLevel,
         bandComposition: BandComposition
     ) -> ChannelRecommendation {
         
@@ -87,7 +87,7 @@ final class SoundEngine {
         
         // ── Step 4: EQ ──
         let eqBands: [EQRecommendation]
-        if experienceLevel.showsEQ {
+        if detailLevel.showsEQ {
             eqBands = calculateEQ(
                 source: channel.source,
                 vocalProfile: channel.vocalProfile,
@@ -101,7 +101,7 @@ final class SoundEngine {
         
         // ── Step 5: Compression ──
         let compressor: CompressorRecommendation?
-        if experienceLevel.showsCompression {
+        if detailLevel.showsCompression {
             compressor = calculateCompressor(
                 source: channel.source,
                 vocalProfile: channel.vocalProfile
@@ -121,7 +121,7 @@ final class SoundEngine {
             channel: channel,
             room: room,
             drumConfig: drumConfig,
-            experienceLevel: experienceLevel
+            detailLevel: detailLevel
         )
         
         return ChannelRecommendation(
@@ -704,7 +704,7 @@ final class SoundEngine {
         channel: InputChannel,
         room: RoomProfile,
         drumConfig: DrumConfiguration,
-        experienceLevel: ExperienceLevel
+        detailLevel: DetailLevel
     ) -> [String] {
         var notes: [String] = []
         
@@ -725,7 +725,7 @@ final class SoundEngine {
         }
         
         // DI-specific
-        if source.isLineLevel && experienceLevel == .beginner {
+        if source.isLineLevel && detailLevel == .essentials {
             notes.append("This is a line-level (DI) source. Make sure your preamp is set to 'Line' not 'Mic' on the console.")
         }
         

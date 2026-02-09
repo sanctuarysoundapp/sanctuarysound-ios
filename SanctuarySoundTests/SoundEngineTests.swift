@@ -52,7 +52,7 @@ final class SoundEngineTests: XCTestCase {
             room: RoomProfile(size: .medium, surface: .mixed),
             channels: [channel],
             setlist: [song],
-            experienceLevel: .advanced
+            detailLevel: .full
         )
 
         let result = engine.generateRecommendation(for: service)
@@ -92,7 +92,7 @@ final class SoundEngineTests: XCTestCase {
             room: RoomProfile(size: .medium, surface: .mixed),
             channels: [channel],
             setlist: [song],
-            experienceLevel: .advanced
+            detailLevel: .full
         )
 
         let result = engine.generateRecommendation(for: service)
@@ -129,7 +129,7 @@ final class SoundEngineTests: XCTestCase {
             mixer: .allenHeathAvantis,
             channels: [channel],
             setlist: [song],
-            experienceLevel: .advanced
+            detailLevel: .full
         )
 
         let result = engine.generateRecommendation(for: service)
@@ -162,7 +162,7 @@ final class SoundEngineTests: XCTestCase {
             room: RoomProfile(size: .large, surface: .reflective),
             channels: [channel],
             setlist: [song],
-            experienceLevel: .advanced
+            detailLevel: .full
         )
 
         let result = engine.generateRecommendation(for: service)
@@ -211,7 +211,7 @@ final class SoundEngineTests: XCTestCase {
             mixer: .allenHeathAvantis,
             channels: [channel],
             setlist: songs,
-            experienceLevel: .advanced
+            detailLevel: .full
         )
 
         let result = engine.generateRecommendation(for: service)
@@ -265,7 +265,7 @@ final class SoundEngineTests: XCTestCase {
             room: RoomProfile(size: .medium, surface: .mixed),
             channels: [channel],
             setlist: [song],
-            experienceLevel: .beginner
+            detailLevel: .essentials
         )
 
         let result = engine.generateRecommendation(for: service)
@@ -308,7 +308,7 @@ final class SoundEngineTests: XCTestCase {
                 mixer: mixer,
                 channels: [channel],
                 setlist: [song],
-                experienceLevel: .advanced
+                detailLevel: .full
             )
 
             let result = engine.generateRecommendation(for: service)
@@ -352,7 +352,7 @@ final class SoundEngineTests: XCTestCase {
             room: RoomProfile(size: .medium, surface: .mixed),
             channels: channels,
             setlist: songs,
-            experienceLevel: .advanced
+            detailLevel: .full
         )
 
         let result = engine.generateRecommendation(for: service)

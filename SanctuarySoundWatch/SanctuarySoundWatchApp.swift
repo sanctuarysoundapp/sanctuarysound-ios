@@ -24,16 +24,16 @@ struct SanctuarySoundWatchApp: App {
                     WatchSplashView()
                         .transition(.opacity)
                         .zIndex(1)
-                } else {
+                }
+                if !showSplash {
                     WatchSPLView(viewModel: viewModel)
                         .transition(.opacity)
                 }
             }
+            .animation(.easeInOut(duration: 0.2), value: showSplash)
             .onAppear {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1.8) {
-                    withAnimation(.easeInOut(duration: 0.2)) {
-                        showSplash = false
-                    }
+                    showSplash = false
                 }
             }
         }

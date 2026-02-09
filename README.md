@@ -12,7 +12,7 @@ SanctuarySound is a **free, open-source** iOS app that calculates optimal mixer 
 
 **No subscriptions. No paywalls. No ads. Free forever.**
 
-Built for the church, by the church.
+Built For The Church, By The Church, Free Forever.
 
 ---
 
@@ -62,12 +62,12 @@ Enter your service details in 60 seconds. SanctuarySound's engine analyzes every
 - Delta analysis: compare your actual settings vs. calculated ideals
 - Per-channel scoring with actionable suggestions
 
-**Experience Level Gating**
-- Beginner: Gain + Fader only
-- Intermediate: Adds EQ + HPF
-- Advanced: Full channel strip with compression and detailed key warnings
+**Detail Level Gating**
+- Essentials: Gain + Fader only
+- Detailed: Adds EQ + HPF
+- Full: Full channel strip with compression and detailed key warnings
 
-The engine always calculates everything — the experience level only controls what's displayed.
+The engine always calculates everything — the detail level only controls what's displayed.
 
 ---
 

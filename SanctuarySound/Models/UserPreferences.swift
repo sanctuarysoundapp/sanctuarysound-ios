@@ -18,7 +18,7 @@ struct UserPreferences: Codable, Equatable {
     // ── Service Defaults ──
 
     var defaultMixer: MixerModel = .allenHeathAvantis
-    var defaultExperienceLevel: ExperienceLevel = .intermediate
+    var defaultDetailLevel: DetailLevel = .detailed
     var defaultBandComposition: BandComposition = .live
     var defaultDrumConfig: DrumConfiguration = .openStage
     var defaultRoomSize: RoomSize = .medium
@@ -33,14 +33,35 @@ struct UserPreferences: Codable, Equatable {
 
     var colorTheme: ColorThemeID = .darkBooth
 
-    // ── Backward-Compatible Decoder ──
+    // ── Backward-Compatible CodingKeys ──
+
+    private enum CodingKeys: String, CodingKey {
+        case defaultMixer, defaultDetailLevel, defaultBandComposition, defaultDrumConfig
+        case defaultRoomSize, defaultRoomSurface, defaultTargetSPL
+        case preferredDrumTemplate, colorTheme
+        case defaultExperienceLevel     // Legacy key for reading old data
+    }
 
     init() {}
 
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         defaultMixer = try container.decodeIfPresent(MixerModel.self, forKey: .defaultMixer) ?? .allenHeathAvantis
-        defaultExperienceLevel = try container.decodeIfPresent(ExperienceLevel.self, forKey: .defaultExperienceLevel) ?? .intermediate
+
+        // Migration: try new key first, then fall back to legacy key with value mapping
+        if let detail = try container.decodeIfPresent(DetailLevel.self, forKey: .defaultDetailLevel) {
+            defaultDetailLevel = detail
+        } else if let legacyRaw = try container.decodeIfPresent(String.self, forKey: .defaultExperienceLevel) {
+            switch legacyRaw {
+            case "Beginner":     defaultDetailLevel = .essentials
+            case "Intermediate": defaultDetailLevel = .detailed
+            case "Advanced":     defaultDetailLevel = .full
+            default:             defaultDetailLevel = .detailed
+            }
+        } else {
+            defaultDetailLevel = .detailed
+        }
+
         defaultBandComposition = try container.decodeIfPresent(BandComposition.self, forKey: .defaultBandComposition) ?? .live
         defaultDrumConfig = try container.decodeIfPresent(DrumConfiguration.self, forKey: .defaultDrumConfig) ?? .openStage
         defaultRoomSize = try container.decodeIfPresent(RoomSize.self, forKey: .defaultRoomSize) ?? .medium
@@ -48,6 +69,20 @@ struct UserPreferences: Codable, Equatable {
         defaultTargetSPL = try container.decodeIfPresent(Double.self, forKey: .defaultTargetSPL) ?? 90.0
         preferredDrumTemplate = try container.decodeIfPresent(DrumKitTemplate.self, forKey: .preferredDrumTemplate) ?? .standard5
         colorTheme = try container.decodeIfPresent(ColorThemeID.self, forKey: .colorTheme) ?? .darkBooth
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(defaultMixer, forKey: .defaultMixer)
+        try container.encode(defaultDetailLevel, forKey: .defaultDetailLevel)
+        try container.encode(defaultBandComposition, forKey: .defaultBandComposition)
+        try container.encode(defaultDrumConfig, forKey: .defaultDrumConfig)
+        try container.encode(defaultRoomSize, forKey: .defaultRoomSize)
+        try container.encode(defaultRoomSurface, forKey: .defaultRoomSurface)
+        try container.encode(defaultTargetSPL, forKey: .defaultTargetSPL)
+        try container.encode(preferredDrumTemplate, forKey: .preferredDrumTemplate)
+        try container.encode(colorTheme, forKey: .colorTheme)
+        // Note: defaultExperienceLevel is read-only legacy key, not written
     }
 }
 

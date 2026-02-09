@@ -61,7 +61,7 @@ struct WatchSplashView: View {
                         .tracking(2)
                         .foregroundStyle(WatchColors.textPrimary)
 
-                    Text("For The Church")
+                    Text("Built For The Church")
                         .font(.system(size: 9, weight: .medium))
                         .foregroundStyle(WatchColors.accent)
                 }

@@ -20,7 +20,7 @@ struct OnboardingView: View {
 
     // Quick Setup state (Screen 4)
     @State private var selectedMixer: MixerModel = .allenHeathAvantis
-    @State private var selectedLevel: ExperienceLevel = .intermediate
+    @State private var selectedLevel: DetailLevel = .detailed
     @State private var selectedRoomSize: RoomSize = .medium
 
     private let totalPages = 5
@@ -247,15 +247,15 @@ struct OnboardingView: View {
 
                 // Experience level
                 VStack(alignment: .leading, spacing: 6) {
-                    Text("EXPERIENCE LEVEL")
+                    Text("DETAIL LEVEL")
                         .font(.system(size: 10, weight: .bold, design: .monospaced))
                         .foregroundStyle(BoothColors.textMuted)
                         .tracking(1)
 
                     HStack(spacing: 8) {
-                        experienceButton(.beginner, label: "Beginner", icon: "1.circle.fill", color: BoothColors.accent)
-                        experienceButton(.intermediate, label: "Intermediate", icon: "2.circle.fill", color: BoothColors.accentWarm)
-                        experienceButton(.advanced, label: "Advanced", icon: "3.circle.fill", color: BoothColors.accentDanger)
+                        experienceButton(.essentials, label: "Essentials", icon: "1.circle.fill", color: BoothColors.accent)
+                        experienceButton(.detailed, label: "Detailed", icon: "2.circle.fill", color: BoothColors.accentWarm)
+                        experienceButton(.full, label: "Full", icon: "3.circle.fill", color: BoothColors.accentDanger)
                     }
                 }
 
@@ -383,7 +383,7 @@ struct OnboardingView: View {
     }
 
     private func experienceButton(
-        _ level: ExperienceLevel,
+        _ level: DetailLevel,
         label: String,
         icon: String,
         color: Color
@@ -486,7 +486,7 @@ struct OnboardingView: View {
         // Save quick setup choices to user preferences
         var prefs = store.userPreferences
         prefs.defaultMixer = selectedMixer
-        prefs.defaultExperienceLevel = selectedLevel
+        prefs.defaultDetailLevel = selectedLevel
         prefs.defaultRoomSize = selectedRoomSize
         store.updatePreferences(prefs)
 

@@ -3,9 +3,8 @@
 // SanctuarySound — Virtual Audio Director for House of Worship
 // ============================================================================
 // Architecture: MVVM View Layer
-// Purpose: Full settings screen with sections for service defaults, appearance,
-//          about/mission, donation links, community links, and legal info.
-//          Replaces the AboutView toolbar target from the Setup tab.
+// Purpose: Full settings screen with sections for about/mission, service
+//          defaults, appearance, data management, community, and donation.
 // ============================================================================
 
 import SwiftUI
@@ -19,6 +18,11 @@ struct SettingsView: View {
     @State private var prefs: UserPreferences = UserPreferences()
     @State private var showClearDataAlert = false
 
+    private let gridColumns = [
+        GridItem(.flexible(), spacing: 12),
+        GridItem(.flexible(), spacing: 12)
+    ]
+
     var body: some View {
         NavigationStack {
             ZStack {
@@ -26,6 +30,9 @@ struct SettingsView: View {
 
                 ScrollView {
                     VStack(spacing: 20) {
+                        // ── About & Support ──
+                        aboutSupportSection
+
                         // ── Service Defaults ──
                         consoleSection
                         bandRoomSection
@@ -40,14 +47,8 @@ struct SettingsView: View {
                         // ── Data Management ──
                         dataManagementSection
 
-                        // ── About & Support ──
-                        aboutSupportSection
-
-                        // ── Community ──
+                        // ── Community & Open Source ──
                         communitySection
-
-                        // ── Legal ──
-                        legalFooter
                 }
                 .padding()
                 .padding(.bottom, 20)
@@ -64,32 +65,153 @@ struct SettingsView: View {
     }
 
 
-    // MARK: - ─── Console & Experience ───────────────────────────────────────
+    // MARK: - ─── About & Support ────────────────────────────────────────────
 
-    private var consoleSection: some View {
-        SectionCard(title: "Console & Experience") {
-            // ── Console ──
-            settingsRow(label: "Console") {
-                Picker("Console", selection: $prefs.defaultMixer) {
-                    ForEach(MixerModel.allCases) { mixer in
-                        Text(mixer.localizedName).tag(mixer)
-                    }
+    private var aboutSupportSection: some View {
+        SectionCard(title: "About & Support") {
+            VStack(spacing: 12) {
+                // App icon with glow
+                ZStack {
+                    Circle()
+                        .fill(
+                            RadialGradient(
+                                colors: [
+                                    BoothColors.accent.opacity(0.2),
+                                    BoothColors.accent.opacity(0.0)
+                                ],
+                                center: .center,
+                                startRadius: 20,
+                                endRadius: 55
+                            )
+                        )
+                        .frame(width: 90, height: 90)
+
+                    Image("AppIconImage")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 60, height: 60)
+                        .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+                        .shadow(color: BoothColors.accent.opacity(0.3), radius: 8)
                 }
-                .pickerStyle(.menu)
-                .tint(BoothColors.accent)
-                .onChange(of: prefs.defaultMixer) { _, _ in savePrefs() }
+
+                Text("SANCTUARYSOUND")
+                    .font(.system(size: 16, weight: .bold, design: .monospaced))
+                    .tracking(3)
+                    .foregroundStyle(BoothColors.textPrimary)
+
+                Text("v\(AppConfig.version) (\(AppConfig.buildNumber))")
+                    .font(.system(size: 11, weight: .medium, design: .monospaced))
+                    .foregroundStyle(BoothColors.textMuted)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 4)
+                    .background(BoothColors.surfaceElevated)
+                    .clipShape(RoundedRectangle(cornerRadius: 4))
+            }
+            .frame(maxWidth: .infinity)
+
+            Text(AppConfig.missionStatement)
+                .font(.system(size: 14, weight: .semibold))
+                .foregroundStyle(BoothColors.accent)
+                .multilineTextAlignment(.center)
+                .frame(maxWidth: .infinity, alignment: .center)
+
+            Text(AppConfig.missionDescription)
+                .font(.system(size: 12))
+                .foregroundStyle(BoothColors.textSecondary)
+                .lineSpacing(3)
+
+            Text("No data collected, ever.")
+                .font(.system(size: 11, weight: .medium))
+                .foregroundStyle(BoothColors.textMuted)
+
+            // ── Hero Donation CTA ──
+            Link(destination: AppConfig.donationURL) {
+                HStack(spacing: 8) {
+                    Image(systemName: "heart.fill")
+                    Text("Support This Ministry")
+                }
+                .font(.system(size: 14, weight: .bold))
+                .frame(maxWidth: .infinity)
+                .frame(height: 48)
+                .foregroundStyle(BoothColors.background)
+                .background(BoothColors.accent)
+                .clipShape(RoundedRectangle(cornerRadius: 10))
             }
 
-            // ── Experience Level ──
-            settingsRow(label: "Level") {
-                Picker("Level", selection: $prefs.defaultExperienceLevel) {
-                    ForEach(ExperienceLevel.allCases) { level in
-                        Text(level.localizedName).tag(level)
+            settingsLink(
+                icon: "chevron.left.forwardslash.chevron.right",
+                title: "GitHub Sponsors",
+                subtitle: "For developer contributions",
+                url: AppConfig.githubSponsorsURL
+            )
+
+            settingsLink(
+                icon: "bubble.left.and.exclamationmark.bubble.right",
+                title: "Feedback & Bug Reports",
+                subtitle: "Report issues on GitHub",
+                url: AppConfig.feedbackURL
+            )
+
+            ShareLink(
+                item: AppConfig.githubURL,
+                subject: Text("SanctuarySound"),
+                message: Text("Check out SanctuarySound — a free, open-source app that calculates mixer settings for church production & worship teams.")
+            ) {
+                HStack(spacing: 12) {
+                    Image(systemName: "square.and.arrow.up")
+                        .font(.system(size: 14))
+                        .foregroundStyle(BoothColors.accent)
+                        .frame(width: 28, height: 28)
+
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Share This App")
+                            .font(.system(size: 13, weight: .medium))
+                            .foregroundStyle(BoothColors.textPrimary)
+                        Text("Help other churches find better sound")
+                            .font(.system(size: 11))
+                            .foregroundStyle(BoothColors.textSecondary)
                     }
+
+                    Spacer()
+
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 11, weight: .semibold))
+                        .foregroundStyle(BoothColors.textMuted)
                 }
-                .pickerStyle(.menu)
-                .tint(BoothColors.accent)
-                .onChange(of: prefs.defaultExperienceLevel) { _, _ in savePrefs() }
+                .padding(12)
+                .background(BoothColors.surfaceElevated)
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+            }
+        }
+    }
+
+
+    // MARK: - ─── Console & Detail Level ───────────────────────────────────────
+
+    private var consoleSection: some View {
+        SectionCard(title: "Console & Detail Level") {
+            LazyVGrid(columns: gridColumns, spacing: 12) {
+                pickerCell(label: "Console") {
+                    Picker("Console", selection: $prefs.defaultMixer) {
+                        ForEach(MixerModel.allCases) { mixer in
+                            Text(mixer.localizedName).tag(mixer)
+                        }
+                    }
+                    .pickerStyle(.menu)
+                    .tint(BoothColors.accent)
+                    .onChange(of: prefs.defaultMixer) { _, _ in savePrefs() }
+                }
+
+                pickerCell(label: "Level") {
+                    Picker("Level", selection: $prefs.defaultDetailLevel) {
+                        ForEach(DetailLevel.allCases) { level in
+                            Text(level.localizedName).tag(level)
+                        }
+                    }
+                    .pickerStyle(.menu)
+                    .tint(BoothColors.accent)
+                    .onChange(of: prefs.defaultDetailLevel) { _, _ in savePrefs() }
+                }
             }
         }
     }
@@ -99,55 +221,54 @@ struct SettingsView: View {
 
     private var bandRoomSection: some View {
         SectionCard(title: "Band & Room") {
-            // ── Band Composition ──
-            settingsRow(label: "Band") {
-                Picker("Band", selection: $prefs.defaultBandComposition) {
-                    ForEach(BandComposition.allCases) { band in
-                        Text(band.localizedName).tag(band)
+            LazyVGrid(columns: gridColumns, spacing: 12) {
+                // ── Band Composition ──
+                pickerCell(label: "Band") {
+                    Picker("Band", selection: $prefs.defaultBandComposition) {
+                        ForEach(BandComposition.allCases) { band in
+                            Text(band.localizedName).tag(band)
+                        }
                     }
+                    .pickerStyle(.menu)
+                    .tint(BoothColors.accent)
+                    .onChange(of: prefs.defaultBandComposition) { _, _ in savePrefs() }
                 }
-                .pickerStyle(.menu)
-                .tint(BoothColors.accent)
-                .onChange(of: prefs.defaultBandComposition) { _, _ in savePrefs() }
-            }
 
-            // ── Drum Config ──
-            settingsRow(label: "Drums") {
-                Picker("Drums", selection: $prefs.defaultDrumConfig) {
-                    ForEach(DrumConfiguration.allCases) { config in
-                        Text(config.localizedName).tag(config)
+                // ── Drum Config ──
+                pickerCell(label: "Drums") {
+                    Picker("Drums", selection: $prefs.defaultDrumConfig) {
+                        ForEach(DrumConfiguration.allCases) { config in
+                            Text(config.localizedName).tag(config)
+                        }
                     }
+                    .pickerStyle(.menu)
+                    .tint(BoothColors.accent)
+                    .onChange(of: prefs.defaultDrumConfig) { _, _ in savePrefs() }
                 }
-                .pickerStyle(.menu)
-                .tint(BoothColors.accent)
-                .onChange(of: prefs.defaultDrumConfig) { _, _ in savePrefs() }
-            }
 
-            Divider()
-                .background(BoothColors.divider)
-
-            // ── Room Size ──
-            settingsRow(label: "Size") {
-                Picker("Size", selection: $prefs.defaultRoomSize) {
-                    ForEach(RoomSize.allCases) { size in
-                        Text(size.localizedName).tag(size)
+                // ── Room Size ──
+                pickerCell(label: "Size") {
+                    Picker("Size", selection: $prefs.defaultRoomSize) {
+                        ForEach(RoomSize.allCases) { size in
+                            Text(size.localizedName).tag(size)
+                        }
                     }
+                    .pickerStyle(.menu)
+                    .tint(BoothColors.accent)
+                    .onChange(of: prefs.defaultRoomSize) { _, _ in savePrefs() }
                 }
-                .pickerStyle(.menu)
-                .tint(BoothColors.accent)
-                .onChange(of: prefs.defaultRoomSize) { _, _ in savePrefs() }
-            }
 
-            // ── Room Surface ──
-            settingsRow(label: "Surfaces") {
-                Picker("Surface", selection: $prefs.defaultRoomSurface) {
-                    ForEach(RoomSurface.allCases) { surface in
-                        Text(surface.localizedName).tag(surface)
+                // ── Room Surface ──
+                pickerCell(label: "Surfaces") {
+                    Picker("Surface", selection: $prefs.defaultRoomSurface) {
+                        ForEach(RoomSurface.allCases) { surface in
+                            Text(surface.localizedName).tag(surface)
+                        }
                     }
+                    .pickerStyle(.menu)
+                    .tint(BoothColors.accent)
+                    .onChange(of: prefs.defaultRoomSurface) { _, _ in savePrefs() }
                 }
-                .pickerStyle(.menu)
-                .tint(BoothColors.accent)
-                .onChange(of: prefs.defaultRoomSurface) { _, _ in savePrefs() }
             }
         }
     }
@@ -356,84 +477,6 @@ struct SettingsView: View {
     }
 
 
-    // MARK: - ─── About & Support ────────────────────────────────────────────
-
-    private var aboutSupportSection: some View {
-        SectionCard(title: "About & Support") {
-            VStack(spacing: 12) {
-                // App icon with glow
-                ZStack {
-                    Circle()
-                        .fill(
-                            RadialGradient(
-                                colors: [
-                                    BoothColors.accent.opacity(0.2),
-                                    BoothColors.accent.opacity(0.0)
-                                ],
-                                center: .center,
-                                startRadius: 20,
-                                endRadius: 55
-                            )
-                        )
-                        .frame(width: 90, height: 90)
-
-                    Image("AppIconImage")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 60, height: 60)
-                        .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
-                        .shadow(color: BoothColors.accent.opacity(0.3), radius: 8)
-                }
-
-                Text("SANCTUARYSOUND")
-                    .font(.system(size: 16, weight: .bold, design: .monospaced))
-                    .tracking(3)
-                    .foregroundStyle(BoothColors.textPrimary)
-
-                Text("v\(AppConfig.version) (\(AppConfig.buildNumber))")
-                    .font(.system(size: 11, weight: .medium, design: .monospaced))
-                    .foregroundStyle(BoothColors.textMuted)
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 4)
-                    .background(BoothColors.surfaceElevated)
-                    .clipShape(RoundedRectangle(cornerRadius: 4))
-            }
-            .frame(maxWidth: .infinity)
-
-            Text(AppConfig.missionStatement)
-                .font(.system(size: 14, weight: .semibold))
-                .foregroundStyle(BoothColors.accent)
-                .frame(maxWidth: .infinity, alignment: .leading)
-
-            Text(AppConfig.missionDescription)
-                .font(.system(size: 12))
-                .foregroundStyle(BoothColors.textSecondary)
-                .lineSpacing(3)
-
-            // ── Hero Donation CTA ──
-            Link(destination: AppConfig.donationURL) {
-                HStack(spacing: 8) {
-                    Image(systemName: "heart.fill")
-                    Text("Support This Ministry")
-                }
-                .font(.system(size: 14, weight: .bold))
-                .frame(maxWidth: .infinity)
-                .frame(height: 48)
-                .foregroundStyle(BoothColors.background)
-                .background(BoothColors.accent)
-                .clipShape(RoundedRectangle(cornerRadius: 10))
-            }
-
-            settingsLink(
-                icon: "chevron.left.forwardslash.chevron.right",
-                title: "GitHub Sponsors",
-                subtitle: "For developer contributions",
-                url: AppConfig.githubSponsorsURL
-            )
-        }
-    }
-
-
     // MARK: - ─── Community & Open Source ─────────────────────────────────────
 
     private var communitySection: some View {
@@ -446,86 +489,39 @@ struct SettingsView: View {
             )
 
             settingsLink(
-                icon: "bubble.left.and.exclamationmark.bubble.right",
-                title: "Feedback & Bug Reports",
-                subtitle: "Report issues on GitHub",
-                url: AppConfig.feedbackURL
+                icon: "hand.raised.fill",
+                title: "Privacy Policy",
+                subtitle: "No data collected, ever",
+                url: AppConfig.privacyPolicyURL
             )
 
-            ShareLink(
-                item: AppConfig.githubURL,
-                subject: Text("SanctuarySound"),
-                message: Text("Check out SanctuarySound — a free, open-source app that calculates mixer settings for church audio volunteers.")
-            ) {
-                HStack(spacing: 12) {
-                    Image(systemName: "square.and.arrow.up")
-                        .font(.system(size: 14))
-                        .foregroundStyle(BoothColors.accent)
-                        .frame(width: 28, height: 28)
-
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("Share This App")
-                            .font(.system(size: 13, weight: .medium))
-                            .foregroundStyle(BoothColors.textPrimary)
-                        Text("Help other churches find better sound")
-                            .font(.system(size: 11))
-                            .foregroundStyle(BoothColors.textSecondary)
-                    }
-
-                    Spacer()
-
-                    Image(systemName: "chevron.right")
-                        .font(.system(size: 11, weight: .semibold))
-                        .foregroundStyle(BoothColors.textMuted)
-                }
-                .padding(12)
-                .background(BoothColors.surfaceElevated)
-                .clipShape(RoundedRectangle(cornerRadius: 8))
-            }
+            settingsLink(
+                icon: "doc.text",
+                title: "MIT License",
+                subtitle: "Free and open-source forever",
+                url: AppConfig.licenseURL
+            )
         }
-    }
-
-
-    // MARK: - ─── Legal Footer ───────────────────────────────────────────────
-
-    private var legalFooter: some View {
-        VStack(spacing: 8) {
-            HStack(spacing: 16) {
-                Link("Privacy Policy", destination: AppConfig.privacyPolicyURL)
-                    .font(.system(size: 11, weight: .medium))
-                    .foregroundStyle(BoothColors.textSecondary)
-
-                Text("·")
-                    .font(.system(size: 11))
-                    .foregroundStyle(BoothColors.textMuted)
-
-                Text("MIT License")
-                    .font(.system(size: 11, weight: .medium))
-                    .foregroundStyle(BoothColors.textSecondary)
-            }
-
-            Text("No data collected, ever.")
-                .font(.system(size: 10))
-                .foregroundStyle(BoothColors.textMuted)
-        }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 12)
     }
 
 
     // MARK: - ─── Components ─────────────────────────────────────────────────
 
-    private func settingsRow<Content: View>(
+    private func pickerCell<Content: View>(
         label: String,
         @ViewBuilder content: () -> Content
     ) -> some View {
-        HStack {
-            Text(label)
-                .font(.system(size: 13, weight: .medium))
-                .foregroundStyle(BoothColors.textPrimary)
-            Spacer()
+        VStack(alignment: .leading, spacing: 4) {
+            Text(label.uppercased())
+                .font(.system(size: 9, weight: .bold, design: .monospaced))
+                .foregroundStyle(BoothColors.textMuted)
+                .tracking(0.5)
             content()
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(10)
+        .background(BoothColors.surfaceElevated)
+        .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 
     private func settingsLink(

@@ -1,6 +1,6 @@
 # Contributing to SanctuarySound
 
-Thank you for your interest in contributing to SanctuarySound! This app helps church audio volunteers get better sound every Sunday, and contributions from the community make it better for everyone.
+Thank you for your interest in contributing to SanctuarySound! This app helps church production & worship teams get better sound every Sunday, and contributions from the community make it better for everyone.
 
 ## Getting Started
 

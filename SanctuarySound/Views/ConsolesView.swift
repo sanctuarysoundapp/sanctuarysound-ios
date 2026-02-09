@@ -435,7 +435,7 @@ struct ConsolesView: View {
             mixer: snapshot.mixer,
             channels: channels,
             setlist: [SetlistSong(title: "Default", key: .G)],
-            experienceLevel: .advanced
+            detailLevel: .full
         )
 
         let engine = SoundEngine()

@@ -48,7 +48,7 @@ final class ServiceSetupViewModel: ObservableObject {
         guard !hasAppliedDefaults else { return }
         hasAppliedDefaults = true
         service.mixer = prefs.defaultMixer
-        service.experienceLevel = prefs.defaultExperienceLevel
+        service.detailLevel = prefs.defaultDetailLevel
         service.bandComposition = prefs.defaultBandComposition
         service.drumConfig = prefs.defaultDrumConfig
         service.room = RoomProfile(size: prefs.defaultRoomSize, surface: prefs.defaultRoomSurface)
@@ -98,7 +98,7 @@ final class ServiceSetupViewModel: ObservableObject {
         }
 
         // Apply user defaults for anything not set by PCO
-        service.experienceLevel = prefs.defaultExperienceLevel
+        service.detailLevel = prefs.defaultDetailLevel
         service.bandComposition = prefs.defaultBandComposition
         service.drumConfig = prefs.defaultDrumConfig
 
@@ -618,17 +618,17 @@ struct BasicsStepView: View {
                     }
                 }
 
-                SectionCard(title: "Your Experience") {
+                SectionCard(title: "Detail Level") {
                     IconPicker(
                         items: [
-                            (value: ExperienceLevel.beginner, icon: "lightbulb.fill", label: "Beginner"),
-                            (value: ExperienceLevel.intermediate, icon: "slider.horizontal.3", label: "Intermediate"),
-                            (value: ExperienceLevel.advanced, icon: "waveform", label: "Advanced")
+                            (value: DetailLevel.essentials, icon: "lightbulb.fill", label: "Essentials"),
+                            (value: DetailLevel.detailed, icon: "slider.horizontal.3", label: "Detailed"),
+                            (value: DetailLevel.full, icon: "waveform", label: "Full")
                         ],
-                        selection: $vm.service.experienceLevel
+                        selection: $vm.service.detailLevel
                     )
 
-                    Text(vm.service.experienceLevel.description)
+                    Text(vm.service.detailLevel.description)
                         .font(.system(size: 12))
                         .foregroundStyle(BoothColors.textSecondary)
                 }
@@ -1414,7 +1414,7 @@ struct ReviewStepView: View {
                     SummaryRow(label: "RT60 (est.)", value: String(format: "%.1f s", vm.service.room.effectiveRT60))
                     SummaryRow(label: "Channels", value: "\(vm.activeChannelCount)")
                     SummaryRow(label: "Songs", value: "\(vm.service.setlist.count)")
-                    SummaryRow(label: "Detail Level", value: vm.service.experienceLevel.localizedName)
+                    SummaryRow(label: "Detail Level", value: vm.service.detailLevel.localizedName)
                 }
 
                 if !vm.service.setlist.isEmpty {

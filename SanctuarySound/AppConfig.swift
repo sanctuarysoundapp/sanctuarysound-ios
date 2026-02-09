@@ -50,9 +50,12 @@ struct AppConfig {
     /// GitHub Issues for feedback and bug reports.
     static let feedbackURL = URL(string: "https://github.com/sanctuarysoundapp/sanctuarysound-ios/issues")!
 
+    /// MIT License (hosted on GitHub).
+    static let licenseURL = URL(string: "https://github.com/sanctuarysoundapp/sanctuarysound-ios/blob/main/LICENSE")!
+
     // ── Mission ──
 
-    static let missionStatement = String(localized: "Built for the church, by the church. Free forever.")
+    static let missionStatement = String(localized: "Built For The Church, By The Church, Free Forever.")
 
-    static let missionDescription = String(localized: "SanctuarySound is an open-source ministry tool that helps church audio volunteers get better sound every Sunday. It will always be free. If this app blesses your ministry, consider supporting its development.")
+    static let missionDescription = String(localized: "SanctuarySound is an open-source ministry tool that helps church production & worship teams get better sound every Sunday. It will always be free. If this app blesses your ministry, consider supporting its development.")
 }
