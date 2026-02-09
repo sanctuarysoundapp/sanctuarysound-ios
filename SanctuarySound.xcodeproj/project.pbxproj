@@ -60,6 +60,8 @@
 		AA000054 /* SPLSharedTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000054 /* SPLSharedTypes.swift */; };
 		AA000055 /* WatchConnectivityDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000055 /* WatchConnectivityDTO.swift */; };
 		AA000056 /* WatchSessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000056 /* WatchSessionManager.swift */; };
+		AA000057 /* DrumKitTemplatePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000057 /* DrumKitTemplatePicker.swift */; };
+		AA000058 /* PCOTeamImportPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000058 /* PCOTeamImportPreviewView.swift */; };
 		AA100001 /* SoundEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB100001 /* SoundEngineTests.swift */; };
 		AA100002 /* PCOTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB100002 /* PCOTests.swift */; };
 		AA100003 /* FrequencyAnalysisTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB100003 /* FrequencyAnalysisTests.swift */; };
@@ -167,6 +169,8 @@
 		AB000054 /* SPLSharedTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SPLSharedTypes.swift; sourceTree = "<group>"; };
 		AB000055 /* WatchConnectivityDTO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchConnectivityDTO.swift; sourceTree = "<group>"; };
 		AB000056 /* WatchSessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchSessionManager.swift; sourceTree = "<group>"; };
+		AB000057 /* DrumKitTemplatePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrumKitTemplatePicker.swift; sourceTree = "<group>"; };
+		AB000058 /* PCOTeamImportPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PCOTeamImportPreviewView.swift; sourceTree = "<group>"; };
 		AB100001 /* SoundEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundEngineTests.swift; sourceTree = "<group>"; };
 		AB100002 /* PCOTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PCOTests.swift; sourceTree = "<group>"; };
 		AB100003 /* FrequencyAnalysisTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrequencyAnalysisTests.swift; sourceTree = "<group>"; };
@@ -334,6 +338,8 @@
 				AB000051 /* EQAnalyzerView.swift */,
 				AB000052 /* RT60MeasurementView.swift */,
 				AB000053 /* QABrowserView.swift */,
+				AB000057 /* DrumKitTemplatePicker.swift */,
+				AB000058 /* PCOTeamImportPreviewView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -680,6 +686,8 @@
 				AA000054 /* SPLSharedTypes.swift in Sources */,
 				AA000055 /* WatchConnectivityDTO.swift in Sources */,
 				AA000056 /* WatchSessionManager.swift in Sources */,
+				AA000057 /* DrumKitTemplatePicker.swift in Sources */,
+				AA000058 /* PCOTeamImportPreviewView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

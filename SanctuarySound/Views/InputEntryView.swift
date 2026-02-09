@@ -54,6 +54,58 @@ final class ServiceSetupViewModel: ObservableObject {
         service.room = RoomProfile(size: prefs.defaultRoomSize, surface: prefs.defaultRoomSurface)
     }
 
+    /// Pre-fill service from a full PCO import (plan name, date, songs, channels, venue).
+    func applyPCOServiceImport(
+        _ pcoImport: PCOFullServiceImport,
+        venues: [Venue],
+        consoles: [ConsoleProfile],
+        prefs: UserPreferences
+    ) {
+        // Pre-fill plan name and date
+        service.name = pcoImport.name
+        service.date = pcoImport.date
+
+        // Merge imported songs and channels
+        service.setlist = pcoImport.songs
+        service.channels = pcoImport.channels
+
+        // Venue assignment from PCO folder match
+        if let venueID = pcoImport.venueID {
+            service.venueID = venueID
+
+            // Auto-select first room in matched venue
+            if let venue = venues.first(where: { $0.id == venueID }),
+               let firstRoom = venue.rooms.first {
+                service.roomID = firstRoom.id
+                service.room = firstRoom.roomProfile
+                if let mixer = firstRoom.defaultMixer {
+                    service.mixer = mixer
+                }
+            }
+
+            // Console auto-link: find console linked to this venue
+            if let console = consoles.first(where: { $0.linkedVenueID == venueID }) {
+                service.consoleProfileID = console.id
+                service.mixer = console.model
+            }
+        } else if venues.count == 1, let singleVenue = venues.first {
+            // Fallback: single saved venue → auto-assign
+            service.venueID = singleVenue.id
+            if let firstRoom = singleVenue.rooms.first {
+                service.roomID = firstRoom.id
+                service.room = firstRoom.roomProfile
+            }
+        }
+
+        // Apply user defaults for anything not set by PCO
+        service.experienceLevel = prefs.defaultExperienceLevel
+        service.bandComposition = prefs.defaultBandComposition
+        service.drumConfig = prefs.defaultDrumConfig
+
+        // Navigate to basics step so user can review
+        currentStep = .basics
+    }
+
     // ── Computed Properties ──
 
     var activeChannelCount: Int {
@@ -261,6 +313,7 @@ struct InputEntryView: View {
     @StateObject private var vm = ServiceSetupViewModel()
     @ObservedObject var store: ServiceStore
     @ObservedObject var pcoManager: PlanningCenterManager
+    @State private var showPCOFullServiceImport = false
 
     var body: some View {
         NavigationStack {
@@ -273,7 +326,11 @@ struct InputEntryView: View {
                         .padding(.top, 8)
 
                     TabView(selection: $vm.currentStep) {
-                        BasicsStepView(vm: vm)
+                        BasicsStepView(
+                            vm: vm,
+                            isPCOAuthenticated: pcoManager.client.isAuthenticated,
+                            onImportFromPCO: { showPCOFullServiceImport = true }
+                        )
                             .tag(SetupStep.basics)
                         ChannelsStepView(vm: vm, store: store, pcoManager: pcoManager)
                             .tag(SetupStep.channels)
@@ -304,6 +361,24 @@ struct InputEntryView: View {
             .preferredColorScheme(.dark)
             .onAppear {
                 vm.applyDefaults(from: store.userPreferences)
+            }
+            .sheet(isPresented: $showPCOFullServiceImport) {
+                PCOImportSheet(
+                    manager: pcoManager,
+                    mode: .fullService,
+                    venues: store.venues,
+                    drumTemplate: store.userPreferences.preferredDrumTemplate,
+                    onImportSetlist: { _ in },
+                    onImportTeam: { _ in },
+                    onImportService: { pcoImport in
+                        vm.applyPCOServiceImport(
+                            pcoImport,
+                            venues: store.venues,
+                            consoles: store.consoleProfiles,
+                            prefs: store.userPreferences
+                        )
+                    }
+                )
             }
         }
     }
@@ -432,10 +507,43 @@ struct IconPicker<T: Hashable>: View {
 
 struct BasicsStepView: View {
     @ObservedObject var vm: ServiceSetupViewModel
+    var isPCOAuthenticated: Bool = false
+    var onImportFromPCO: (() -> Void)?
 
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
+                // PCO Full Service Import
+                if isPCOAuthenticated {
+                    Button {
+                        onImportFromPCO?()
+                    } label: {
+                        HStack(spacing: 10) {
+                            Image(systemName: "arrow.down.doc.fill")
+                                .font(.system(size: 18))
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("Import from Planning Center")
+                                    .font(.system(size: 14, weight: .semibold))
+                                Text("Songs, team, and service details")
+                                    .font(.system(size: 11))
+                                    .foregroundStyle(BoothColors.textSecondary)
+                            }
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .font(.system(size: 12, weight: .semibold))
+                                .foregroundStyle(BoothColors.textMuted)
+                        }
+                        .padding(14)
+                        .foregroundStyle(BoothColors.accentWarm)
+                        .background(BoothColors.accentWarm.opacity(0.1))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 10)
+                                .stroke(BoothColors.accentWarm.opacity(0.3), lineWidth: 1)
+                        )
+                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                    }
+                }
+
                 SectionCard(title: "Service Info") {
                     BoothTextField(label: "Service Name", text: $vm.service.name, placeholder: "e.g., Sunday 9:30 AM")
 

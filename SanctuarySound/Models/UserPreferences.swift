@@ -25,9 +25,30 @@ struct UserPreferences: Codable, Equatable {
     var defaultRoomSurface: RoomSurface = .mixed
     var defaultTargetSPL: Double = 90.0
 
+    // ── PCO Import ──
+
+    var preferredDrumTemplate: DrumKitTemplate = .standard5
+
     // ── Appearance ──
 
     var colorTheme: ColorThemeID = .darkBooth
+
+    // ── Backward-Compatible Decoder ──
+
+    init() {}
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        defaultMixer = try container.decodeIfPresent(MixerModel.self, forKey: .defaultMixer) ?? .allenHeathAvantis
+        defaultExperienceLevel = try container.decodeIfPresent(ExperienceLevel.self, forKey: .defaultExperienceLevel) ?? .intermediate
+        defaultBandComposition = try container.decodeIfPresent(BandComposition.self, forKey: .defaultBandComposition) ?? .live
+        defaultDrumConfig = try container.decodeIfPresent(DrumConfiguration.self, forKey: .defaultDrumConfig) ?? .openStage
+        defaultRoomSize = try container.decodeIfPresent(RoomSize.self, forKey: .defaultRoomSize) ?? .medium
+        defaultRoomSurface = try container.decodeIfPresent(RoomSurface.self, forKey: .defaultRoomSurface) ?? .mixed
+        defaultTargetSPL = try container.decodeIfPresent(Double.self, forKey: .defaultTargetSPL) ?? 90.0
+        preferredDrumTemplate = try container.decodeIfPresent(DrumKitTemplate.self, forKey: .preferredDrumTemplate) ?? .standard5
+        colorTheme = try container.decodeIfPresent(ColorThemeID.self, forKey: .colorTheme) ?? .darkBooth
+    }
 }
 
 

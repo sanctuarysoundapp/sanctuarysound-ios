@@ -145,7 +145,9 @@ final class PCOModelsDecodingTests: XCTestCase {
                         "length": 300,
                         "description": "Elevation Worship",
                         "song_id": "7001",
-                        "key": "G"
+                        "key_name": "G",
+                        "arrangement_name": "Default Arrangement",
+                        "arrangement_sequence": "V1,C,V2,C,B,C"
                     }
                 },
                 {
@@ -157,7 +159,9 @@ final class PCOModelsDecodingTests: XCTestCase {
                         "length": null,
                         "description": null,
                         "song_id": null,
-                        "key": null
+                        "key_name": null,
+                        "arrangement_name": null,
+                        "arrangement_sequence": null
                     }
                 }
             ]
@@ -176,13 +180,78 @@ final class PCOModelsDecodingTests: XCTestCase {
         XCTAssertEqual(song.attributes.length, 300)
         XCTAssertEqual(song.attributes.description, "Elevation Worship")
         XCTAssertEqual(song.attributes.songId, "7001")
-        XCTAssertEqual(song.attributes.key, "G")
+        XCTAssertEqual(song.attributes.keyName, "G")
+        XCTAssertEqual(song.attributes.arrangementName, "Default Arrangement")
+        XCTAssertEqual(song.attributes.arrangementSequence, "V1,C,V2,C,B,C")
 
         let header = response.data[1]
         XCTAssertEqual(header.attributes.itemType, "header")
         XCTAssertNil(header.attributes.length)
         XCTAssertNil(header.attributes.songId)
-        XCTAssertNil(header.attributes.key)
+        XCTAssertNil(header.attributes.keyName)
+        XCTAssertNil(header.attributes.arrangementName)
+        XCTAssertNil(header.attributes.arrangementSequence)
+    }
+
+
+    func testDecodePlanItemsResponse_withMissingOptionalFields() throws {
+        // Verifies backward compatibility when new fields are absent from the response
+        let json = """
+        {
+            "data": [
+                {
+                    "id": "9003",
+                    "type": "Item",
+                    "attributes": {
+                        "title": "Trust In God",
+                        "item_type": "song",
+                        "length": 240,
+                        "description": null,
+                        "song_id": "7003"
+                    }
+                }
+            ]
+        }
+        """.data(using: .utf8)!
+
+        let response = try decoder.decode(PCOResponse<PCOPlanItemAttributes>.self, from: json)
+        let item = response.data[0]
+
+        XCTAssertEqual(item.attributes.title, "Trust In God")
+        XCTAssertEqual(item.attributes.songId, "7003")
+        XCTAssertNil(item.attributes.keyName,
+            "key_name should be nil when absent from JSON")
+        XCTAssertNil(item.attributes.arrangementName,
+            "arrangement_name should be nil when absent from JSON")
+        XCTAssertNil(item.attributes.arrangementSequence,
+            "arrangement_sequence should be nil when absent from JSON")
+    }
+
+    func testDecodeArrangementWithKeyName() throws {
+        let json = """
+        {
+            "data": [
+                {
+                    "id": "8010",
+                    "type": "Arrangement",
+                    "attributes": {
+                        "name": "Worship Version",
+                        "bpm": 78.0,
+                        "length": 300,
+                        "meter_numerator": 4,
+                        "meter_denominator": 4,
+                        "key_name": "Ab"
+                    }
+                }
+            ]
+        }
+        """.data(using: .utf8)!
+
+        let response = try decoder.decode(PCOResponse<PCOArrangementAttributes>.self, from: json)
+        let arrangement = response.data[0]
+
+        XCTAssertEqual(arrangement.attributes.keyName, "Ab")
+        XCTAssertEqual(arrangement.attributes.bpm, 78.0)
     }
 
 
@@ -335,7 +404,8 @@ final class PCOModelsDecodingTests: XCTestCase {
                         "bpm": 140.0,
                         "length": 285,
                         "meter_numerator": 4,
-                        "meter_denominator": 4
+                        "meter_denominator": 4,
+                        "key_name": "G"
                     }
                 },
                 {
@@ -346,7 +416,8 @@ final class PCOModelsDecodingTests: XCTestCase {
                         "bpm": 72.5,
                         "length": 320,
                         "meter_numerator": 3,
-                        "meter_denominator": 4
+                        "meter_denominator": 4,
+                        "key_name": "A"
                     }
                 }
             ]
@@ -365,10 +436,12 @@ final class PCOModelsDecodingTests: XCTestCase {
         XCTAssertEqual(first.attributes.length, 285)
         XCTAssertEqual(first.attributes.meterNumerator, 4)
         XCTAssertEqual(first.attributes.meterDenominator, 4)
+        XCTAssertEqual(first.attributes.keyName, "G")
 
         let second = response.data[1]
         XCTAssertEqual(second.attributes.bpm, 72.5)
         XCTAssertEqual(second.attributes.meterNumerator, 3)
+        XCTAssertEqual(second.attributes.keyName, "A")
     }
 
     func testDecodeArrangementWithNullFields() throws {
@@ -383,7 +456,8 @@ final class PCOModelsDecodingTests: XCTestCase {
                         "bpm": null,
                         "length": null,
                         "meter_numerator": null,
-                        "meter_denominator": null
+                        "meter_denominator": null,
+                        "key_name": null
                     }
                 }
             ]
@@ -398,6 +472,7 @@ final class PCOModelsDecodingTests: XCTestCase {
         XCTAssertNil(arrangement.attributes.length)
         XCTAssertNil(arrangement.attributes.meterNumerator)
         XCTAssertNil(arrangement.attributes.meterDenominator)
+        XCTAssertNil(arrangement.attributes.keyName)
     }
 
 
@@ -768,6 +843,14 @@ final class PCOPositionMappingTests: XCTestCase {
         XCTAssertEqual(manager.mapPositionToSource("Drummer"), .kickDrum)
     }
 
+    func testMapPosition_percussion_returnsKickDrum() {
+        XCTAssertEqual(manager.mapPositionToSource("Percussion"), .kickDrum)
+    }
+
+    func testMapPosition_cajon_returnsKickDrum() {
+        XCTAssertEqual(manager.mapPositionToSource("Cajon"), .kickDrum)
+    }
+
 
     // MARK: - ─── Production Positions ───────────────────────────────────
 
@@ -818,6 +901,16 @@ final class PCOPositionMappingTests: XCTestCase {
         // "Worship Leader" matches lead vocal check before any other
         XCTAssertEqual(manager.mapPositionToSource("Worship Leader"), .leadVocal,
             "Worship Leader should map to lead vocal even though it does not contain 'vocal'")
+    }
+
+    func testMapPosition_instrumentsCheckedBeforeGenericVocal() {
+        // Instruments should be matched before generic "vocal" keyword catch-all
+        XCTAssertEqual(manager.mapPositionToSource("Drums"), .kickDrum,
+            "Drums should map to kickDrum, not fall through to backing vocal")
+        XCTAssertEqual(manager.mapPositionToSource("Bass"), .bassGtrDI,
+            "Bass should map to bassGtrDI, not fall through to backing vocal")
+        XCTAssertEqual(manager.mapPositionToSource("Keys"), .digitalPiano,
+            "Keys should map to digitalPiano, not fall through to backing vocal")
     }
 }
 
@@ -989,5 +1082,959 @@ final class PCOTokensTests: XCTestCase {
         XCTAssertEqual(decoded.refreshToken, "test-refresh-token-xyz789")
         XCTAssertEqual(decoded.expiresAt, Date(timeIntervalSince1970: 1800000000))
         XCTAssertEqual(decoded.scope, "services")
+    }
+}
+
+
+// MARK: - ─── Folder Decoding Tests ──────────────────────────────────────
+
+final class PCOFolderDecodingTests: XCTestCase {
+
+    private let decoder = JSONDecoder()
+
+    func testDecodeFolderResponse() throws {
+        let json = """
+        {
+            "data": [
+                {
+                    "id": "F001",
+                    "type": "Folder",
+                    "attributes": {
+                        "name": "Pell City",
+                        "container": "Organization",
+                        "created_at": "2024-01-01T00:00:00Z",
+                        "updated_at": "2026-02-01T12:00:00Z"
+                    }
+                },
+                {
+                    "id": "F002",
+                    "type": "Folder",
+                    "attributes": {
+                        "name": "Lincoln",
+                        "container": null,
+                        "created_at": null,
+                        "updated_at": null
+                    }
+                }
+            ]
+        }
+        """.data(using: .utf8)!
+
+        let response = try decoder.decode(PCOResponse<PCOFolderAttributes>.self, from: json)
+
+        XCTAssertEqual(response.data.count, 2)
+
+        let first = response.data[0]
+        XCTAssertEqual(first.id, "F001")
+        XCTAssertEqual(first.type, "Folder")
+        XCTAssertEqual(first.attributes.name, "Pell City")
+        XCTAssertEqual(first.attributes.container, "Organization")
+        XCTAssertEqual(first.attributes.createdAt, "2024-01-01T00:00:00Z")
+
+        let second = response.data[1]
+        XCTAssertEqual(second.id, "F002")
+        XCTAssertEqual(second.attributes.name, "Lincoln")
+        XCTAssertNil(second.attributes.container)
+        XCTAssertNil(second.attributes.createdAt)
+    }
+
+    func testDecodeFolderWithMinimalAttributes() throws {
+        let json = """
+        {
+            "data": [
+                {
+                    "id": "F010",
+                    "type": "Folder",
+                    "attributes": {
+                        "name": "Central Services"
+                    }
+                }
+            ]
+        }
+        """.data(using: .utf8)!
+
+        let response = try decoder.decode(PCOResponse<PCOFolderAttributes>.self, from: json)
+        let folder = response.data[0]
+
+        XCTAssertEqual(folder.attributes.name, "Central Services")
+        XCTAssertNil(folder.attributes.container)
+        XCTAssertNil(folder.attributes.createdAt)
+        XCTAssertNil(folder.attributes.updatedAt)
+    }
+
+    func testDecodeEmptyFolderList() throws {
+        let json = """
+        {
+            "data": []
+        }
+        """.data(using: .utf8)!
+
+        let response = try decoder.decode(PCOResponse<PCOFolderAttributes>.self, from: json)
+        XCTAssertTrue(response.data.isEmpty)
+    }
+}
+
+
+// MARK: - ─── PCO Folder Item Tests ──────────────────────────────────────
+
+final class PCOFolderItemTests: XCTestCase {
+
+    func testFolderItemFolder_id() {
+        let resource = PCOResource<PCOFolderAttributes>(
+            id: "F100",
+            type: "Folder",
+            attributes: PCOFolderAttributes(
+                name: "Test Campus",
+                container: nil,
+                createdAt: nil,
+                updatedAt: nil
+            )
+        )
+        let item = PCOFolderItem.folder(resource)
+
+        XCTAssertEqual(item.id, "folder-F100")
+    }
+
+    func testFolderItemServiceType_id() {
+        let resource = PCOResource<PCOServiceTypeAttributes>(
+            id: "ST200",
+            type: "ServiceType",
+            attributes: PCOServiceTypeAttributes(
+                name: "Sunday AM",
+                frequency: "Weekly",
+                lastPlanFrom: nil
+            )
+        )
+        let item = PCOFolderItem.serviceType(resource)
+
+        XCTAssertEqual(item.id, "stype-ST200")
+    }
+
+    func testFolderItemFolder_name() {
+        let resource = PCOResource<PCOFolderAttributes>(
+            id: "F101",
+            type: "Folder",
+            attributes: PCOFolderAttributes(
+                name: "Pell City",
+                container: nil,
+                createdAt: nil,
+                updatedAt: nil
+            )
+        )
+        let item = PCOFolderItem.folder(resource)
+
+        XCTAssertEqual(item.name, "Pell City")
+    }
+
+    func testFolderItemServiceType_name() {
+        let resource = PCOResource<PCOServiceTypeAttributes>(
+            id: "ST201",
+            type: "ServiceType",
+            attributes: PCOServiceTypeAttributes(
+                name: "[PC] Sunday",
+                frequency: nil,
+                lastPlanFrom: nil
+            )
+        )
+        let item = PCOFolderItem.serviceType(resource)
+
+        XCTAssertEqual(item.name, "[PC] Sunday")
+    }
+}
+
+
+// MARK: - ─── Venue Matching from Breadcrumbs Tests ──────────────────────
+
+@MainActor
+final class PCOVenueMatchingTests: XCTestCase {
+
+    private var manager: PlanningCenterManager!
+
+    override func setUp() {
+        super.setUp()
+        manager = PlanningCenterManager()
+    }
+
+    override func tearDown() {
+        manager = nil
+        super.tearDown()
+    }
+
+    func testMatchVenue_exactMatch() {
+        manager.folderBreadcrumbs = [(id: "F1", name: "Pell City")]
+        let venues = [Venue(name: "Pell City")]
+
+        let match = manager.matchVenueFromBreadcrumbs(venues: venues)
+
+        XCTAssertEqual(match, venues[0].id)
+    }
+
+    func testMatchVenue_caseInsensitive() {
+        manager.folderBreadcrumbs = [(id: "F1", name: "PELL CITY")]
+        let venues = [Venue(name: "pell city")]
+
+        let match = manager.matchVenueFromBreadcrumbs(venues: venues)
+
+        XCTAssertEqual(match, venues[0].id)
+    }
+
+    func testMatchVenue_trailingWhitespace() {
+        manager.folderBreadcrumbs = [(id: "F1", name: "Pell City  ")]
+        let venues = [Venue(name: " Pell City")]
+
+        let match = manager.matchVenueFromBreadcrumbs(venues: venues)
+
+        XCTAssertEqual(match, venues[0].id)
+    }
+
+    func testMatchVenue_noMatch() {
+        manager.folderBreadcrumbs = [(id: "F1", name: "Talladega")]
+        let venues = [Venue(name: "Pell City")]
+
+        let match = manager.matchVenueFromBreadcrumbs(venues: venues)
+
+        XCTAssertNil(match)
+    }
+
+    func testMatchVenue_emptyBreadcrumbs() {
+        manager.folderBreadcrumbs = []
+        let venues = [Venue(name: "Pell City")]
+
+        let match = manager.matchVenueFromBreadcrumbs(venues: venues)
+
+        XCTAssertNil(match)
+    }
+
+    func testMatchVenue_emptyVenues() {
+        manager.folderBreadcrumbs = [(id: "F1", name: "Pell City")]
+
+        let match = manager.matchVenueFromBreadcrumbs(venues: [])
+
+        XCTAssertNil(match)
+    }
+
+    func testMatchVenue_matchesFirstBreadcrumb() {
+        // If multiple breadcrumbs could match, first takes priority
+        let venue1 = Venue(name: "Pell City")
+        let venue2 = Venue(name: "Central Services")
+        manager.folderBreadcrumbs = [
+            (id: "F1", name: "Pell City"),
+            (id: "F2", name: "Central Services"),
+        ]
+
+        let match = manager.matchVenueFromBreadcrumbs(venues: [venue1, venue2])
+
+        XCTAssertEqual(match, venue1.id)
+    }
+
+    func testMatchVenue_nestedFolderMatches() {
+        // When root folder doesn't match but subfolder does
+        let venue = Venue(name: "Central Services")
+        manager.folderBreadcrumbs = [
+            (id: "F1", name: "Victory Church"),
+            (id: "F2", name: "Central Services"),
+        ]
+
+        let match = manager.matchVenueFromBreadcrumbs(venues: [venue])
+
+        XCTAssertEqual(match, venue.id)
+    }
+}
+
+
+// MARK: - ─── Position Classification Tests ──────────────────────────────
+
+@MainActor
+final class PCOPositionClassificationTests: XCTestCase {
+
+    private var manager: PlanningCenterManager!
+
+    override func setUp() {
+        super.setUp()
+        manager = PlanningCenterManager()
+    }
+
+    override func tearDown() {
+        manager = nil
+        super.tearDown()
+    }
+
+
+    // MARK: - ─── Production Positions ────────────────────────────────────
+
+    func testClassify_FOHSound_isProduction() {
+        XCTAssertEqual(manager.classifyPosition("FOH Sound"), .production)
+    }
+
+    func testClassify_Lights_isProduction() {
+        XCTAssertEqual(manager.classifyPosition("Lights"), .production)
+    }
+
+    func testClassify_Lyrics_isProduction() {
+        XCTAssertEqual(manager.classifyPosition("Lyrics"), .production)
+    }
+
+    func testClassify_Director_isProduction() {
+        XCTAssertEqual(manager.classifyPosition("Director"), .production)
+    }
+
+    func testClassify_Producer_isProduction() {
+        XCTAssertEqual(manager.classifyPosition("Producer"), .production)
+    }
+
+    func testClassify_Photography_isProduction() {
+        XCTAssertEqual(manager.classifyPosition("Photography"), .production)
+    }
+
+    func testClassify_CameraOperator_isProduction() {
+        XCTAssertEqual(manager.classifyPosition("Camera Operator"), .production)
+    }
+
+    func testClassify_Streaming_isProduction() {
+        XCTAssertEqual(manager.classifyPosition("Streaming"), .production)
+    }
+
+    func testClassify_SoundEngineer_isProduction() {
+        XCTAssertEqual(manager.classifyPosition("Sound Engineer"), .production)
+    }
+
+    func testClassify_StageManager_isProduction() {
+        XCTAssertEqual(manager.classifyPosition("Stage Manager"), .production)
+    }
+
+    func testClassify_Usher_isProduction() {
+        XCTAssertEqual(manager.classifyPosition("Usher"), .production)
+    }
+
+    func testClassify_KidsMinistry_isProduction() {
+        XCTAssertEqual(manager.classifyPosition("Kids"), .production)
+    }
+
+
+    // MARK: - ─── Audio Positions ─────────────────────────────────────────
+
+    func testClassify_VOX1_isAudio() {
+        XCTAssertEqual(manager.classifyPosition("VOX 1"), .audio)
+    }
+
+    func testClassify_ElectricGuitar_isAudio() {
+        XCTAssertEqual(manager.classifyPosition("Electric Guitar"), .audio)
+    }
+
+    func testClassify_Keys_isAudio() {
+        XCTAssertEqual(manager.classifyPosition("Keys"), .audio)
+    }
+
+    func testClassify_Bass_isAudio() {
+        XCTAssertEqual(manager.classifyPosition("Bass"), .audio)
+    }
+
+    func testClassify_WorshipLeader_isAudio() {
+        XCTAssertEqual(manager.classifyPosition("Worship Leader"), .audio)
+    }
+
+
+    // MARK: - ─── Drum Positions ──────────────────────────────────────────
+
+    func testClassify_Drums_isDrums() {
+        XCTAssertEqual(manager.classifyPosition("Drums"), .drums)
+    }
+
+    func testClassify_Percussion_isDrums() {
+        XCTAssertEqual(manager.classifyPosition("Percussion"), .drums)
+    }
+
+    func testClassify_Cajon_isDrums() {
+        XCTAssertEqual(manager.classifyPosition("Cajon"), .drums)
+    }
+
+    func testClassify_Drummer_isDrums() {
+        XCTAssertEqual(manager.classifyPosition("Drummer"), .drums)
+    }
+
+
+    // MARK: - ─── Edge Cases ──────────────────────────────────────────────
+
+    func testClassify_emptyString_isUnknown() {
+        XCTAssertEqual(manager.classifyPosition(""), .unknown)
+    }
+
+    func testClassify_caseInsensitive() {
+        XCTAssertEqual(manager.classifyPosition("FOH SOUND"), .production)
+        XCTAssertEqual(manager.classifyPosition("foh sound"), .production)
+        XCTAssertEqual(manager.classifyPosition("Foh Sound"), .production)
+    }
+}
+
+
+// MARK: - ─── Abbreviation Expansion Tests ───────────────────────────────
+
+@MainActor
+final class PCOAbbreviationTests: XCTestCase {
+
+    private var manager: PlanningCenterManager!
+
+    override func setUp() {
+        super.setUp()
+        manager = PlanningCenterManager()
+    }
+
+    override func tearDown() {
+        manager = nil
+        super.tearDown()
+    }
+
+    func testExpand_EG_toElectricGuitar() {
+        XCTAssertEqual(manager.expandAbbreviations("EG"), "electric guitar")
+    }
+
+    func testExpand_AG_toAcousticGuitar() {
+        XCTAssertEqual(manager.expandAbbreviations("AG"), "acoustic guitar")
+    }
+
+    func testExpand_BGV_toBackingVocal() {
+        XCTAssertEqual(manager.expandAbbreviations("BGV"), "backing vocal")
+    }
+
+    func testExpand_MD_toWorshipLeader() {
+        XCTAssertEqual(manager.expandAbbreviations("MD"), "worship leader")
+    }
+
+    func testExpand_EGLead_prefix() {
+        XCTAssertEqual(manager.expandAbbreviations("EG Lead"), "electric guitar Lead")
+    }
+
+    func testExpand_VOX_toVocal() {
+        XCTAssertEqual(manager.expandAbbreviations("VOX"), "vocal")
+    }
+
+    func testExpand_VOX1_prefix() {
+        XCTAssertEqual(manager.expandAbbreviations("VOX 1"), "vocal 1")
+    }
+
+    func testExpand_unknownReturnsOriginal() {
+        XCTAssertEqual(manager.expandAbbreviations("Bass"), "Bass")
+    }
+
+    func testExpand_caseInsensitive() {
+        XCTAssertEqual(manager.expandAbbreviations("eg"), "electric guitar")
+        XCTAssertEqual(manager.expandAbbreviations("Eg"), "electric guitar")
+    }
+}
+
+
+// MARK: - ─── Abbreviation → Position Mapping Tests ──────────────────────
+
+@MainActor
+final class PCOAbbreviationMappingTests: XCTestCase {
+
+    private var manager: PlanningCenterManager!
+
+    override func setUp() {
+        super.setUp()
+        manager = PlanningCenterManager()
+    }
+
+    override func tearDown() {
+        manager = nil
+        super.tearDown()
+    }
+
+    func testMap_EG_toElectricGtr() {
+        XCTAssertEqual(manager.mapPositionToSource("EG"), .electricGtrModeler)
+    }
+
+    func testMap_EGLead_toElectricGtr() {
+        XCTAssertEqual(manager.mapPositionToSource("EG Lead"), .electricGtrModeler)
+    }
+
+    func testMap_EGRhythm_toElectricGtr() {
+        XCTAssertEqual(manager.mapPositionToSource("EG Rhythm"), .electricGtrModeler)
+    }
+
+    func testMap_AG_toAcousticGtr() {
+        XCTAssertEqual(manager.mapPositionToSource("AG"), .acousticGtrDI)
+    }
+
+    func testMap_VOX1_toBackingVocal() {
+        XCTAssertEqual(manager.mapPositionToSource("VOX 1"), .backingVocal)
+    }
+
+    func testMap_MD_toLeadVocal() {
+        XCTAssertEqual(manager.mapPositionToSource("MD"), .leadVocal)
+    }
+}
+
+
+// MARK: - ─── Drum Kit Template Tests ────────────────────────────────────
+
+final class DrumKitTemplateTests: XCTestCase {
+
+    func testBasic3_hasThreeChannels() {
+        XCTAssertEqual(DrumKitTemplate.basic3.channels.count, 3)
+    }
+
+    func testStandard5_hasFiveChannels() {
+        XCTAssertEqual(DrumKitTemplate.standard5.channels.count, 5)
+    }
+
+    func testFull7_hasSevenChannels() {
+        XCTAssertEqual(DrumKitTemplate.full7.channels.count, 7)
+    }
+
+    func testAllDrumSources_count() {
+        XCTAssertEqual(DrumKitTemplate.allDrumSources.count, 9)
+    }
+
+    func testBasic3_containsKickSnareOverhead() {
+        let sources = DrumKitTemplate.basic3.channels.map(\.source)
+        XCTAssertTrue(sources.contains(.kickDrum))
+        XCTAssertTrue(sources.contains(.snareDrum))
+        XCTAssertTrue(sources.contains(.overheadL))
+    }
+
+    func testStandard5_containsKickSnareHiHatOverheads() {
+        let sources = DrumKitTemplate.standard5.channels.map(\.source)
+        XCTAssertTrue(sources.contains(.kickDrum))
+        XCTAssertTrue(sources.contains(.snareDrum))
+        XCTAssertTrue(sources.contains(.hiHat))
+    }
+
+    func testCustom_returnsStandard5AsDefault() {
+        // Custom template returns standard5 channels as a starting point
+        XCTAssertEqual(DrumKitTemplate.custom.channels.count,
+                       DrumKitTemplate.standard5.channels.count)
+    }
+
+    func testTemplate_codableRoundTrip() throws {
+        let encoder = JSONEncoder()
+        let decoder = JSONDecoder()
+
+        for template in DrumKitTemplate.allCases {
+            let data = try encoder.encode(template)
+            let decoded = try decoder.decode(DrumKitTemplate.self, from: data)
+            XCTAssertEqual(decoded, template, "Codable roundtrip failed for \(template)")
+        }
+    }
+}
+
+
+// MARK: - ─── Drum Expansion Tests ───────────────────────────────────────
+
+@MainActor
+final class PCODrumExpansionTests: XCTestCase {
+
+    private var manager: PlanningCenterManager!
+
+    override func setUp() {
+        super.setUp()
+        manager = PlanningCenterManager()
+    }
+
+    override func tearDown() {
+        manager = nil
+        super.tearDown()
+    }
+
+    func testExpandDrums_basic3_returns3Items() {
+        let items = manager.expandDrumPosition(
+            personName: "Alex",
+            positionName: "Drums",
+            template: .basic3
+        )
+        XCTAssertEqual(items.count, 3)
+    }
+
+    func testExpandDrums_standard5_returns5Items() {
+        let items = manager.expandDrumPosition(
+            personName: "Alex",
+            positionName: "Drums",
+            template: .standard5
+        )
+        XCTAssertEqual(items.count, 5)
+    }
+
+    func testExpandDrums_full7_returns7Items() {
+        let items = manager.expandDrumPosition(
+            personName: "Alex",
+            positionName: "Drums",
+            template: .full7
+        )
+        XCTAssertEqual(items.count, 7)
+    }
+
+    func testExpandDrums_allItemsAreDrumsCategory() {
+        let items = manager.expandDrumPosition(
+            personName: "Alex",
+            positionName: "Drums",
+            template: .standard5
+        )
+        for item in items {
+            XCTAssertEqual(item.positionCategory, .drums)
+        }
+    }
+
+    func testExpandDrums_allItemsIncluded() {
+        let items = manager.expandDrumPosition(
+            personName: "Alex",
+            positionName: "Drums",
+            template: .standard5
+        )
+        for item in items {
+            XCTAssertTrue(item.isIncluded)
+        }
+    }
+
+    func testExpandDrums_preservesPersonName() {
+        let items = manager.expandDrumPosition(
+            personName: "Alex Rivera",
+            positionName: "Drums",
+            template: .basic3
+        )
+        for item in items {
+            XCTAssertEqual(item.personName, "Alex Rivera")
+        }
+    }
+
+    func testExpandDrums_labelsMatchTemplate() {
+        let items = manager.expandDrumPosition(
+            personName: "Alex",
+            positionName: "Drums",
+            template: .basic3
+        )
+        let labels = items.map(\.channelLabel)
+        let templateLabels = DrumKitTemplate.basic3.channels.map(\.label)
+        XCTAssertEqual(labels, templateLabels)
+    }
+}
+
+
+// MARK: - ─── Process Team Members Tests ─────────────────────────────────
+
+@MainActor
+final class PCOProcessTeamMembersTests: XCTestCase {
+
+    private var manager: PlanningCenterManager!
+
+    override func setUp() {
+        super.setUp()
+        manager = PlanningCenterManager()
+    }
+
+    override func tearDown() {
+        manager = nil
+        super.tearDown()
+    }
+
+    func testProcessTeam_usesPositionNameAsLabel() {
+        let members: [PCOTeamMemberAttributes] = [
+            PCOTeamMemberAttributes(name: "Sarah Johnson", status: "C", teamPositionName: "VOX 1"),
+        ]
+
+        let items = manager.processTeamMembers(members)
+
+        XCTAssertEqual(items.count, 1)
+        XCTAssertEqual(items[0].channelLabel, "VOX 1")
+        XCTAssertEqual(items[0].personName, "Sarah Johnson")
+    }
+
+    func testProcessTeam_filtersDeclinedMembers() {
+        let members: [PCOTeamMemberAttributes] = [
+            PCOTeamMemberAttributes(name: "Alice", status: "C", teamPositionName: "VOX 1"),
+            PCOTeamMemberAttributes(name: "Bob", status: "D", teamPositionName: "VOX 2"),
+        ]
+
+        let items = manager.processTeamMembers(members)
+
+        // Only confirmed (C) member should be included
+        XCTAssertEqual(items.count, 1)
+        XCTAssertEqual(items[0].personName, "Alice")
+    }
+
+    func testProcessTeam_includesUnconfirmed() {
+        let members: [PCOTeamMemberAttributes] = [
+            PCOTeamMemberAttributes(name: "Marcus", status: "U", teamPositionName: "Bass"),
+        ]
+
+        let items = manager.processTeamMembers(members)
+
+        XCTAssertEqual(items.count, 1)
+        XCTAssertEqual(items[0].personName, "Marcus")
+    }
+
+    func testProcessTeam_productionExcludedByDefault() {
+        let members: [PCOTeamMemberAttributes] = [
+            PCOTeamMemberAttributes(name: "Tech Person", status: "C", teamPositionName: "FOH Sound"),
+        ]
+
+        let items = manager.processTeamMembers(members)
+
+        XCTAssertEqual(items.count, 1)
+        XCTAssertEqual(items[0].positionCategory, .production)
+        XCTAssertFalse(items[0].isIncluded)
+    }
+
+    func testProcessTeam_audioIncludedByDefault() {
+        let members: [PCOTeamMemberAttributes] = [
+            PCOTeamMemberAttributes(name: "Guitarist", status: "C", teamPositionName: "Electric Guitar"),
+        ]
+
+        let items = manager.processTeamMembers(members)
+
+        XCTAssertEqual(items.count, 1)
+        XCTAssertEqual(items[0].positionCategory, .audio)
+        XCTAssertTrue(items[0].isIncluded)
+    }
+
+    func testProcessTeam_drumsExpanded() {
+        let members: [PCOTeamMemberAttributes] = [
+            PCOTeamMemberAttributes(name: "Alex", status: "C", teamPositionName: "Drums"),
+        ]
+
+        let items = manager.processTeamMembers(members, drumTemplate: .basic3)
+
+        XCTAssertEqual(items.count, 3, "Drums should expand to 3 channels with basic3 template")
+        for item in items {
+            XCTAssertEqual(item.positionCategory, .drums)
+        }
+    }
+
+    func testProcessTeam_mixedTeam() {
+        let members: [PCOTeamMemberAttributes] = [
+            PCOTeamMemberAttributes(name: "Sarah", status: "C", teamPositionName: "Worship Leader"),
+            PCOTeamMemberAttributes(name: "Bob", status: "C", teamPositionName: "Electric Guitar"),
+            PCOTeamMemberAttributes(name: "Alex", status: "C", teamPositionName: "Drums"),
+            PCOTeamMemberAttributes(name: "Tech", status: "C", teamPositionName: "Lights"),
+            PCOTeamMemberAttributes(name: "Skip", status: "D", teamPositionName: "Bass"),
+        ]
+
+        let items = manager.processTeamMembers(members, drumTemplate: .basic3)
+
+        // Sarah (audio) + Bob (audio) + Alex (3 drum channels) + Tech (production) = 6
+        // Skip is declined, excluded
+        XCTAssertEqual(items.count, 6)
+
+        let audioItems = items.filter { $0.positionCategory == .audio }
+        let drumItems = items.filter { $0.positionCategory == .drums }
+        let prodItems = items.filter { $0.positionCategory == .production }
+
+        XCTAssertEqual(audioItems.count, 2)
+        XCTAssertEqual(drumItems.count, 3)
+        XCTAssertEqual(prodItems.count, 1)
+    }
+}
+
+
+// MARK: - ─── PCO Team Import Item Tests ─────────────────────────────────
+
+final class PCOTeamImportItemTests: XCTestCase {
+
+    func testItem_defaultIsIncluded() {
+        let item = PCOTeamImportItem(
+            personName: "Test",
+            positionName: "Bass",
+            positionCategory: .audio,
+            channelLabel: "Bass",
+            source: .bassGtrDI,
+            isIncluded: true
+        )
+        XCTAssertTrue(item.isIncluded)
+    }
+
+    func testItem_uniqueIDs() {
+        let item1 = PCOTeamImportItem(
+            personName: "A",
+            positionName: "VOX 1",
+            positionCategory: .audio,
+            channelLabel: "VOX 1",
+            source: .backingVocal,
+            isIncluded: true
+        )
+        let item2 = PCOTeamImportItem(
+            personName: "B",
+            positionName: "VOX 2",
+            positionCategory: .audio,
+            channelLabel: "VOX 2",
+            source: .backingVocal,
+            isIncluded: true
+        )
+        XCTAssertNotEqual(item1.id, item2.id)
+    }
+
+    func testItem_equatable() {
+        let item = PCOTeamImportItem(
+            personName: "Test",
+            positionName: "Keys",
+            positionCategory: .audio,
+            channelLabel: "Keys",
+            source: .digitalPiano,
+            isIncluded: true
+        )
+        // Same item should equal itself
+        XCTAssertEqual(item, item)
+    }
+}
+
+
+// MARK: - ─── Date Parsing Tests ─────────────────────────────────────────
+
+@MainActor
+final class PCODateParsingTests: XCTestCase {
+
+    private var manager: PlanningCenterManager!
+
+    override func setUp() {
+        super.setUp()
+        manager = PlanningCenterManager()
+    }
+
+    override func tearDown() {
+        manager = nil
+        super.tearDown()
+    }
+
+    func testParsePlanDate_validISO8601() {
+        let date = manager.parsePlanDate("2026-02-09T09:30:00Z")
+
+        let calendar = Calendar(identifier: .gregorian)
+        let components = calendar.dateComponents(in: TimeZone(identifier: "UTC")!, from: date)
+
+        XCTAssertEqual(components.year, 2026)
+        XCTAssertEqual(components.month, 2)
+        XCTAssertEqual(components.day, 9)
+    }
+
+    func testParsePlanDate_withFractionalSeconds() {
+        let date = manager.parsePlanDate("2026-02-09T09:30:00.123Z")
+
+        let calendar = Calendar(identifier: .gregorian)
+        let components = calendar.dateComponents(in: TimeZone(identifier: "UTC")!, from: date)
+
+        XCTAssertEqual(components.year, 2026)
+        XCTAssertEqual(components.month, 2)
+    }
+
+    func testParsePlanDate_dateOnly() {
+        let date = manager.parsePlanDate("2026-02-15")
+
+        let calendar = Calendar(identifier: .gregorian)
+        let components = calendar.dateComponents([.year, .month, .day], from: date)
+
+        XCTAssertEqual(components.year, 2026)
+        XCTAssertEqual(components.month, 2)
+        XCTAssertEqual(components.day, 15)
+    }
+
+    func testParsePlanDate_nilInput_returnsCurrent() {
+        let before = Date()
+        let date = manager.parsePlanDate(nil)
+        let after = Date()
+
+        XCTAssertTrue(date >= before && date <= after,
+            "Nil input should return approximately current date")
+    }
+
+    func testParsePlanDate_emptyString_returnsCurrent() {
+        let before = Date()
+        let date = manager.parsePlanDate("")
+        let after = Date()
+
+        XCTAssertTrue(date >= before && date <= after,
+            "Empty string should return approximately current date")
+    }
+
+    func testParsePlanDate_invalidString_returnsCurrent() {
+        let before = Date()
+        let date = manager.parsePlanDate("not-a-date")
+        let after = Date()
+
+        XCTAssertTrue(date >= before && date <= after,
+            "Invalid string should return approximately current date")
+    }
+
+    func testParsePlanDate_withTimezone() {
+        let date = manager.parsePlanDate("2026-06-15T14:00:00-05:00")
+
+        let calendar = Calendar(identifier: .gregorian)
+        let components = calendar.dateComponents(in: TimeZone(identifier: "UTC")!, from: date)
+
+        XCTAssertEqual(components.year, 2026)
+        XCTAssertEqual(components.month, 6)
+        XCTAssertEqual(components.day, 15)
+        XCTAssertEqual(components.hour, 19) // 14:00 CDT = 19:00 UTC
+    }
+}
+
+
+// MARK: - ─── User Preferences Backward Compat Tests ─────────────────────
+
+final class PCOUserPreferencesTests: XCTestCase {
+
+    func testUserPreferences_defaultDrumTemplate() {
+        let prefs = UserPreferences()
+        XCTAssertEqual(prefs.preferredDrumTemplate, .standard5)
+    }
+
+    func testUserPreferences_decodeWithoutDrumTemplate() throws {
+        // JSON from before preferredDrumTemplate was added
+        let json = """
+        {
+            "defaultMixer": "Allen & Heath Avantis",
+            "defaultExperienceLevel": "Intermediate",
+            "defaultBandComposition": "Full Live Band",
+            "defaultDrumConfig": "Open Stage (No Isolation)",
+            "defaultRoomSize": "Medium (300–800 seats)",
+            "defaultRoomSurface": "Mixed (Typical Sanctuary)",
+            "defaultTargetSPL": 90.0,
+            "colorTheme": "Dark Booth"
+        }
+        """.data(using: .utf8)!
+
+        let decoder = JSONDecoder()
+        let prefs = try decoder.decode(UserPreferences.self, from: json)
+
+        XCTAssertEqual(prefs.preferredDrumTemplate, .standard5,
+            "Missing preferredDrumTemplate should default to standard5")
+        XCTAssertEqual(prefs.defaultTargetSPL, 90.0)
+        XCTAssertEqual(prefs.colorTheme, .darkBooth)
+    }
+
+    func testUserPreferences_encodeDecodeWithDrumTemplate() throws {
+        var prefs = UserPreferences()
+        prefs.preferredDrumTemplate = .full7
+
+        let encoder = JSONEncoder()
+        let data = try encoder.encode(prefs)
+
+        let decoder = JSONDecoder()
+        let decoded = try decoder.decode(UserPreferences.self, from: data)
+
+        XCTAssertEqual(decoded.preferredDrumTemplate, .full7)
+    }
+}
+
+
+// MARK: - ─── PCO Position Category Tests ────────────────────────────────
+
+final class PCOPositionCategoryTests: XCTestCase {
+
+    func testPositionCategory_allCases() {
+        let allCases = PCOPositionCategory.allCases
+        XCTAssertEqual(allCases.count, 4)
+        XCTAssertTrue(allCases.contains(.audio))
+        XCTAssertTrue(allCases.contains(.production))
+        XCTAssertTrue(allCases.contains(.drums))
+        XCTAssertTrue(allCases.contains(.unknown))
+    }
+
+    func testPositionCategory_codableRoundTrip() throws {
+        let encoder = JSONEncoder()
+        let decoder = JSONDecoder()
+
+        for category in PCOPositionCategory.allCases {
+            let data = try encoder.encode(category)
+            let decoded = try decoder.decode(PCOPositionCategory.self, from: data)
+            XCTAssertEqual(decoded, category)
+        }
     }
 }
