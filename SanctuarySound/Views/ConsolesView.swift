@@ -179,61 +179,107 @@ struct ConsolesView: View {
     }
 
     private func consoleRow(_ profile: ConsoleProfile) -> some View {
-        Button {
-            editingConsole = profile
-        } label: {
-            HStack(spacing: 12) {
-                VStack(alignment: .leading, spacing: 2) {
-                    HStack(spacing: 6) {
-                        Text(profile.name.isEmpty ? profile.model.shortName : profile.name)
-                            .font(.system(size: 14, weight: .medium))
-                            .foregroundStyle(BoothColors.textPrimary)
-                        connectionBadge(for: profile)
-                    }
+        VStack(spacing: 0) {
+            Button {
+                editingConsole = profile
+            } label: {
+                HStack(spacing: 12) {
+                    VStack(alignment: .leading, spacing: 2) {
+                        HStack(spacing: 6) {
+                            // Connection status indicator
+                            if profile.connectionType == .tcpMIDI
+                                && connectionManager.status.isConnected {
+                                Circle()
+                                    .fill(BoothColors.accent)
+                                    .frame(width: 8, height: 8)
+                                    .shadow(color: BoothColors.accent.opacity(0.6), radius: 3)
+                            }
 
-                    HStack(spacing: 6) {
-                        Text(profile.model.localizedName)
-                            .font(.system(size: 11))
-                            .foregroundStyle(BoothColors.textSecondary)
-                        if let ip = profile.ipAddress, !ip.isEmpty {
-                            Text("\u{00B7}")
-                                .foregroundStyle(BoothColors.textMuted)
-                            Text(ip)
-                                .font(.system(size: 11, design: .monospaced))
-                                .foregroundStyle(BoothColors.textMuted)
+                            Text(profile.name.isEmpty ? profile.model.shortName : profile.name)
+                                .font(.system(size: 14, weight: .medium))
+                                .foregroundStyle(BoothColors.textPrimary)
+                            connectionBadge(for: profile)
                         }
-                    }
 
-                    // Linked venue/room
-                    if let venueID = profile.linkedVenueID, let venue = store.venue(for: venueID) {
-                        HStack(spacing: 4) {
-                            Image(systemName: "building.2")
-                                .font(.system(size: 9))
-                            Text(venue.name)
-                            if let roomID = profile.linkedRoomID, let room = store.room(for: roomID) {
+                        HStack(spacing: 6) {
+                            Text(profile.model.localizedName)
+                                .font(.system(size: 11))
+                                .foregroundStyle(BoothColors.textSecondary)
+                            if let ip = profile.ipAddress, !ip.isEmpty {
                                 Text("\u{00B7}")
-                                Text(room.name)
+                                    .foregroundStyle(BoothColors.textMuted)
+                                Text(ip)
+                                    .font(.system(size: 11, design: .monospaced))
+                                    .foregroundStyle(BoothColors.textMuted)
                             }
                         }
-                        .font(.system(size: 10))
-                        .foregroundStyle(BoothColors.textMuted)
+
+                        // Linked venue/room
+                        if let venueID = profile.linkedVenueID, let venue = store.venue(for: venueID) {
+                            HStack(spacing: 4) {
+                                Image(systemName: "building.2")
+                                    .font(.system(size: 9))
+                                Text(venue.name)
+                                if let roomID = profile.linkedRoomID, let room = store.room(for: roomID) {
+                                    Text("\u{00B7}")
+                                    Text(room.name)
+                                }
+                            }
+                            .font(.system(size: 10))
+                            .foregroundStyle(BoothColors.textMuted)
+                        }
                     }
+                    Spacer()
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 12))
+                        .foregroundStyle(BoothColors.textMuted)
                 }
-                Spacer()
-                Image(systemName: "chevron.right")
-                    .font(.system(size: 12))
-                    .foregroundStyle(BoothColors.textMuted)
+                .padding(10)
             }
-            .padding(10)
-            .background(BoothColors.surfaceElevated)
-            .clipShape(RoundedRectangle(cornerRadius: 8))
+            .buttonStyle(.plain)
+
+            // TCP Connect button for TCP-capable consoles
+            if profile.connectionType == .tcpMIDI {
+                NavigationLink {
+                    MixerConnectionView(
+                        connectionManager: connectionManager,
+                        store: store,
+                        initialHost: profile.ipAddress,
+                        initialPort: String(profile.port),
+                        initialMixer: profile.model
+                    )
+                } label: {
+                    HStack(spacing: 6) {
+                        Image(systemName: "cable.connector")
+                            .font(.system(size: 11))
+                        Text("Connect Live")
+                            .font(.system(size: 11, weight: .semibold))
+                    }
+                    .foregroundStyle(BoothColors.accent)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 32)
+                    .background(BoothColors.accent.opacity(0.08))
+                    .clipShape(RoundedRectangle(cornerRadius: 6))
+                }
+                .buttonStyle(.plain)
+                .padding(.horizontal, 10)
+                .padding(.bottom, 8)
+            }
         }
-        .buttonStyle(.plain)
+        .background(BoothColors.surfaceElevated)
+        .clipShape(RoundedRectangle(cornerRadius: 8))
         .contextMenu {
             Button {
                 editingConsole = profile
             } label: {
                 Label("Edit", systemImage: "pencil")
+            }
+            if profile.connectionType == .tcpMIDI {
+                Button {
+                    // Navigate handled by NavigationLink above
+                } label: {
+                    Label("Connect Live", systemImage: "cable.connector")
+                }
             }
             Button(role: .destructive) {
                 deleteConfirmConsole = profile

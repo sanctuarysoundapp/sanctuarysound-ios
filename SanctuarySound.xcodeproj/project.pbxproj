@@ -48,8 +48,18 @@
 		AA000042 /* ConsolesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000042 /* ConsolesView.swift */; };
 		AA000043 /* ToolsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000043 /* ToolsView.swift */; };
 		AA000044 /* AppTips.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000044 /* AppTips.swift */; };
+		AA000045 /* FrequencyAnalysis.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000045 /* FrequencyAnalysis.swift */; };
+		AA000046 /* RT60Calculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000046 /* RT60Calculator.swift */; };
+		AA000047 /* EQAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000047 /* EQAnalyzer.swift */; };
+		AA000048 /* RT60Analyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000048 /* RT60Analyzer.swift */; };
+		AA000049 /* QAContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000049 /* QAContent.swift */; };
+		AA000050 /* QAStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000050 /* QAStore.swift */; };
+		AA000051 /* EQAnalyzerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000051 /* EQAnalyzerView.swift */; };
+		AA000052 /* RT60MeasurementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000052 /* RT60MeasurementView.swift */; };
+		AA000053 /* QABrowserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000053 /* QABrowserView.swift */; };
 		AA100001 /* SoundEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB100001 /* SoundEngineTests.swift */; };
 		AA100002 /* PCOTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB100002 /* PCOTests.swift */; };
+		AA100003 /* FrequencyAnalysisTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB100003 /* FrequencyAnalysisTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -105,8 +115,18 @@
 		AB000042 /* ConsolesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsolesView.swift; sourceTree = "<group>"; };
 		AB000043 /* ToolsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolsView.swift; sourceTree = "<group>"; };
 		AB000044 /* AppTips.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTips.swift; sourceTree = "<group>"; };
+		AB000045 /* FrequencyAnalysis.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrequencyAnalysis.swift; sourceTree = "<group>"; };
+		AB000046 /* RT60Calculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RT60Calculator.swift; sourceTree = "<group>"; };
+		AB000047 /* EQAnalyzer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EQAnalyzer.swift; sourceTree = "<group>"; };
+		AB000048 /* RT60Analyzer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RT60Analyzer.swift; sourceTree = "<group>"; };
+		AB000049 /* QAContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QAContent.swift; sourceTree = "<group>"; };
+		AB000050 /* QAStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QAStore.swift; sourceTree = "<group>"; };
+		AB000051 /* EQAnalyzerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EQAnalyzerView.swift; sourceTree = "<group>"; };
+		AB000052 /* RT60MeasurementView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RT60MeasurementView.swift; sourceTree = "<group>"; };
+		AB000053 /* QABrowserView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QABrowserView.swift; sourceTree = "<group>"; };
 		AB100001 /* SoundEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundEngineTests.swift; sourceTree = "<group>"; };
 		AB100002 /* PCOTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PCOTests.swift; sourceTree = "<group>"; };
+		AB100003 /* FrequencyAnalysisTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrequencyAnalysisTests.swift; sourceTree = "<group>"; };
 		AC000001 /* SanctuarySound.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SanctuarySound.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AC100001 /* SanctuarySoundTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SanctuarySoundTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -167,6 +187,7 @@
 				AB000023 /* ColorTheme.swift */,
 				AB000038 /* VenueModels.swift */,
 				AB000039 /* ConsoleProfile.swift */,
+				AB000049 /* QAContent.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -177,6 +198,8 @@
 				AB000003 /* SoundEngine.swift */,
 				AB000006 /* CSVImporter.swift */,
 				AB000007 /* AnalysisEngine.swift */,
+				AB000045 /* FrequencyAnalysis.swift */,
+				AB000046 /* RT60Calculator.swift */,
 			);
 			path = Engine;
 			sourceTree = "<group>";
@@ -199,6 +222,9 @@
 				AB000041 /* InputLibraryView.swift */,
 				AB000042 /* ConsolesView.swift */,
 				AB000043 /* ToolsView.swift */,
+				AB000051 /* EQAnalyzerView.swift */,
+				AB000052 /* RT60MeasurementView.swift */,
+				AB000053 /* QABrowserView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -229,6 +255,8 @@
 			isa = PBXGroup;
 			children = (
 				AB000008 /* SPLMeter.swift */,
+				AB000047 /* EQAnalyzer.swift */,
+				AB000048 /* RT60Analyzer.swift */,
 			);
 			path = Audio;
 			sourceTree = "<group>";
@@ -239,6 +267,7 @@
 				AB000013 /* ServiceStore.swift */,
 				AB000031 /* SecureStorage.swift */,
 				AB000034 /* PlanningCenterManager.swift */,
+				AB000050 /* QAStore.swift */,
 			);
 			path = Store;
 			sourceTree = "<group>";
@@ -256,6 +285,7 @@
 			children = (
 				AB100001 /* SoundEngineTests.swift */,
 				AB100002 /* PCOTests.swift */,
+				AB100003 /* FrequencyAnalysisTests.swift */,
 			);
 			path = SanctuarySoundTests;
 			sourceTree = "<group>";
@@ -401,6 +431,15 @@
 				AA000042 /* ConsolesView.swift in Sources */,
 				AA000043 /* ToolsView.swift in Sources */,
 				AA000044 /* AppTips.swift in Sources */,
+				AA000045 /* FrequencyAnalysis.swift in Sources */,
+				AA000046 /* RT60Calculator.swift in Sources */,
+				AA000047 /* EQAnalyzer.swift in Sources */,
+				AA000048 /* RT60Analyzer.swift in Sources */,
+				AA000049 /* QAContent.swift in Sources */,
+				AA000050 /* QAStore.swift in Sources */,
+				AA000051 /* EQAnalyzerView.swift in Sources */,
+				AA000052 /* RT60MeasurementView.swift in Sources */,
+				AA000053 /* QABrowserView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -410,6 +449,7 @@
 			files = (
 				AA100001 /* SoundEngineTests.swift in Sources */,
 				AA100002 /* PCOTests.swift in Sources */,
+				AA100003 /* FrequencyAnalysisTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

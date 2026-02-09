@@ -3,8 +3,8 @@
 // SanctuarySound — Virtual Audio Director for House of Worship
 // ============================================================================
 // Architecture: MVVM View Layer
-// Purpose: Tools tab — utility features including SPL Meter, with future
-//          expansion for EQ Analyzer, Room Acoustics, and AI Q&A.
+// Purpose: Tools tab — utility features including SPL Meter, EQ Analyzer,
+//          Room Acoustics measurement, and Sound Engineer Q&A knowledge base.
 // ============================================================================
 
 import SwiftUI
@@ -31,8 +31,11 @@ struct ToolsView: View {
                         // ── SPL Meter ──
                         splMeterCard
 
-                        // ── Future Tools ──
-                        futureToolsSection
+                        // ── Analysis Tools ──
+                        analysisToolsSection
+
+                        // ── Knowledge Base ──
+                        knowledgeBaseCard
 
                         // ── SPL Reports ──
                         splReportsSection
@@ -71,37 +74,57 @@ struct ToolsView: View {
     }
 
 
-    // MARK: - Future Tools
+    // MARK: - Analysis Tools
 
-    private var futureToolsSection: some View {
-        SectionCard(title: "Coming Soon") {
-            toolCard(
-                title: "EQ Analyzer",
-                icon: "waveform",
-                description: "Real-time frequency spectrum display for room and mix analysis.",
-                accentColor: BoothColors.accentWarm,
-                isActive: false,
-                enabled: false
-            )
+    private var analysisToolsSection: some View {
+        SectionCard(title: "Analysis") {
+            NavigationLink {
+                EQAnalyzerView()
+            } label: {
+                toolCard(
+                    title: "EQ Analyzer",
+                    icon: "waveform",
+                    description: "Real-time 1/3-octave frequency spectrum for room and mix analysis.",
+                    accentColor: BoothColors.accent,
+                    isActive: false,
+                    enabled: true
+                )
+            }
+            .buttonStyle(.plain)
 
-            toolCard(
-                title: "Room Acoustics",
-                icon: "building.2",
-                description: "Measure RT60 reverb time using your iPhone mic.",
-                accentColor: BoothColors.accentWarm,
-                isActive: false,
-                enabled: false
-            )
+            NavigationLink {
+                RT60MeasurementView()
+            } label: {
+                toolCard(
+                    title: "Room Acoustics",
+                    icon: "building.2",
+                    description: "Measure RT60 reverb time using a clap test with your iPhone mic.",
+                    accentColor: BoothColors.accent,
+                    isActive: false,
+                    enabled: true
+                )
+            }
+            .buttonStyle(.plain)
+        }
+    }
 
+
+    // MARK: - Knowledge Base
+
+    private var knowledgeBaseCard: some View {
+        NavigationLink {
+            QABrowserView()
+        } label: {
             toolCard(
                 title: "Sound Engineer Q&A",
                 icon: "questionmark.bubble",
-                description: "Audio engineering knowledge base for mixing questions.",
-                accentColor: BoothColors.accentWarm,
+                description: "Audio engineering knowledge base — gain staging, EQ, compression, and more.",
+                accentColor: BoothColors.accent,
                 isActive: false,
-                enabled: false
+                enabled: true
             )
         }
+        .buttonStyle(.plain)
     }
 
 
