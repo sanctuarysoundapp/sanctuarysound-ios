@@ -168,7 +168,7 @@ The engine implements professional audio engineering principles:
 - **Conservative compression** — ratios between 2:1 and 4:1, never limiting
 - **Room acoustics modeling** — 3x3 matrix (size x surface) for RT60 estimation
 
-See [CLAUDE.md](CLAUDE.md) for the complete engineering reference.
+See [ARCHITECTURE.md](ARCHITECTURE.md) for the complete engineering reference.
 
 ---
 
