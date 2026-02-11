@@ -8,6 +8,7 @@
 //          persists reports/preferences locally, and fires haptics on alerts.
 // ============================================================================
 
+import Combine
 import Foundation
 import SwiftUI
 import WatchKit
@@ -32,6 +33,23 @@ final class WatchSPLViewModel: ObservableObject {
 
     // ── Reports ──
     @Published private(set) var reports: [SPLSessionReport] = []
+
+    // ── Session Timer ──
+    @Published private(set) var sessionElapsed: TimeInterval = 0
+    private var sessionStartTime: Date?
+    private var timerCancellable: AnyCancellable?
+
+    /// Formatted elapsed time: "12:34" or "1:23:45" for sessions over an hour.
+    var formattedElapsed: String {
+        let total = max(0, Int(sessionElapsed))
+        let hours = total / 3600
+        let minutes = (total % 3600) / 60
+        let seconds = total % 60
+        if hours > 0 {
+            return String(format: "%d:%02d:%02d", hours, minutes, seconds)
+        }
+        return String(format: "%d:%02d", minutes, seconds)
+    }
 
     // ── Crown Adjustment ──
     @Published var crownTargetDB: Double = 90.0
@@ -65,6 +83,7 @@ final class WatchSPLViewModel: ObservableObject {
             isRunning = false
             alertStateCodable = .safe
             previousAlertRaw = "safe"
+            stopSessionTimer()
         } else {
             sessionReceiver.sendCommand(WCMessageKey.commandStart)
         }
@@ -148,7 +167,17 @@ final class WatchSPLViewModel: ObservableObject {
         currentDB = snapshot.currentDB
         peakDB = snapshot.peakDB
         averageDB = snapshot.averageDB
+
+        // ── Session Timer Edge Detection ──
+        let wasRunning = isRunning
         isRunning = snapshot.isRunning
+
+        if isRunning && sessionStartTime == nil {
+            sessionStartTime = Date()
+            startSessionTimer()
+        } else if !isRunning && wasRunning {
+            stopSessionTimer()
+        }
 
         let newAlert = snapshot.alertState
         fireHapticsIfNeeded(previousRaw: previousAlertRaw, newRaw: newAlert.rawValue)
@@ -199,6 +228,26 @@ final class WatchSPLViewModel: ObservableObject {
         default:
             break
         }
+    }
+
+    // MARK: - ─── Session Timer ──────────────────────────────────────────────────
+
+    private func startSessionTimer() {
+        timerCancellable = Timer.publish(every: 1, on: .main, in: .common)
+            .autoconnect()
+            .sink { [weak self] _ in
+                Task { @MainActor in
+                    guard let self, let start = self.sessionStartTime else { return }
+                    self.sessionElapsed = Date().timeIntervalSince(start)
+                }
+            }
+    }
+
+    private func stopSessionTimer() {
+        timerCancellable?.cancel()
+        timerCancellable = nil
+        sessionStartTime = nil
+        sessionElapsed = 0
     }
 
     // MARK: - Local Persistence

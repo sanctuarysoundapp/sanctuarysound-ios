@@ -15,6 +15,7 @@ import SwiftUI
 
 struct WatchSPLView: View {
     @ObservedObject var viewModel: WatchSPLViewModel
+    @State private var isPulsing = false
 
     var body: some View {
         NavigationStack {
@@ -48,6 +49,15 @@ struct WatchSPLView: View {
             let size = geo.size
 
             ZStack {
+                // ── Radial Background Gradient ──
+                RadialGradient(
+                    colors: [WatchColors.surface.opacity(0.3), WatchColors.background],
+                    center: .center,
+                    startRadius: 0,
+                    endRadius: min(size.width, size.height) * 0.5
+                )
+                .ignoresSafeArea()
+
                 // ── Central Activity Ring Gauge ──
                 activityRingGauge(size: size)
                     .position(x: size.width / 2, y: size.height / 2)
@@ -94,11 +104,16 @@ struct WatchSPLView: View {
                     )
                     .frame(width: ringDiameter, height: ringDiameter)
 
-                // Filled arc — Activity Ring style
+                // Filled arc — Activity Ring style with gradient
                 Circle()
                     .trim(from: 0, to: min(viewModel.ringFillFraction, 1.0))
                     .stroke(
-                        viewModel.ringColor,
+                        AngularGradient(
+                            gradient: ringGradient,
+                            center: .center,
+                            startAngle: .degrees(-90),
+                            endAngle: .degrees(-90 + 360 * min(viewModel.ringFillFraction, 1.0))
+                        ),
                         style: StrokeStyle(lineWidth: ringWidth, lineCap: .round)
                     )
                     .frame(width: ringDiameter, height: ringDiameter)
@@ -116,20 +131,50 @@ struct WatchSPLView: View {
                         .blur(radius: 4)
                 }
 
-                // Center dB readout
+                // Center dB readout + session timer
                 VStack(spacing: 0) {
                     Text("\(Int(viewModel.currentDB))")
                         .font(.system(size: 34, weight: .heavy, design: .rounded))
                         .foregroundStyle(viewModel.ringColor)
                         .contentTransition(.numericText())
+                        .scaleEffect(isPulsing ? 1.08 : 1.0)
 
                     Text("dB")
                         .font(.system(size: 10, weight: .semibold))
                         .foregroundStyle(WatchColors.textSecondary)
+
+                    // Session timer (visible only while running)
+                    if viewModel.isRunning {
+                        Text(viewModel.formattedElapsed)
+                            .font(.system(size: 9, weight: .medium, design: .monospaced))
+                            .foregroundStyle(WatchColors.textMuted)
+                            .padding(.top, 2)
+                    }
                 }
             }
         }
         .buttonStyle(.plain)
+        .onChange(of: viewModel.alertStateCodable.rawValue) { _, newValue in
+            isPulsing = newValue == "alert"
+        }
+        .animation(
+            isPulsing
+                ? .easeInOut(duration: 0.6).repeatForever(autoreverses: true)
+                : .default,
+            value: isPulsing
+        )
+    }
+
+    /// Ring gradient based on alert state: solid green (safe), green→amber (warning), amber→red (alert).
+    private var ringGradient: Gradient {
+        switch viewModel.alertStateCodable.rawValue {
+        case "alert":
+            return Gradient(colors: [WatchColors.accentWarm, WatchColors.accentDanger])
+        case "warning":
+            return Gradient(colors: [WatchColors.accent, WatchColors.accentWarm])
+        default:
+            return Gradient(colors: [WatchColors.accent, WatchColors.accent])
+        }
     }
 
 
@@ -213,19 +258,50 @@ struct WatchReportRow: View {
     let report: SPLSessionReport
 
     var body: some View {
-        HStack {
+        HStack(spacing: 6) {
+            // ── Grade Icon ──
+            Image(systemName: gradeIcon)
+                .font(.system(size: 12))
+                .foregroundStyle(gradeColor)
+
             VStack(alignment: .leading, spacing: 2) {
                 Text(report.date, style: .date)
                     .font(.system(size: 11, weight: .medium))
                     .foregroundStyle(WatchColors.textPrimary)
-                Text("Peak: \(Int(report.overallPeakDB)) dB")
-                    .font(.system(size: 10, weight: .regular, design: .monospaced))
-                    .foregroundStyle(WatchColors.textSecondary)
+                HStack(spacing: 6) {
+                    Text("Peak: \(Int(report.overallPeakDB))")
+                        .font(.system(size: 9, weight: .regular, design: .monospaced))
+                        .foregroundStyle(WatchColors.textSecondary)
+                    Text("Avg: \(Int(report.overallAverageDB))")
+                        .font(.system(size: 9, weight: .regular, design: .monospaced))
+                        .foregroundStyle(WatchColors.textMuted)
+                }
             }
             Spacer()
             Text("\(report.breachCount)")
                 .font(.system(size: 14, weight: .bold, design: .monospaced))
-                .foregroundStyle(report.breachCount > 0 ? WatchColors.accentWarm : WatchColors.accent)
+                .foregroundStyle(breachCountColor)
         }
+    }
+
+    private var gradeIcon: String {
+        let pct = report.breachPercentage
+        if pct == 0 { return "checkmark.circle.fill" }
+        if pct < 5 { return "checkmark.circle" }
+        if pct < 15 { return "exclamationmark.triangle" }
+        return "xmark.circle"
+    }
+
+    private var gradeColor: Color {
+        let pct = report.breachPercentage
+        if pct < 5 { return WatchColors.accent }
+        if pct < 15 { return WatchColors.accentWarm }
+        return WatchColors.accentDanger
+    }
+
+    private var breachCountColor: Color {
+        if report.breachCount == 0 { return WatchColors.accent }
+        if report.breachCount <= 2 { return WatchColors.accentWarm }
+        return WatchColors.accentDanger
     }
 }

@@ -16,7 +16,7 @@ struct WatchReportDetailView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 8) {
+            VStack(alignment: .leading, spacing: 6) {
                 // ── Header ──
                 Text(report.date, style: .date)
                     .font(.system(size: 13, weight: .bold))
@@ -31,24 +31,29 @@ struct WatchReportDetailView: View {
                         .foregroundStyle(gradeColor)
                 }
 
-                Divider()
-                    .background(WatchColors.textMuted)
+                // ── Breach Timeline Bar ──
+                if report.totalMonitoringSeconds > 0 {
+                    breachTimelineBar
+                }
 
                 // ── Stats ──
-                statRow(label: "Peak", value: "\(Int(report.overallPeakDB)) dB")
-                statRow(label: "Average", value: "\(Int(report.overallAverageDB)) dB")
-                statRow(label: "Target", value: "\(Int(report.targetDB)) dB")
-                statRow(label: "Breaches", value: "\(report.breachCount)")
-                statRow(label: "Danger", value: "\(report.dangerCount)")
-                statRow(label: "Duration", value: formatDuration(report.totalMonitoringSeconds))
-                statRow(label: "Over %", value: String(format: "%.1f%%", report.breachPercentage))
+                coloredStatRow(label: "Peak", value: "\(Int(report.overallPeakDB)) dB", color: peakColor)
+                coloredStatRow(label: "Average", value: "\(Int(report.overallAverageDB)) dB", color: averageColor)
+                coloredStatRow(label: "Target", value: "\(Int(report.targetDB)) dB", color: WatchColors.textPrimary)
+                coloredStatRow(label: "Breaches", value: "\(report.breachCount)", color: breachCountColor)
+                coloredStatRow(label: "Danger", value: "\(report.dangerCount)", color: dangerColor)
+                coloredStatRow(label: "Duration", value: formatDuration(report.totalMonitoringSeconds), color: WatchColors.textPrimary)
+                coloredStatRow(label: "Over %", value: String(format: "%.1f%%", report.breachPercentage), color: overPercentColor)
             }
             .padding(.horizontal, 4)
         }
         .navigationTitle("Report")
     }
 
-    private func statRow(label: String, value: String) -> some View {
+
+    // MARK: - ─── Colored Stat Row ─────────────────────────────────────────────
+
+    private func coloredStatRow(label: String, value: String, color: Color) -> some View {
         HStack {
             Text(label)
                 .font(.system(size: 11, weight: .medium))
@@ -56,9 +61,80 @@ struct WatchReportDetailView: View {
             Spacer()
             Text(value)
                 .font(.system(size: 12, weight: .semibold, design: .monospaced))
-                .foregroundStyle(WatchColors.textPrimary)
+                .foregroundStyle(color)
         }
+        .padding(.horizontal, 6)
+        .padding(.vertical, 4)
+        .background(WatchColors.surfaceElevated)
+        .clipShape(RoundedRectangle(cornerRadius: 6))
     }
+
+
+    // MARK: - ─── Breach Timeline Bar ──────────────────────────────────────────
+
+    private var breachTimelineBar: some View {
+        GeometryReader { geo in
+            let totalWidth = geo.size.width
+            let totalSeconds = report.totalMonitoringSeconds
+
+            ZStack(alignment: .leading) {
+                // Full session background (safe = green)
+                RoundedRectangle(cornerRadius: 3)
+                    .fill(WatchColors.accent.opacity(0.3))
+                    .frame(height: 6)
+
+                // Breach segments overlaid
+                ForEach(report.breachEvents) { breach in
+                    let startFraction = max(0, min(1, breach.startTime.timeIntervalSince(report.sessionStart) / totalSeconds))
+                    let durationFraction = max(0, min(1 - startFraction, breach.durationSeconds / totalSeconds))
+                    let xOffset = startFraction * totalWidth
+                    let segmentWidth = max(durationFraction * totalWidth, 2)
+
+                    RoundedRectangle(cornerRadius: 3)
+                        .fill(breach.wasDanger ? WatchColors.accentDanger : WatchColors.accentWarm)
+                        .frame(width: segmentWidth, height: 6)
+                        .offset(x: xOffset)
+                }
+            }
+        }
+        .frame(height: 6)
+        .padding(.vertical, 2)
+    }
+
+
+    // MARK: - ─── Color Logic ──────────────────────────────────────────────────
+
+    private var peakColor: Color {
+        let threshold = report.flaggingMode.thresholdDB
+        if report.overallPeakDB > report.targetDB + threshold { return WatchColors.accentDanger }
+        if report.overallPeakDB > report.targetDB { return WatchColors.accentWarm }
+        return WatchColors.accent
+    }
+
+    private var averageColor: Color {
+        if report.overallAverageDB > report.targetDB - 3 { return WatchColors.accentWarm }
+        return WatchColors.accent
+    }
+
+    private var breachCountColor: Color {
+        if report.breachCount == 0 { return WatchColors.accent }
+        if report.breachCount <= 2 { return WatchColors.accentWarm }
+        return WatchColors.accentDanger
+    }
+
+    private var dangerColor: Color {
+        report.dangerCount > 0 ? WatchColors.accentDanger : WatchColors.accent
+    }
+
+    private var overPercentColor: Color {
+        let pct = report.breachPercentage
+        if pct < 5 { return WatchColors.accent }
+        if pct < 15 { return WatchColors.accentWarm }
+        return WatchColors.accentDanger
+    }
+
+
+    // MARK: - ─── Helpers ──────────────────────────────────────────────────────
 
     private func formatDuration(_ seconds: TimeInterval) -> String {
         let mins = Int(seconds) / 60
