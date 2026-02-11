@@ -1061,7 +1061,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.2.0;
+				MARKETING_VERSION = 0.3.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.sanctuarysound.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -1098,7 +1098,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.2.0;
+				MARKETING_VERSION = 0.3.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.sanctuarysound.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -1162,7 +1162,7 @@
 				INFOPLIST_FILE = SanctuarySoundWatch/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = SanctuarySound;
 				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.sanctuarysound.app;
-				MARKETING_VERSION = 0.2.0;
+				MARKETING_VERSION = 0.3.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.sanctuarysound.app.watchkitapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
@@ -1188,7 +1188,7 @@
 				INFOPLIST_FILE = SanctuarySoundWatch/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = SanctuarySound;
 				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.sanctuarysound.app;
-				MARKETING_VERSION = 0.2.0;
+				MARKETING_VERSION = 0.3.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.sanctuarysound.app.watchkitapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
@@ -1247,7 +1247,7 @@
 				DEVELOPMENT_TEAM = M2739G49TS;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = SanctuarySoundWatchWidgetExt/Info.plist;
-				MARKETING_VERSION = 0.2.0;
+				MARKETING_VERSION = 0.3.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.sanctuarysound.app.watchkitapp.widget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
@@ -1268,7 +1268,7 @@
 				DEVELOPMENT_TEAM = M2739G49TS;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = SanctuarySoundWatchWidgetExt/Info.plist;
-				MARKETING_VERSION = 0.2.0;
+				MARKETING_VERSION = 0.3.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.sanctuarysound.app.watchkitapp.widget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
