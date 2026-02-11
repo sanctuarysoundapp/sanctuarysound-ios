@@ -1,0 +1,9 @@
+Initial release of SanctuarySound - your Virtual Audio Director for worship.
+
+- Gain staging recommendations for 9 console models
+- Key-aware EQ and compressor settings
+- SPL monitoring with alerts and session reports
+- 31-band EQ analyzer and RT60 room measurement
+- Planning Center Online integration
+- Apple Watch companion app
+- Sound Engineer Q&A knowledge base

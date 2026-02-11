@@ -1,0 +1,1 @@
+mixer,audio,church,worship,live sound,gain staging,EQ,SPL,sound engineer,volunteer
