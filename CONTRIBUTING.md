@@ -117,7 +117,7 @@ If you're contributing to the `SoundEngine`:
 - Compressor ratios stay between **2:1 and 4:1** (no limiting)
 - Key-aware EQ uses semitone math: `freq = C1 * 2^(semitone/12)` where C1 = 32.703 Hz
 
-See `CLAUDE.md` for the complete audio engineering reference.
+See `ARCHITECTURE.md` for the complete audio engineering reference.
 
 ## Sustainability
 

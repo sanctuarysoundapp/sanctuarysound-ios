@@ -246,7 +246,7 @@ final class SoundEngineTests: XCTestCase {
     /// At beginner experience level, EQ bands should be empty and
     /// compressor should be nil (the engine always calculates, but
     /// the model shouldn't filter — the VIEW filters display).
-    /// Actually, per CLAUDE.md: "the experience level only controls what the View displays"
+    /// Actually, per ARCHITECTURE.md: "the detail level only controls what the View displays"
     /// So the engine should STILL calculate EQ and compression.
     func testBeginnerLevelStillCalculatesFullStrip() {
         let channel = InputChannel(
