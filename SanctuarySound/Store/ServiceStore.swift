@@ -305,7 +305,9 @@ final class ServiceStore: ObservableObject {
         savedSnapshots.count + savedReports.count + venues.count + consoleProfiles.count
     }
 
-    /// Clear all user data and reset to defaults. Returns the store to fresh state.
+    /// Clear all user data and reset to defaults. Returns the store to a truly empty state.
+    /// Does NOT re-create default venue/room/console — the user will be guided through
+    /// Quick Setup on next launch to configure fresh defaults.
     func clearAllData() {
         savedServices = []
         savedVocalists = []
@@ -329,8 +331,6 @@ final class ServiceStore: ObservableObject {
             }
         }
 
-        // Re-run migration to create default venue/room/console
-        migrateIfNeeded()
         splMeter.updateAlertThresholds(preference: splPreference)
     }
 
@@ -338,10 +338,16 @@ final class ServiceStore: ObservableObject {
 
     /// Migrate from flat data model to hierarchical (Venue/Room/Console).
     /// Runs once on first launch after update. Safe to call multiple times.
+    /// Skips if onboarding hasn't completed — lets Quick Setup create defaults
+    /// with the user's chosen mixer, room size, and detail level instead.
     private func migrateIfNeeded() {
         // Already migrated if venues file exists
         let venuesURL = documentsURL.appendingPathComponent(venuesFile)
         guard !FileManager.default.fileExists(atPath: venuesURL.path) else { return }
+
+        // If onboarding hasn't been completed, let onboarding create defaults instead
+        // of creating them here with generic UserPreferences defaults
+        guard UserDefaults.standard.bool(forKey: "hasSeenOnboarding") else { return }
 
         // Create default venue with one room from user preferences
         let defaultRoom = Room(

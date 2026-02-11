@@ -15,6 +15,7 @@ import SwiftUI
 struct SettingsView: View {
     @ObservedObject var store: ServiceStore
     @ObservedObject var pcoManager: PlanningCenterManager
+    @AppStorage("hasSeenOnboarding") private var hasSeenOnboarding = false
     @State private var prefs: UserPreferences = UserPreferences()
     @State private var showClearDataAlert = false
 
@@ -468,9 +469,12 @@ struct SettingsView: View {
                     store.clearAllData()
                     prefs = store.userPreferences
                     ThemeProvider.shared.apply(themeID: prefs.colorTheme)
+                    withAnimation(.easeInOut(duration: 0.3)) {
+                        hasSeenOnboarding = false
+                    }
                 }
             } message: {
-                Text("This will permanently delete all services, inputs, vocalists, venues, consoles, snapshots, and SPL reports. This cannot be undone.")
+                Text("This will permanently delete all services, inputs, vocalists, venues, consoles, snapshots, and SPL reports. You'll be guided through Quick Setup again to reconfigure your defaults. This cannot be undone.")
             }
         }
     }

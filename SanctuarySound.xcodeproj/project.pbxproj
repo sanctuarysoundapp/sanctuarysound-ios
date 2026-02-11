@@ -74,6 +74,7 @@
 		AA000062 /* SPLReportFormatting.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000062 /* SPLReportFormatting.swift */; };
 		AA000063 /* SPLSessionReportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000063 /* SPLSessionReportView.swift */; };
 		AA000064 /* SPLReportExportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000064 /* SPLReportExportView.swift */; };
+		AA000065 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = AB000065 /* PrivacyInfo.xcprivacy */; };
 		AA100001 /* SoundEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB100001 /* SoundEngineTests.swift */; };
 		AA100002 /* PCOTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB100002 /* PCOTests.swift */; };
 		AA100003 /* FrequencyAnalysisTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB100003 /* FrequencyAnalysisTests.swift */; };
@@ -129,6 +130,31 @@
 			remoteInfo = SanctuarySoundWatch;
 		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		AD000004 /* Embed Watch Content */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
+			dstSubfolderSpec = 16;
+			files = (
+				AA500001 /* SanctuarySoundWatch.app in Embed Watch Content */,
+			);
+			name = "Embed Watch Content";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AD200004 /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				AA500002 /* SanctuarySoundWatchWidgetExt.appex in Embed App Extensions */,
+			);
+			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		AB000001 /* SanctuarySoundApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SanctuarySoundApp.swift; sourceTree = "<group>"; };
@@ -199,6 +225,7 @@
 		AB000062 /* SPLReportFormatting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SPLReportFormatting.swift; sourceTree = "<group>"; };
 		AB000063 /* SPLSessionReportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SPLSessionReportView.swift; sourceTree = "<group>"; };
 		AB000064 /* SPLReportExportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SPLReportExportView.swift; sourceTree = "<group>"; };
+		AB000065 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		AB100001 /* SoundEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundEngineTests.swift; sourceTree = "<group>"; };
 		AB100002 /* PCOTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PCOTests.swift; sourceTree = "<group>"; };
 		AB100003 /* FrequencyAnalysisTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrequencyAnalysisTests.swift; sourceTree = "<group>"; };
@@ -212,9 +239,9 @@
 		AB200005 /* WatchColors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchColors.swift; sourceTree = "<group>"; };
 		AB200006 /* WatchReportsListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchReportsListView.swift; sourceTree = "<group>"; };
 		AB200007 /* WatchReportDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchReportDetailView.swift; sourceTree = "<group>"; };
-		AB200011 /* WatchSplashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchSplashView.swift; sourceTree = "<group>"; };
 		AB200008 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		AB200009 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		AB200011 /* WatchSplashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchSplashView.swift; sourceTree = "<group>"; };
 		AB300001 /* WatchSPLViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchSPLViewModelTests.swift; sourceTree = "<group>"; };
 		AB400001 /* WatchComplicationProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchComplicationProvider.swift; sourceTree = "<group>"; };
 		AB400002 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -263,31 +290,6 @@
 		};
 /* End PBXFrameworksBuildPhase section */
 
-/* Begin PBXCopyFilesBuildPhase section */
-		AD000004 /* Embed Watch Content */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
-			dstSubfolderSpec = 16;
-			files = (
-				AA500001 /* SanctuarySoundWatch.app in Embed Watch Content */,
-			);
-			name = "Embed Watch Content";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		AD200004 /* Embed App Extensions */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 13;
-			files = (
-				AA500002 /* SanctuarySoundWatchWidgetExt.appex in Embed App Extensions */,
-			);
-			name = "Embed App Extensions";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXCopyFilesBuildPhase section */
-
 /* Begin PBXGroup section */
 		AE000001 = {
 			isa = PBXGroup;
@@ -321,6 +323,7 @@
 				AB000010 /* Assets.xcassets */,
 				AB000036 /* Localizable.xcstrings */,
 				AB000037 /* InfoPlist.xcstrings */,
+				AB000065 /* PrivacyInfo.xcprivacy */,
 			);
 			path = SanctuarySound;
 			sourceTree = "<group>";
@@ -384,15 +387,6 @@
 				AB000064 /* SPLReportExportView.swift */,
 			);
 			path = Views;
-			sourceTree = "<group>";
-		};
-		AE000013 /* Components */ = {
-			isa = PBXGroup;
-			children = (
-				AB000060 /* SharedComponents.swift */,
-				AB000061 /* StepNavigation.swift */,
-			);
-			path = Components;
 			sourceTree = "<group>";
 		};
 		AE000006 /* ViewModels */ = {
@@ -462,6 +456,15 @@
 				AB000056 /* WatchSessionManager.swift */,
 			);
 			path = Connectivity;
+			sourceTree = "<group>";
+		};
+		AE000013 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				AB000060 /* SharedComponents.swift */,
+				AB000061 /* StepNavigation.swift */,
+			);
+			path = Components;
 			sourceTree = "<group>";
 		};
 		AE000099 /* Products */ = {
@@ -674,6 +677,7 @@
 				AA000010 /* Assets.xcassets in Resources */,
 				AA000036 /* Localizable.xcstrings in Resources */,
 				AA000037 /* InfoPlist.xcstrings in Resources */,
+				AA000065 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -876,7 +880,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -928,7 +932,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				SDKROOT = iphoneos;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
@@ -942,15 +946,20 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = M2739G49TS;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = SanctuarySound/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = SanctuarySound;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "SanctuarySound connects to your mixer console over the local network to read channel settings for analysis and recommendations.";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "SanctuarySound uses the microphone to measure sound pressure levels (SPL) in your worship space for mix calibration.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = "";
 				INFOPLIST_KEY_UIStatusBarStyle = UIStatusBarStyleLightContent;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -974,15 +983,20 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = M2739G49TS;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = SanctuarySound/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = SanctuarySound;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "SanctuarySound connects to your mixer console over the local network to read channel settings for analysis and recommendations.";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "SanctuarySound uses the microphone to measure sound pressure levels (SPL) in your worship space for mix calibration.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = "";
 				INFOPLIST_KEY_UIStatusBarStyle = UIStatusBarStyleLightContent;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -1009,7 +1023,6 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = M2739G49TS;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.sanctuarysound.app.tests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1030,7 +1043,6 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = M2739G49TS;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.sanctuarysound.app.tests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1048,6 +1060,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = M2739G49TS;
@@ -1073,6 +1086,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = M2739G49TS;
