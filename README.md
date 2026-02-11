@@ -96,7 +96,18 @@ The engine always calculates everything — the detail level only controls what'
 
 ## Screenshots
 
-*Coming soon — dark booth-optimized UI designed for live service use.*
+<p align="center">
+  <img src="metadata/app-store/screenshots/6.9-inch/01_Services.png" width="200" alt="Services">
+  <img src="metadata/app-store/screenshots/6.9-inch/02_ServiceSetup.png" width="200" alt="Service Setup">
+  <img src="metadata/app-store/screenshots/6.9-inch/03_Recommendations.png" width="200" alt="Recommendations">
+  <img src="metadata/app-store/screenshots/6.9-inch/04_InputLibrary.png" width="200" alt="Input Library">
+</p>
+<p align="center">
+  <img src="metadata/app-store/screenshots/6.9-inch/06_SPLMeter.png" width="200" alt="SPL Meter">
+  <img src="metadata/app-store/screenshots/6.9-inch/07_EQAnalyzer.png" width="200" alt="EQ Analyzer">
+  <img src="metadata/app-store/screenshots/6.9-inch/08_QABrowser.png" width="200" alt="Q&A Browser">
+  <img src="metadata/app-store/screenshots/6.9-inch/09_Settings.png" width="200" alt="Settings">
+</p>
 
 ---
 
@@ -140,7 +151,7 @@ SanctuarySoundWatchWidgetExt/ # WidgetKit complications
 
 **Pattern:** MVVM with strict separation. Models own no logic. ViewModels own the engine. Views display state. The `SoundEngine` is pure and stateless — designed for unit testing.
 
-**Tests:** 261 iOS unit tests + 17 Watch tests passing. Zero external dependencies.
+**Tests:** 287 iOS unit tests + 9 UI tests + 17 Watch tests passing. Zero external dependencies.
 
 **Dependencies:** Zero. Pure Swift, SwiftUI, AVFoundation, Accelerate, and Network frameworks.
 
