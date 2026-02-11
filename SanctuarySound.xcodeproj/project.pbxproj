@@ -81,6 +81,7 @@
 		AA100004 /* ForceUnwrapSafetyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB100004 /* ForceUnwrapSafetyTests.swift */; };
 		AA100005 /* SPLCalibrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB100005 /* SPLCalibrationTests.swift */; };
 		AA100006 /* SPLFormattingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB100006 /* SPLFormattingTests.swift */; };
+		AA100007 /* SettingsEnumTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB100007 /* SettingsEnumTests.swift */; };
 		AA200001 /* SanctuarySoundWatchApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB200001 /* SanctuarySoundWatchApp.swift */; };
 		AA200002 /* WatchSPLView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB200002 /* WatchSPLView.swift */; };
 		AA200003 /* WatchSPLViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB200003 /* WatchSPLViewModel.swift */; };
@@ -232,6 +233,7 @@
 		AB100004 /* ForceUnwrapSafetyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForceUnwrapSafetyTests.swift; sourceTree = "<group>"; };
 		AB100005 /* SPLCalibrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SPLCalibrationTests.swift; sourceTree = "<group>"; };
 		AB100006 /* SPLFormattingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SPLFormattingTests.swift; sourceTree = "<group>"; };
+		AB100007 /* SettingsEnumTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsEnumTests.swift; sourceTree = "<group>"; };
 		AB200001 /* SanctuarySoundWatchApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SanctuarySoundWatchApp.swift; sourceTree = "<group>"; };
 		AB200002 /* WatchSPLView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchSPLView.swift; sourceTree = "<group>"; };
 		AB200003 /* WatchSPLViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchSPLViewModel.swift; sourceTree = "<group>"; };
@@ -488,6 +490,7 @@
 				AB100004 /* ForceUnwrapSafetyTests.swift */,
 				AB100005 /* SPLCalibrationTests.swift */,
 				AB100006 /* SPLFormattingTests.swift */,
+				AB100007 /* SettingsEnumTests.swift */,
 			);
 			path = SanctuarySoundTests;
 			sourceTree = "<group>";
@@ -773,6 +776,7 @@
 				AA100004 /* ForceUnwrapSafetyTests.swift in Sources */,
 				AA100005 /* SPLCalibrationTests.swift in Sources */,
 				AA100006 /* SPLFormattingTests.swift in Sources */,
+				AA100007 /* SettingsEnumTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
