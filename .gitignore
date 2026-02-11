@@ -30,8 +30,10 @@ Pods/
 
 # Sensitive / Local
 *.env
+*.p8
 *.p12
 *.mobileprovision
+AuthKey_*
 Secrets/
 
 # Project-specific exclusions
