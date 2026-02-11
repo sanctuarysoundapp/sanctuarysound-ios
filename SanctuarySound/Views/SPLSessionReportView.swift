@@ -94,7 +94,11 @@ struct SPLSessionReportView: View {
 
         Task { @MainActor in
             let renderer = ImageRenderer(content: reportContent)
-            renderer.scale = UIScreen.main.scale
+            let scale = UIApplication.shared.connectedScenes
+                .compactMap { $0 as? UIWindowScene }
+                .first?
+                .screen.scale ?? 3.0
+            renderer.scale = scale
             if let uiImage = renderer.uiImage {
                 renderedImage = uiImage
             }
