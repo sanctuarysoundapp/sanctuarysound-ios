@@ -54,6 +54,16 @@
                ReferencedContainer = "container:SanctuarySound.xcodeproj">
             </BuildableReference>
          </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "AF110001"
+               BuildableName = "SanctuarySoundUITests.xctest"
+               BlueprintName = "SanctuarySoundUITests"
+               ReferencedContainer = "container:SanctuarySound.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction
