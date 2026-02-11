@@ -117,15 +117,15 @@ struct AboutView: View {
 
     private var supportSection: some View {
         SectionCard(title: "Support This Ministry") {
-            Text("Your generosity keeps this app free for every church. Donations are tax-deductible through our church's 501(c)(3).")
+            Text("Your generosity keeps this app free for every church.")
                 .font(.system(size: 12))
                 .foregroundStyle(BoothColors.textSecondary)
                 .lineSpacing(3)
 
             Link(destination: AppConfig.donationURL) {
                 HStack(spacing: 8) {
-                    Image(systemName: "heart.fill")
-                    Text("Support Development")
+                    Image(systemName: "cup.and.saucer.fill")
+                    Text("Buy Us a Coffee")
                 }
                 .font(.system(size: 14, weight: .bold))
                 .frame(maxWidth: .infinity)

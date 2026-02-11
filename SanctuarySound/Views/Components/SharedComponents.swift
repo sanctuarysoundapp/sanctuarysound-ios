@@ -227,11 +227,8 @@ struct SongRow: View {
                 .clipShape(RoundedRectangle(cornerRadius: 6))
 
             if let bpm = song.bpm {
-                Text("\(bpm)")
+                Text("\(bpm) bpm")
                     .font(.system(size: 11, weight: .medium, design: .monospaced))
-                    .foregroundStyle(BoothColors.textMuted)
-                + Text(" bpm")
-                    .font(.system(size: 9))
                     .foregroundStyle(BoothColors.textMuted)
             }
         }

@@ -35,8 +35,8 @@ struct AppConfig {
 
     // ── URLs ──
 
-    /// Donation page — Victory Church AL via Church Center (Planning Center).
-    static let donationURL = URL(string: "https://victorychurchal.churchcenter.com")!
+    /// Donation page — Ko-fi for community support.
+    static let donationURL = URL(string: "https://ko-fi.com/sanctuarysoundapp")!
 
     /// GitHub repository.
     static let githubURL = URL(string: "https://github.com/sanctuarysoundapp/sanctuarysound-ios")!
@@ -57,5 +57,5 @@ struct AppConfig {
 
     static let missionStatement = String(localized: "Built For The Church, By The Church, Free Forever.")
 
-    static let missionDescription = String(localized: "SanctuarySound is an open-source ministry tool that helps church production & worship teams get better sound every Sunday. It will always be free. If this app blesses your ministry, consider supporting its development.")
+    static let missionDescription = String(localized: "SanctuarySound is an open-source ministry tool that helps church production & worship teams get better sound every Sunday. It will always be free. If this app blesses your ministry, consider buying us a coffee.")
 }

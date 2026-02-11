@@ -128,8 +128,8 @@ struct SettingsView: View {
             // ── Hero Donation CTA ──
             Link(destination: AppConfig.donationURL) {
                 HStack(spacing: 8) {
-                    Image(systemName: "heart.fill")
-                    Text("Support This Ministry")
+                    Image(systemName: "cup.and.saucer.fill")
+                    Text("Buy Us a Coffee")
                 }
                 .font(.system(size: 14, weight: .bold))
                 .frame(maxWidth: .infinity)
@@ -138,8 +138,8 @@ struct SettingsView: View {
                 .background(BoothColors.accent)
                 .clipShape(RoundedRectangle(cornerRadius: 10))
             }
-            .accessibilityLabel("Support This Ministry")
-            .accessibilityHint("Opens donation page")
+            .accessibilityLabel("Buy Us a Coffee")
+            .accessibilityHint("Opens Ko-fi donation page")
 
             settingsLink(
                 icon: "chevron.left.forwardslash.chevron.right",
@@ -154,37 +154,6 @@ struct SettingsView: View {
                 subtitle: "Report issues on GitHub",
                 url: AppConfig.feedbackURL
             )
-
-            ShareLink(
-                item: AppConfig.githubURL,
-                subject: Text("SanctuarySound"),
-                message: Text("Check out SanctuarySound — a free, open-source app that calculates mixer settings for church production & worship teams.")
-            ) {
-                HStack(spacing: 12) {
-                    Image(systemName: "square.and.arrow.up")
-                        .font(.system(size: 14))
-                        .foregroundStyle(BoothColors.accent)
-                        .frame(width: 28, height: 28)
-
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("Share This App")
-                            .font(.system(size: 13, weight: .medium))
-                            .foregroundStyle(BoothColors.textPrimary)
-                        Text("Help other churches find better sound")
-                            .font(.system(size: 11))
-                            .foregroundStyle(BoothColors.textSecondary)
-                    }
-
-                    Spacer()
-
-                    Image(systemName: "chevron.right")
-                        .font(.system(size: 11, weight: .semibold))
-                        .foregroundStyle(BoothColors.textMuted)
-                }
-                .padding(12)
-                .background(BoothColors.surfaceElevated)
-                .clipShape(RoundedRectangle(cornerRadius: 8))
-            }
         }
     }
 
