@@ -183,7 +183,7 @@ SanctuarySound collects **no data**. The microphone is used only for real-time S
 
 SanctuarySound is free forever. If this app helps your worship team, consider supporting its development:
 
-- **Church Teams:** [Donate through Victory Church AL](https://victorychurchal.churchcenter.com) (tax-deductible via 501(c)(3))
+- **Buy Us a Coffee:** [Ko-fi](https://ko-fi.com/sanctuarysoundapp)
 - **Developers:** [GitHub Sponsors](https://github.com/sponsors/sanctuarysoundapp)
 
 Every contribution helps us build more tools for the church audio community.

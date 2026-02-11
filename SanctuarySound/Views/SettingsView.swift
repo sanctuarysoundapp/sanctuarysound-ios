@@ -128,8 +128,8 @@ struct SettingsView: View {
             // ── Hero Donation CTA ──
             Link(destination: AppConfig.donationURL) {
                 HStack(spacing: 8) {
-                    Image(systemName: "heart.fill")
-                    Text("Support This Ministry")
+                    Image(systemName: "cup.and.saucer.fill")
+                    Text("Buy Us a Coffee")
                 }
                 .font(.system(size: 14, weight: .bold))
                 .frame(maxWidth: .infinity)
@@ -138,8 +138,8 @@ struct SettingsView: View {
                 .background(BoothColors.accent)
                 .clipShape(RoundedRectangle(cornerRadius: 10))
             }
-            .accessibilityLabel("Support This Ministry")
-            .accessibilityHint("Opens donation page")
+            .accessibilityLabel("Buy Us a Coffee")
+            .accessibilityHint("Opens Ko-fi donation page")
 
             settingsLink(
                 icon: "chevron.left.forwardslash.chevron.right",
