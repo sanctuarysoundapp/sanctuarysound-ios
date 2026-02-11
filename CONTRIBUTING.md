@@ -121,7 +121,7 @@ See `CLAUDE.md` for the complete audio engineering reference.
 
 ## Sustainability
 
-SanctuarySound is a free, open-source ministry tool. Development is supported through donations via the church's 501(c)(3) and [GitHub Sponsors](https://github.com/sponsors/sanctuarysoundapp). There are no paywalls, no premium tiers, and no feature gating. Every feature is available to every user.
+SanctuarySound is a free, open-source ministry tool. Development is supported through [Ko-fi](https://ko-fi.com/sanctuarysoundapp) and [GitHub Sponsors](https://github.com/sponsors/sanctuarysoundapp). There are no paywalls, no premium tiers, and no feature gating. Every feature is available to every user.
 
 ## License
 
