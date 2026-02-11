@@ -368,17 +368,27 @@ final class PCOClient: ObservableObject {
 /// Provides the key window as the presentation anchor for ASWebAuthenticationSession.
 private final class AuthPresentationContext: NSObject, ASWebAuthenticationPresentationContextProviding {
     func presentationAnchor(for session: ASWebAuthenticationSession) -> ASPresentationAnchor {
-        guard let scene = UIApplication.shared.connectedScenes
-            .compactMap({ $0 as? UIWindowScene })
-            .first(where: { $0.activationState == .foregroundActive }),
-              let window = scene.windows.first(where: { $0.isKeyWindow }) else {
-            // Fallback: create a window from any available scene
-            let fallbackScene = UIApplication.shared.connectedScenes
-                .compactMap({ $0 as? UIWindowScene })
-                .first
-            return fallbackScene?.windows.first ?? ASPresentationAnchor()
+        let scenes = UIApplication.shared.connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+
+        // Prefer the active foreground scene's key window
+        if let activeScene = scenes.first(where: { $0.activationState == .foregroundActive }),
+           let keyWindow = activeScene.windows.first(where: { $0.isKeyWindow }) {
+            return keyWindow
         }
-        return window
+
+        // Fallback: any existing window from any scene
+        if let anyWindow = scenes.flatMap(\.windows).first {
+            return anyWindow
+        }
+
+        // Last resort: create a new window attached to any available scene.
+        // A window scene always exists when OAuth is triggered from the UI.
+        guard let fallbackScene = scenes.first else {
+            Logger.network.error("No UIWindowScene available for OAuth presentation anchor")
+            fatalError("No UIWindowScene available — OAuth requires an active window scene")
+        }
+        return ASPresentationAnchor(windowScene: fallbackScene)
     }
 }
 
