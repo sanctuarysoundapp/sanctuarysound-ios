@@ -289,17 +289,50 @@ struct RootView: View {
         }
         .environmentObject(themeProvider)
         .onAppear {
+            #if DEBUG
+            applyDebugLaunchArguments()
+            #endif
+
             // Activate WatchConnectivity session
             WatchSessionManager.shared.activate()
 
             // Dismiss splash after the animation completes
-            DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
-                withAnimation(.easeInOut(duration: 0.3)) {
+            let splashDelay: TimeInterval = isUITesting ? 0.0 : 3.0
+            DispatchQueue.main.asyncAfter(deadline: .now() + splashDelay) {
+                withAnimation(.easeInOut(duration: isUITesting ? 0.0 : 0.3)) {
                     showSplash = false
                 }
             }
         }
     }
+
+    // MARK: - ─── Debug Launch Arguments ───────────────────────────────────
+
+    private var isUITesting: Bool {
+        #if DEBUG
+        return CommandLine.arguments.contains("-UITesting")
+        #else
+        return false
+        #endif
+    }
+
+    #if DEBUG
+    private func applyDebugLaunchArguments() {
+        let args = CommandLine.arguments
+
+        if args.contains("-disableAnimations") {
+            UIView.setAnimationsEnabled(false)
+        }
+
+        if args.contains("-skipOnboarding") {
+            hasSeenOnboarding = true
+        }
+
+        if args.contains("-useSampleData") {
+            SampleDataInjector.populate(store)
+        }
+    }
+    #endif
 }
 
 
