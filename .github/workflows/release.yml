@@ -1,0 +1,117 @@
+name: Release to TestFlight
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+env:
+  XCODE_VERSION: '26.2'
+  SCHEME: 'SanctuarySound'
+  PROJECT: 'SanctuarySound.xcodeproj'
+  TEAM_ID: 'M2739G49TS'
+
+jobs:
+  release:
+    runs-on: macos-26
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode_${{ env.XCODE_VERSION }}.app
+
+      - name: Parse version from tag
+        id: version
+        run: |
+          TAG="${GITHUB_REF#refs/tags/v}"
+          echo "version=$TAG" >> "$GITHUB_OUTPUT"
+          echo "build=${{ github.run_number }}" >> "$GITHUB_OUTPUT"
+          echo "Version: $TAG, Build: ${{ github.run_number }}"
+
+      - name: Bump version in project
+        run: |
+          chmod +x scripts/bump-version.sh
+          ./scripts/bump-version.sh \
+            --version "${{ steps.version.outputs.version }}" \
+            --build "${{ steps.version.outputs.build }}"
+
+      - name: Run tests
+        run: |
+          xcodebuild test \
+            -project ${{ env.PROJECT }} \
+            -scheme ${{ env.SCHEME }} \
+            -destination 'platform=iOS Simulator,name=iPhone 17 Pro Max' \
+            -only-testing:SanctuarySoundTests \
+            -configuration Debug \
+            CODE_SIGNING_ALLOWED=NO
+
+      - name: Install App Store Connect API Key
+        env:
+          ASC_KEY_P8: ${{ secrets.ASC_KEY_P8 }}
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_KEY_ISSUER_ID: ${{ secrets.ASC_KEY_ISSUER_ID }}
+        run: |
+          mkdir -p ~/private_keys
+          echo "$ASC_KEY_P8" > ~/private_keys/AuthKey_${ASC_KEY_ID}.p8
+
+      - name: Archive
+        run: |
+          xcodebuild archive \
+            -project ${{ env.PROJECT }} \
+            -scheme ${{ env.SCHEME }} \
+            -configuration Release \
+            -archivePath build/SanctuarySound.xcarchive \
+            -destination 'generic/platform=iOS' \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath ~/private_keys/AuthKey_${{ secrets.ASC_KEY_ID }}.p8 \
+            -authenticationKeyID ${{ secrets.ASC_KEY_ID }} \
+            -authenticationKeyIssuerID ${{ secrets.ASC_KEY_ISSUER_ID }}
+
+      - name: Export IPA
+        run: |
+          xcodebuild -exportArchive \
+            -archivePath build/SanctuarySound.xcarchive \
+            -exportPath build/export \
+            -exportOptionsPlist exportOptions.plist \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath ~/private_keys/AuthKey_${{ secrets.ASC_KEY_ID }}.p8 \
+            -authenticationKeyID ${{ secrets.ASC_KEY_ID }} \
+            -authenticationKeyIssuerID ${{ secrets.ASC_KEY_ISSUER_ID }}
+
+      - name: Upload to TestFlight
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_KEY_ISSUER_ID: ${{ secrets.ASC_KEY_ISSUER_ID }}
+        run: |
+          xcrun altool --upload-app \
+            --type ios \
+            --file build/export/SanctuarySound.ipa \
+            --apiKey "$ASC_KEY_ID" \
+            --apiIssuer "$ASC_KEY_ISSUER_ID"
+
+      - name: Generate release notes
+        id: notes
+        run: |
+          chmod +x scripts/generate-release-notes.sh
+          NOTES=$(./scripts/generate-release-notes.sh)
+          echo "notes<<EOF" >> "$GITHUB_OUTPUT"
+          echo "$NOTES" >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          body: ${{ steps.notes.outputs.notes }}
+          files: build/export/SanctuarySound.ipa
+          generate_release_notes: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Cleanup API Key
+        if: always()
+        run: rm -rf ~/private_keys
