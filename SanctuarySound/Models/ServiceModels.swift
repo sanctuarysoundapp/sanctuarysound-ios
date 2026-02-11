@@ -60,6 +60,17 @@ enum BandComposition: String, CaseIterable, Identifiable, Codable {
 
     var id: String { rawValue }
 
+    /// Display name for Settings picker cells (max 16 chars).
+    var pickerDisplayName: String {
+        switch self {
+        case .live:     return "Full Live"
+        case .tracks:   return "Tracks Only"
+        case .hybrid:   return "Hybrid"
+        case .acoustic: return "Acoustic"
+        case .solo:     return "Solo + Vocal"
+        }
+    }
+
     /// Tracks-based setups need less gain staging on individual channels
     /// but require careful stereo bus management.
     var requiresStereoTrackInput: Bool {
@@ -349,6 +360,16 @@ enum DrumConfiguration: String, CaseIterable, Identifiable, Codable {
 
     var id: String { rawValue }
 
+    /// Display name for Settings picker cells (max 16 chars).
+    var pickerDisplayName: String {
+        switch self {
+        case .openStage:  return "Open Stage"
+        case .drumShield: return "Drum Shield"
+        case .drumCage:   return "Drum Cage"
+        case .electronic: return "Electronic Kit"
+        }
+    }
+
     /// SPL reduction factor in dB applied to drum source levels.
     /// A drum cage reduces what the overheads and room mics "see."
     var isolationReductionDB: Double {
@@ -382,6 +403,15 @@ enum RoomSize: String, CaseIterable, Identifiable, Codable {
 
     var id: String { rawValue }
 
+    /// Display name for Settings picker cells (max 16 chars).
+    var pickerDisplayName: String {
+        switch self {
+        case .small:  return "Small (<300)"
+        case .medium: return "Medium (300-800)"
+        case .large:  return "Large (800+)"
+        }
+    }
+
     /// Estimated RT60 baseline in seconds (before surface correction).
     var baseRT60: Double {
         switch self {
@@ -399,6 +429,15 @@ enum RoomSurface: String, CaseIterable, Identifiable, Codable {
     case mixed      = "Mixed (Typical Sanctuary)"
 
     var id: String { rawValue }
+
+    /// Display name for Settings picker cells (max 16 chars).
+    var pickerDisplayName: String {
+        switch self {
+        case .absorbent:  return "Absorbent"
+        case .reflective: return "Reflective"
+        case .mixed:      return "Mixed"
+        }
+    }
 
     /// RT60 multiplier applied to the room size baseline.
     var rt60Multiplier: Double {

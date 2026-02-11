@@ -20,8 +20,8 @@ struct SettingsView: View {
     @State private var showClearDataAlert = false
 
     private let gridColumns = [
-        GridItem(.flexible(), spacing: 12),
-        GridItem(.flexible(), spacing: 12)
+        GridItem(.flexible(minimum: 0, maximum: .infinity), spacing: 12),
+        GridItem(.flexible(minimum: 0, maximum: .infinity), spacing: 12)
     ]
 
     var body: some View {
@@ -195,24 +195,22 @@ struct SettingsView: View {
         SectionCard(title: "Console & Detail Level") {
             LazyVGrid(columns: gridColumns, spacing: 12) {
                 pickerCell(label: "Console") {
-                    Picker("Console", selection: $prefs.defaultMixer) {
-                        ForEach(MixerModel.allCases) { mixer in
-                            Text(mixer.localizedName).tag(mixer)
-                        }
-                    }
-                    .pickerStyle(.menu)
-                    .tint(BoothColors.accent)
+                    menuPicker(
+                        selection: $prefs.defaultMixer,
+                        allCases: MixerModel.allCases,
+                        displayName: { $0.localizedName },
+                        shortName: { $0.pickerDisplayName }
+                    )
                     .onChange(of: prefs.defaultMixer) { _, _ in savePrefs() }
                 }
 
                 pickerCell(label: "Level") {
-                    Picker("Level", selection: $prefs.defaultDetailLevel) {
-                        ForEach(DetailLevel.allCases) { level in
-                            Text(level.localizedName).tag(level)
-                        }
-                    }
-                    .pickerStyle(.menu)
-                    .tint(BoothColors.accent)
+                    menuPicker(
+                        selection: $prefs.defaultDetailLevel,
+                        allCases: DetailLevel.allCases,
+                        displayName: { $0.localizedName },
+                        shortName: { $0.rawValue }
+                    )
                     .onChange(of: prefs.defaultDetailLevel) { _, _ in savePrefs() }
                 }
             }
@@ -227,49 +225,45 @@ struct SettingsView: View {
             LazyVGrid(columns: gridColumns, spacing: 12) {
                 // ── Band Composition ──
                 pickerCell(label: "Band") {
-                    Picker("Band", selection: $prefs.defaultBandComposition) {
-                        ForEach(BandComposition.allCases) { band in
-                            Text(band.localizedName).tag(band)
-                        }
-                    }
-                    .pickerStyle(.menu)
-                    .tint(BoothColors.accent)
+                    menuPicker(
+                        selection: $prefs.defaultBandComposition,
+                        allCases: BandComposition.allCases,
+                        displayName: { $0.localizedName },
+                        shortName: { $0.pickerDisplayName }
+                    )
                     .onChange(of: prefs.defaultBandComposition) { _, _ in savePrefs() }
                 }
 
                 // ── Drum Config ──
                 pickerCell(label: "Drums") {
-                    Picker("Drums", selection: $prefs.defaultDrumConfig) {
-                        ForEach(DrumConfiguration.allCases) { config in
-                            Text(config.localizedName).tag(config)
-                        }
-                    }
-                    .pickerStyle(.menu)
-                    .tint(BoothColors.accent)
+                    menuPicker(
+                        selection: $prefs.defaultDrumConfig,
+                        allCases: DrumConfiguration.allCases,
+                        displayName: { $0.localizedName },
+                        shortName: { $0.pickerDisplayName }
+                    )
                     .onChange(of: prefs.defaultDrumConfig) { _, _ in savePrefs() }
                 }
 
                 // ── Room Size ──
                 pickerCell(label: "Size") {
-                    Picker("Size", selection: $prefs.defaultRoomSize) {
-                        ForEach(RoomSize.allCases) { size in
-                            Text(size.localizedName).tag(size)
-                        }
-                    }
-                    .pickerStyle(.menu)
-                    .tint(BoothColors.accent)
+                    menuPicker(
+                        selection: $prefs.defaultRoomSize,
+                        allCases: RoomSize.allCases,
+                        displayName: { $0.localizedName },
+                        shortName: { $0.pickerDisplayName }
+                    )
                     .onChange(of: prefs.defaultRoomSize) { _, _ in savePrefs() }
                 }
 
                 // ── Room Surface ──
                 pickerCell(label: "Surfaces") {
-                    Picker("Surface", selection: $prefs.defaultRoomSurface) {
-                        ForEach(RoomSurface.allCases) { surface in
-                            Text(surface.localizedName).tag(surface)
-                        }
-                    }
-                    .pickerStyle(.menu)
-                    .tint(BoothColors.accent)
+                    menuPicker(
+                        selection: $prefs.defaultRoomSurface,
+                        allCases: RoomSurface.allCases,
+                        displayName: { $0.localizedName },
+                        shortName: { $0.pickerDisplayName }
+                    )
                     .onChange(of: prefs.defaultRoomSurface) { _, _ in savePrefs() }
                 }
             }
@@ -534,11 +528,39 @@ struct SettingsView: View {
                 .foregroundStyle(BoothColors.textMuted)
                 .tracking(0.5)
             content()
+                .frame(maxWidth: .infinity, alignment: .leading)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(10)
         .background(BoothColors.surfaceElevated)
         .clipShape(RoundedRectangle(cornerRadius: 8))
+        .accessibilityElement(children: .combine)
+    }
+
+    /// Menu-based picker showing full names in dropdown, short names in cell.
+    private func menuPicker<T: Hashable & Identifiable>(
+        selection: Binding<T>,
+        allCases: [T],
+        displayName: @escaping (T) -> String,
+        shortName: @escaping (T) -> String
+    ) -> some View {
+        Menu {
+            Picker("", selection: selection) {
+                ForEach(allCases) { item in
+                    Text(displayName(item)).tag(item)
+                }
+            }
+        } label: {
+            HStack(spacing: 4) {
+                Text(shortName(selection.wrappedValue))
+                    .font(.system(size: 14))
+                    .foregroundStyle(BoothColors.accent)
+                    .lineLimit(1)
+                Image(systemName: "chevron.up.chevron.down")
+                    .font(.system(size: 9))
+                    .foregroundStyle(BoothColors.accent.opacity(0.6))
+            }
+        }
     }
 
     private func settingsLink(

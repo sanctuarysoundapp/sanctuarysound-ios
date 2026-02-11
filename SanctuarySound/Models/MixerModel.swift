@@ -97,7 +97,7 @@ enum MixerModel: String, CaseIterable, Identifiable, Codable {
     /// Whether the console supports built-in compressor per channel.
     var hasChannelCompressor: Bool { true } // All modern digital consoles do
 
-    /// Short display label for compact UI.
+    /// Short display label for compact badges (e.g., InfoBadge).
     var shortName: String {
         switch self {
         case .allenHeathAvantis: return "Avantis"
@@ -109,6 +109,21 @@ enum MixerModel: String, CaseIterable, Identifiable, Codable {
         case .yamahaCLQL:       return "CL/QL"
         case .soundcraftSi:     return "Si"
         case .presonusSL:       return "SL"
+        }
+    }
+
+    /// Display name for Settings picker cells (max 16 chars).
+    var pickerDisplayName: String {
+        switch self {
+        case .allenHeathAvantis: return "A&H Avantis"
+        case .allenHeathSQ:     return "A&H SQ"
+        case .allenHeathDLive:  return "A&H dLive"
+        case .behringerX32:     return "Behringer X32"
+        case .midasM32:         return "Midas M32"
+        case .yamahaTF:         return "Yamaha TF"
+        case .yamahaCLQL:       return "Yamaha CL/QL"
+        case .soundcraftSi:     return "Soundcraft Si"
+        case .presonusSL:       return "PreSonus SL"
         }
     }
 }
