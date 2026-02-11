@@ -1,6 +1,6 @@
 # CLAUDE.md — SanctuarySound Project Bible
 
-> **Last Updated:** 2026-02-09
+> **Last Updated:** 2026-02-11
 > **Status:** Beta Ready — TestFlight Provisioning
 > **Primary Stack:** Swift 5.9+ / SwiftUI / MVVM / iOS 17+ / watchOS 10+
 
@@ -356,6 +356,10 @@ The engine is pure and stateless — perfect for unit testing. Sprint C added co
 - [x] Zero IAP remnants in codebase (verified via grep)
 - [x] Accessibility labels for key interactive elements (VoiceOver) — Sprint C
 - [x] Technical debt remediated (3 sprints: force unwraps, file splitting, accessibility)
+- [x] True data clear — "Clear All Data" fully empties store, resets onboarding (PR #15)
+- [x] Test target deployment mismatch fixed — all 261 tests compile and pass (PR #15)
+- [x] CI modernized — macos-26, Xcode 26.2, iPhone 17 Pro Max (PR #15)
+- [x] `PrivacyInfo.xcprivacy` — Apple privacy manifest for App Store (PR #15)
 - [ ] TestFlight upload and internal testing
 - [ ] README screenshots (currently placeholder)
 

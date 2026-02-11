@@ -60,11 +60,11 @@ final class SPLMeter: ObservableObject {
     /// SPL ≈ dBFS + referenceOffset
     /// This is a rough factory calibration; the calibration flow refines it.
     /// Static so it is accessible from the nonisolated processBuffer() method.
-    private static let referenceOffset: Double = 90.0  // Approximate: 0 dBFS ≈ ~90 dB SPL on iPhone
+    private nonisolated static let referenceOffset: Double = 90.0  // Approximate: 0 dBFS ≈ ~90 dB SPL on iPhone
 
     /// Throttle UI dispatches from ~50Hz (audio callback rate) to 10Hz
     /// to reduce main-thread pressure and prevent UI jank.
-    private static let uiUpdateInterval: TimeInterval = 0.1  // 10Hz
+    private nonisolated static let uiUpdateInterval: TimeInterval = 0.1  // 10Hz
     private nonisolated(unsafe) var lastUIUpdateTime: TimeInterval = 0
 
     // MARK: - Public API

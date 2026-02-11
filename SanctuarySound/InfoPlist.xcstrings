@@ -43,12 +43,12 @@
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "SanctuarySound connects to your Allen & Heath mixer over the local network to read channel settings for analysis and recommendations."
+            "value" : "SanctuarySound connects to your mixer console over the local network to read channel settings for analysis and recommendations."
           }
         },
         "es" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "SanctuarySound se conecta a tu mezcladora Allen & Heath a través de la red local para leer los ajustes de canal para análisis y recomendaciones."
           }
         }
