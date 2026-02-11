@@ -39,4 +39,8 @@ Secrets/
 # Project-specific exclusions
 SS-Development\ Files/
 icon-design/
+demo-video/
 .claude/
+.agent/
+.agents/
+.windsurf/
