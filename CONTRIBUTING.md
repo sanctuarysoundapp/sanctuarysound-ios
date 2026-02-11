@@ -51,14 +51,22 @@ Use the [Mixer Support Request](https://github.com/sanctuarysoundapp/sanctuaryso
 - Fader range and unity position
 - Any documentation links
 
+### Branching Strategy
+
+We use a `develop` → `main` workflow:
+
+- **`develop`** — integration branch where all feature work lands
+- **`main`** — production-quality releases only (tagged versions go to TestFlight)
+- Feature branches target `develop`, not `main`
+
 ### Submitting Code
 
 1. Fork the repository
-2. Create a feature branch from `main`: `git checkout -b feature/your-feature`
+2. Create a feature branch from `develop`: `git checkout -b feature/your-feature develop`
 3. Make your changes following the code conventions below
-4. Write or update tests as needed (261+ tests must pass)
+4. Write or update tests as needed (289+ tests must pass)
 5. Ensure the project builds clean with no warnings
-6. Submit a pull request to `main`
+6. Submit a pull request to `develop`
 
 ## Code Conventions
 
@@ -93,7 +101,7 @@ Each file follows: header comment → imports → MARK sections → extensions �
 
 ### Testing
 
-- 261+ iOS unit tests and 17 Watch tests must all pass before submitting a PR
+- 289+ iOS unit tests and 17 Watch tests must all pass before submitting a PR
 - Test pure functions with known inputs and expected output ranges
 - Aim for 80%+ coverage on the Engine layer
 - Use test-driven development: write tests first (RED), implement (GREEN), refactor
