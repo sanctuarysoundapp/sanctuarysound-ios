@@ -4,7 +4,7 @@
 // ============================================================================
 // Architecture: MVVM View Layer
 // Purpose: Browse and search the Sound Engineer Q&A knowledge base.
-//          Category grid, search bar, article list, and article detail view.
+//          Category grid, search bar, filter chips, article list.
 //          100% offline — all content bundled with the app.
 // ============================================================================
 
@@ -25,7 +25,10 @@ struct QABrowserView: View {
                     // ── Search ──
                     searchBar
 
-                    if store.searchQuery.isEmpty && store.selectedCategory == nil {
+                    // ── Filter Chips ──
+                    filterChipsBar
+
+                    if store.searchQuery.isEmpty && !store.hasActiveFilters {
                         // ── Category Grid ──
                         categoryGrid
 
@@ -79,10 +82,91 @@ struct QABrowserView: View {
     }
 
 
+    // MARK: - ─── Filter Chips ────────────────────────────────────────────────
+
+    private var filterChipsBar: some View {
+        VStack(spacing: 8) {
+            // Difficulty chips
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 8) {
+                    ForEach(QADifficulty.allCases) { difficulty in
+                        filterChip(
+                            label: difficulty.rawValue,
+                            isActive: store.selectedDifficulty == difficulty,
+                            color: difficultyColor(difficulty)
+                        ) {
+                            if store.selectedDifficulty == difficulty {
+                                store.selectedDifficulty = nil
+                            } else {
+                                store.selectedDifficulty = difficulty
+                            }
+                        }
+                    }
+
+                    // Console tag chips
+                    if !store.availableConsoleTags.isEmpty {
+                        Divider()
+                            .frame(height: 20)
+                            .overlay(BoothColors.divider)
+
+                        ForEach(store.availableConsoleTags, id: \.self) { tag in
+                            filterChip(
+                                label: tag.uppercased(),
+                                isActive: store.selectedConsoleTags.contains(tag),
+                                color: BoothColors.accentWarm
+                            ) {
+                                if store.selectedConsoleTags.contains(tag) {
+                                    store.selectedConsoleTags.remove(tag)
+                                } else {
+                                    store.selectedConsoleTags.insert(tag)
+                                }
+                            }
+                        }
+                    }
+                }
+                .padding(.horizontal, 2)
+            }
+
+            // Clear All button
+            if store.hasActiveFilters {
+                Button {
+                    store.clearAllFilters()
+                } label: {
+                    HStack(spacing: 4) {
+                        Image(systemName: "xmark")
+                            .font(.system(size: 9))
+                        Text("Clear All Filters")
+                            .font(.system(size: 11, weight: .medium))
+                    }
+                    .foregroundStyle(BoothColors.accentDanger)
+                }
+            }
+        }
+    }
+
+    private func filterChip(
+        label: String,
+        isActive: Bool,
+        color: Color,
+        action: @escaping () -> Void
+    ) -> some View {
+        Button(action: action) {
+            Text(label)
+                .font(.system(size: 10, weight: .bold, design: .monospaced))
+                .foregroundStyle(isActive ? BoothColors.background : color)
+                .padding(.horizontal, 8)
+                .padding(.vertical, 4)
+                .background(isActive ? color : color.opacity(0.12))
+                .clipShape(RoundedRectangle(cornerRadius: 5))
+        }
+        .buttonStyle(.plain)
+    }
+
+
     // MARK: - ─── Category Grid ───────────────────────────────────────────────
 
     private var categoryGrid: some View {
-        SectionCard(title: "Categories") {
+        SectionCard(title: "Categories (\(store.articles.count) articles)") {
             LazyVGrid(columns: [
                 GridItem(.flexible(), spacing: 10),
                 GridItem(.flexible(), spacing: 10)
@@ -107,8 +191,9 @@ struct QABrowserView: View {
                     .font(.system(size: 12, weight: .semibold))
                     .foregroundStyle(BoothColors.textPrimary)
                     .multilineTextAlignment(.center)
+                    .lineLimit(2)
 
-                Text("\(store.articleCount(for: category)) articles")
+                Text("\(store.articleCount(for: category))")
                     .font(.system(size: 10))
                     .foregroundStyle(BoothColors.textMuted)
             }
@@ -169,34 +254,29 @@ struct QABrowserView: View {
                 }
 
                 SectionCard(title: "\(category.rawValue) (\(store.filteredArticles.count))") {
-                    if store.filteredArticles.isEmpty {
-                        emptyResults
-                    } else {
-                        ForEach(store.filteredArticles) { article in
-                            NavigationLink {
-                                QAArticleDetailView(article: article, store: store)
-                            } label: {
-                                articleRow(article)
-                            }
-                            .buttonStyle(.plain)
-                        }
-                    }
+                    articleList
                 }
             } else {
-                // Search results
+                // Search or filter results
                 SectionCard(title: "Results (\(store.filteredArticles.count))") {
-                    if store.filteredArticles.isEmpty {
-                        emptyResults
-                    } else {
-                        ForEach(store.filteredArticles) { article in
-                            NavigationLink {
-                                QAArticleDetailView(article: article, store: store)
-                            } label: {
-                                articleRow(article)
-                            }
-                            .buttonStyle(.plain)
-                        }
+                    articleList
+                }
+            }
+        }
+    }
+
+    private var articleList: some View {
+        Group {
+            if store.filteredArticles.isEmpty {
+                emptyResults
+            } else {
+                ForEach(store.filteredArticles) { article in
+                    NavigationLink {
+                        QAArticleDetailView(article: article, store: store)
+                    } label: {
+                        articleRow(article)
                     }
+                    .buttonStyle(.plain)
                 }
             }
         }
@@ -234,6 +314,21 @@ struct QABrowserView: View {
                     .font(.system(size: 11))
                     .foregroundStyle(BoothColors.textSecondary)
                     .lineLimit(2)
+
+                // Console tags on article row
+                if !article.consoleTags.isEmpty {
+                    HStack(spacing: 4) {
+                        ForEach(article.consoleTags.prefix(3), id: \.self) { tag in
+                            Text(tag.uppercased())
+                                .font(.system(size: 7, weight: .bold, design: .monospaced))
+                                .foregroundStyle(BoothColors.accentWarm)
+                                .padding(.horizontal, 4)
+                                .padding(.vertical, 1)
+                                .background(BoothColors.accentWarm.opacity(0.1))
+                                .clipShape(RoundedRectangle(cornerRadius: 2))
+                        }
+                    }
+                }
             }
 
             Spacer()
@@ -248,13 +343,7 @@ struct QABrowserView: View {
     }
 
     private func difficultyBadge(_ difficulty: QADifficulty) -> some View {
-        let color: Color = {
-            switch difficulty {
-            case .beginner:     return BoothColors.accent
-            case .intermediate: return BoothColors.accentWarm
-            case .advanced:     return BoothColors.accentDanger
-            }
-        }()
+        let color = difficultyColor(difficulty)
 
         return Text(difficulty.rawValue)
             .font(.system(size: 8, weight: .bold, design: .monospaced))
@@ -264,148 +353,12 @@ struct QABrowserView: View {
             .background(color.opacity(0.15))
             .clipShape(RoundedRectangle(cornerRadius: 3))
     }
-}
 
-
-// MARK: - ─── Article Detail View ─────────────────────────────────────────────
-
-struct QAArticleDetailView: View {
-    let article: QAArticle
-    let store: QAStore
-
-    var body: some View {
-        ZStack {
-            BoothColors.background.ignoresSafeArea()
-
-            ScrollView {
-                VStack(alignment: .leading, spacing: 20) {
-                    // ── Header ──
-                    VStack(alignment: .leading, spacing: 8) {
-                        HStack(spacing: 8) {
-                            Text(article.category.rawValue)
-                                .font(.system(size: 10, weight: .bold, design: .monospaced))
-                                .foregroundStyle(BoothColors.accent)
-                                .padding(.horizontal, 6)
-                                .padding(.vertical, 2)
-                                .background(BoothColors.accent.opacity(0.15))
-                                .clipShape(RoundedRectangle(cornerRadius: 3))
-
-                            difficultyBadge(article.difficulty)
-                        }
-
-                        Text(article.title)
-                            .font(.system(size: 22, weight: .bold))
-                            .foregroundStyle(BoothColors.textPrimary)
-
-                        Text(article.summary)
-                            .font(.system(size: 14))
-                            .foregroundStyle(BoothColors.textSecondary)
-                            .lineSpacing(2)
-                    }
-
-                    Divider()
-                        .overlay(BoothColors.divider)
-
-                    // ── Sections ──
-                    ForEach(Array(article.sections.enumerated()), id: \.offset) { _, section in
-                        sectionView(section)
-                    }
-
-                    // ── Related Articles ──
-                    let related = store.relatedArticles(for: article)
-                    if !related.isEmpty {
-                        Divider()
-                            .overlay(BoothColors.divider)
-
-                        VStack(alignment: .leading, spacing: 10) {
-                            Text("RELATED")
-                                .font(.system(size: 10, weight: .bold, design: .monospaced))
-                                .foregroundStyle(BoothColors.textMuted)
-                                .tracking(1)
-
-                            ForEach(related) { relatedArticle in
-                                NavigationLink {
-                                    QAArticleDetailView(article: relatedArticle, store: store)
-                                } label: {
-                                    HStack(spacing: 8) {
-                                        Image(systemName: relatedArticle.category.icon)
-                                            .font(.system(size: 12))
-                                            .foregroundStyle(BoothColors.accent)
-
-                                        Text(relatedArticle.title)
-                                            .font(.system(size: 13, weight: .medium))
-                                            .foregroundStyle(BoothColors.textPrimary)
-
-                                        Spacer()
-
-                                        Image(systemName: "chevron.right")
-                                            .font(.system(size: 10))
-                                            .foregroundStyle(BoothColors.textMuted)
-                                    }
-                                    .padding(10)
-                                    .background(BoothColors.surfaceElevated)
-                                    .clipShape(RoundedRectangle(cornerRadius: 8))
-                                }
-                                .buttonStyle(.plain)
-                            }
-                        }
-                    }
-                }
-                .padding()
-                .padding(.bottom, 20)
-            }
+    private func difficultyColor(_ difficulty: QADifficulty) -> Color {
+        switch difficulty {
+        case .beginner:     return BoothColors.accent
+        case .intermediate: return BoothColors.accentWarm
+        case .advanced:     return BoothColors.accentDanger
         }
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbarColorScheme(.dark, for: .navigationBar)
-    }
-
-    private func sectionView(_ section: QASection) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
-            if let heading = section.heading {
-                Text(heading)
-                    .font(.system(size: 16, weight: .semibold))
-                    .foregroundStyle(BoothColors.textPrimary)
-            }
-
-            Text(section.content)
-                .font(.system(size: 13))
-                .foregroundStyle(BoothColors.textPrimary)
-                .lineSpacing(3)
-
-            if let tip = section.tip {
-                HStack(alignment: .top, spacing: 8) {
-                    Image(systemName: "lightbulb.fill")
-                        .font(.system(size: 12))
-                        .foregroundStyle(BoothColors.accentWarm)
-                        .padding(.top, 2)
-
-                    Text(tip)
-                        .font(.system(size: 12))
-                        .foregroundStyle(BoothColors.textSecondary)
-                        .lineSpacing(2)
-                }
-                .padding(10)
-                .background(BoothColors.accentWarm.opacity(0.08))
-                .clipShape(RoundedRectangle(cornerRadius: 8))
-            }
-        }
-    }
-
-    private func difficultyBadge(_ difficulty: QADifficulty) -> some View {
-        let color: Color = {
-            switch difficulty {
-            case .beginner:     return BoothColors.accent
-            case .intermediate: return BoothColors.accentWarm
-            case .advanced:     return BoothColors.accentDanger
-            }
-        }()
-
-        return Text(difficulty.rawValue)
-            .font(.system(size: 8, weight: .bold, design: .monospaced))
-            .foregroundStyle(color)
-            .padding(.horizontal, 5)
-            .padding(.vertical, 1)
-            .background(color.opacity(0.15))
-            .clipShape(RoundedRectangle(cornerRadius: 3))
     }
 }

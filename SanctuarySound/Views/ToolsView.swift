@@ -3,8 +3,8 @@
 // SanctuarySound — Virtual Audio Director for House of Worship
 // ============================================================================
 // Architecture: MVVM View Layer
-// Purpose: Tools tab — utility features including SPL Meter, EQ Analyzer,
-//          Room Acoustics measurement, and Sound Engineer Q&A knowledge base.
+// Purpose: Tools tab — utility features organized into three sections:
+//          Monitoring (SPL Meter), Analysis (EQ, RT60), and Learning (Q&A).
 // ============================================================================
 
 import SwiftUI
@@ -28,17 +28,14 @@ struct ToolsView: View {
                         TipView(SPLMeterTip())
                             .tipBackground(BoothColors.surface)
 
-                        // ── SPL Meter ──
-                        splMeterCard
+                        // ── Monitoring ──
+                        monitoringSection
 
-                        // ── Analysis Tools ──
-                        analysisToolsSection
+                        // ── Analysis ──
+                        analysisSection
 
-                        // ── Knowledge Base ──
-                        knowledgeBaseCard
-
-                        // ── SPL Reports ──
-                        splReportsSection
+                        // ── Learning & Development ──
+                        learningSection
                     }
                     .padding()
                     .padding(.bottom, 20)
@@ -51,35 +48,36 @@ struct ToolsView: View {
     }
 
 
-    // MARK: - SPL Meter Card
+    // MARK: - ─── Monitoring ──────────────────────────────────────────────────
 
-    private var splMeterCard: some View {
-        NavigationLink {
-            SPLCalibrationView(
-                store: store,
-                splMeter: store.splMeter,
-                splPreference: $splPreference,
-                onSave: { pref in store.updateSPLPreference(pref) }
-            )
-        } label: {
-            toolCard(
-                title: "SPL Meter",
-                icon: "speaker.wave.2.fill",
-                description: "Monitor sound levels in real-time with calibration, alerts, and session reports.",
-                accentColor: BoothColors.accent,
-                isActive: store.splMeter.isRunning,
-                enabled: true
-            )
+    private var monitoringSection: some View {
+        SectionCard(title: "Monitoring") {
+            NavigationLink {
+                SPLCalibrationView(
+                    store: store,
+                    splMeter: store.splMeter,
+                    splPreference: $splPreference,
+                    onSave: { pref in store.updateSPLPreference(pref) }
+                )
+            } label: {
+                toolCard(
+                    title: "SPL Meter",
+                    icon: "speaker.wave.2.fill",
+                    description: "Monitor sound levels in real-time with calibration, alerts, and session reports.",
+                    accentColor: BoothColors.accent,
+                    isActive: store.splMeter.isRunning
+                )
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("SPL Meter\(store.splMeter.isRunning ? ", active" : "")")
+            .accessibilityHint("Monitor sound levels in real-time with calibration and alerts")
         }
-        .buttonStyle(.plain)
-        .accessibilityLabel("SPL Meter\(store.splMeter.isRunning ? ", active" : "")")
-        .accessibilityHint("Monitor sound levels in real-time with calibration and alerts")
     }
 
 
-    // MARK: - Analysis Tools
+    // MARK: - ─── Analysis ────────────────────────────────────────────────────
 
-    private var analysisToolsSection: some View {
+    private var analysisSection: some View {
         SectionCard(title: "Analysis") {
             NavigationLink {
                 EQAnalyzerView()
@@ -89,8 +87,7 @@ struct ToolsView: View {
                     icon: "waveform",
                     description: "Real-time 1/3-octave frequency spectrum for room and mix analysis.",
                     accentColor: BoothColors.accent,
-                    isActive: false,
-                    enabled: true
+                    isActive: false
                 )
             }
             .buttonStyle(.plain)
@@ -105,8 +102,7 @@ struct ToolsView: View {
                     icon: "building.2",
                     description: "Measure RT60 reverb time using a clap test with your iPhone mic.",
                     accentColor: BoothColors.accent,
-                    isActive: false,
-                    enabled: true
+                    isActive: false
                 )
             }
             .buttonStyle(.plain)
@@ -116,103 +112,52 @@ struct ToolsView: View {
     }
 
 
-    // MARK: - Knowledge Base
+    // MARK: - ─── Learning & Development ──────────────────────────────────────
 
-    private var knowledgeBaseCard: some View {
-        NavigationLink {
-            QABrowserView()
-        } label: {
-            toolCard(
-                title: "Sound Engineer Q&A",
-                icon: "questionmark.bubble",
-                description: "Audio engineering knowledge base — gain staging, EQ, compression, and more.",
-                accentColor: BoothColors.accent,
-                isActive: false,
-                enabled: true
-            )
-        }
-        .buttonStyle(.plain)
-        .accessibilityLabel("Sound Engineer Q&A")
-        .accessibilityHint("Audio engineering knowledge base")
-    }
-
-
-    // MARK: - SPL Reports
-
-    private var splReportsSection: some View {
-        SectionCard(title: "SPL Reports (\(store.savedReports.count))") {
-            if store.savedReports.isEmpty {
-                VStack(spacing: 8) {
-                    Image(systemName: "chart.line.text.clipboard")
-                        .font(.system(size: 28))
-                        .foregroundStyle(BoothColors.textMuted)
-                    Text("No session reports yet. Start monitoring with the SPL Meter.")
-                        .font(.system(size: 12))
-                        .foregroundStyle(BoothColors.textMuted)
-                        .multilineTextAlignment(.center)
-                }
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 16)
-            } else {
-                ForEach(store.savedReports.prefix(5)) { report in
-                    reportRow(report)
-                }
+    private var learningSection: some View {
+        SectionCard(title: "Learning & Development") {
+            NavigationLink {
+                QABrowserView()
+            } label: {
+                toolCard(
+                    title: "Sound Engineer Q&A",
+                    icon: "questionmark.bubble",
+                    description: "Audio engineering knowledge base with articles on gain staging, EQ, compression, mixer setup, and more.",
+                    accentColor: BoothColors.accent,
+                    isActive: false
+                )
             }
+            .buttonStyle(.plain)
+            .accessibilityLabel("Sound Engineer Q&A")
+            .accessibilityHint("Audio engineering knowledge base")
         }
     }
 
-    private func reportRow(_ report: SPLSessionReport) -> some View {
-        HStack {
-            VStack(alignment: .leading, spacing: 2) {
-                Text(formatDate(report.sessionStart))
-                    .font(.system(size: 13, weight: .medium))
-                    .foregroundStyle(BoothColors.textPrimary)
-                HStack(spacing: 6) {
-                    Text("Avg: \(Int(report.overallAverageDB)) dB")
-                    Text("\u{00B7}")
-                    Text("Peak: \(Int(report.overallPeakDB)) dB")
-                }
-                .font(.system(size: 11, design: .monospaced))
-                .foregroundStyle(BoothColors.textSecondary)
-            }
-            Spacer()
-            Text(gradeLabel(for: report))
-                .font(.system(size: 12, weight: .bold))
-                .foregroundStyle(gradeColorForReport(report))
-        }
-        .padding(10)
-        .background(BoothColors.surfaceElevated)
-        .clipShape(RoundedRectangle(cornerRadius: 8))
-        .accessibilityElement(children: .combine)
-        .accessibilityLabel("\(formatDate(report.sessionStart)), average \(Int(report.overallAverageDB)) dB, peak \(Int(report.overallPeakDB)) dB, \(gradeLabel(for: report))")
-    }
 
-
-    // MARK: - Tool Card Component
+    // MARK: - ─── Tool Card Component ─────────────────────────────────────────
 
     private func toolCard(
         title: String,
         icon: String,
         description: String,
         accentColor: Color,
-        isActive: Bool,
-        enabled: Bool
+        isActive: Bool
     ) -> some View {
         HStack(spacing: 14) {
             ZStack {
                 RoundedRectangle(cornerRadius: 10)
-                    .fill(accentColor.opacity(enabled ? 0.15 : 0.05))
+                    .fill(accentColor.opacity(0.15))
                     .frame(width: 44, height: 44)
                 Image(systemName: icon)
                     .font(.system(size: 20))
-                    .foregroundStyle(enabled ? accentColor : BoothColors.textMuted)
+                    .foregroundStyle(accentColor)
             }
 
             VStack(alignment: .leading, spacing: 3) {
                 HStack(spacing: 6) {
                     Text(title)
                         .font(.system(size: 15, weight: .semibold))
-                        .foregroundStyle(enabled ? BoothColors.textPrimary : BoothColors.textMuted)
+                        .foregroundStyle(BoothColors.textPrimary)
                     if isActive {
                         Text("ACTIVE")
                             .font(.system(size: 8, weight: .black, design: .monospaced))
@@ -225,47 +170,18 @@ struct ToolsView: View {
                 }
                 Text(description)
                     .font(.system(size: 12))
-                    .foregroundStyle(enabled ? BoothColors.textSecondary : BoothColors.textMuted)
+                    .foregroundStyle(BoothColors.textSecondary)
                     .lineLimit(2)
             }
 
             Spacer()
 
-            if enabled {
-                Image(systemName: "chevron.right")
-                    .font(.system(size: 12))
-                    .foregroundStyle(BoothColors.textMuted)
-            }
+            Image(systemName: "chevron.right")
+                .font(.system(size: 12))
+                .foregroundStyle(BoothColors.textMuted)
         }
         .padding(12)
         .background(BoothColors.surfaceElevated)
         .clipShape(RoundedRectangle(cornerRadius: 10))
-        .opacity(enabled ? 1.0 : 0.6)
-    }
-
-
-    // MARK: - Helpers
-
-    private static let dateFormatter: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "MMM d, h:mm a"
-        return formatter
-    }()
-
-    private func formatDate(_ date: Date) -> String {
-        Self.dateFormatter.string(from: date)
-    }
-
-    private func gradeLabel(for report: SPLSessionReport) -> String {
-        if report.breachCount == 0 { return "Clean" }
-        if report.dangerCount == 0 && report.breachPercentage < 10 { return "Good" }
-        if report.breachPercentage < 20 { return "Fair" }
-        return "Over"
-    }
-
-    private func gradeColorForReport(_ report: SPLSessionReport) -> Color {
-        if report.breachCount == 0 { return BoothColors.accent }
-        if report.dangerCount == 0 && report.breachPercentage < 10 { return BoothColors.accentWarm }
-        return BoothColors.accentDanger
     }
 }
