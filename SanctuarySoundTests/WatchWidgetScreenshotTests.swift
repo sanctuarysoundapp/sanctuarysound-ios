@@ -77,7 +77,8 @@ final class WatchWidgetScreenshotTests: XCTestCase {
             alertState: "safe",
             isRunning: true,
             flaggingMode: "BAL",
-            isPhoneReachable: true
+            isPhoneReachable: true,
+            sessionElapsed: 2340  // 39 minutes
         )
 
         renderToAttachment(
@@ -96,7 +97,8 @@ final class WatchWidgetScreenshotTests: XCTestCase {
             alertState: "alert",
             isRunning: true,
             flaggingMode: "BAL",
-            isPhoneReachable: true
+            isPhoneReachable: true,
+            sessionElapsed: 4920  // 1 hour 22 minutes
         )
 
         renderToAttachment(
@@ -121,6 +123,7 @@ final class WatchWidgetScreenshotTests: XCTestCase {
     }
 
     func test04_watchReportDetail_ultra3() throws {
+        // Hero detail: "Good" grade (1 breach, relatable for volunteers)
         let report = Self.sampleReports()[0]
 
         let view = WatchReportDetailPreview(report: report)
@@ -144,7 +147,8 @@ final class WatchWidgetScreenshotTests: XCTestCase {
             alertState: "safe",
             isRunning: true,
             flaggingMode: "BAL",
-            isPhoneReachable: true
+            isPhoneReachable: true,
+            sessionElapsed: 2340  // 39 minutes
         )
 
         renderToAttachment(
@@ -163,7 +167,8 @@ final class WatchWidgetScreenshotTests: XCTestCase {
             alertState: "alert",
             isRunning: true,
             flaggingMode: "BAL",
-            isPhoneReachable: true
+            isPhoneReachable: true,
+            sessionElapsed: 4920  // 1 hour 22 minutes
         )
 
         renderToAttachment(
@@ -266,40 +271,48 @@ final class WatchWidgetScreenshotTests: XCTestCase {
 
     // MARK: - ─── Sample Data ───────────────────────────────────────────────
 
-    /// Creates sample SPL reports for screenshot rendering.
-    /// Replicates logic from SampleDataInjector.createSPLReport().
+    /// Creates 6 sample SPL reports spanning all 4 grade levels for rich screenshots.
+    /// Grades: Excellent (0% breaches), Good (<5%), Fair (5-15%), Needs Work (≥15%).
     private static func sampleReports() -> [SPLSessionReport] {
         let now = Date()
         let calendar = Calendar.current
 
-        let report1Start = calendar.date(byAdding: .hour, value: -26, to: now) ?? now
-        let report1End = calendar.date(byAdding: .hour, value: -24, to: now) ?? now
+        // ── Report 1: Good (hero) — 1 breach, 1 day ago ──
+        let r1Start = calendar.date(byAdding: .hour, value: -26, to: now) ?? now
+        let r1End = calendar.date(byAdding: .hour, value: -24, to: now) ?? now
 
-        let report2Start = calendar.date(byAdding: .day, value: -7, to: now) ?? now
-        let report2End = calendar.date(
-            byAdding: .minute, value: 95, to: report2Start
-        ) ?? report2Start
+        // ── Report 2: Excellent — 0 breaches, 3 days ago ──
+        let r2Start = calendar.date(byAdding: .day, value: -3, to: now) ?? now
+        let r2End = calendar.date(byAdding: .minute, value: 95, to: r2Start) ?? r2Start
 
-        let report3Start = calendar.date(byAdding: .day, value: -14, to: now) ?? now
-        let report3End = calendar.date(
-            byAdding: .minute, value: 110, to: report3Start
-        ) ?? report3Start
+        // ── Report 3: Fair — 2 breaches (1 danger), 7 days ago ──
+        let r3Start = calendar.date(byAdding: .day, value: -7, to: now) ?? now
+        let r3End = calendar.date(byAdding: .minute, value: 110, to: r3Start) ?? r3Start
+
+        // ── Report 4: Needs Work — 4 breaches (2 danger), 10 days ago ──
+        let r4Start = calendar.date(byAdding: .day, value: -10, to: now) ?? now
+        let r4End = calendar.date(byAdding: .minute, value: 90, to: r4Start) ?? r4Start
+
+        // ── Report 5: Excellent — 0 breaches, 14 days ago ──
+        let r5Start = calendar.date(byAdding: .day, value: -14, to: now) ?? now
+        let r5End = calendar.date(byAdding: .minute, value: 120, to: r5Start) ?? r5Start
+
+        // ── Report 6: Good — 1 breach, 21 days ago ──
+        let r6Start = calendar.date(byAdding: .day, value: -21, to: now) ?? now
+        let r6End = calendar.date(byAdding: .minute, value: 100, to: r6Start) ?? r6Start
 
         return [
+            // Report 1: Good — 1 breach at 25min mark
             SPLSessionReport(
-                date: report1Start,
-                sessionStart: report1Start,
-                sessionEnd: report1End,
+                date: r1Start,
+                sessionStart: r1Start,
+                sessionEnd: r1End,
                 targetDB: 90.0,
                 flaggingMode: .balanced,
                 breachEvents: [
                     SPLBreachEvent(
-                        startTime: calendar.date(
-                            byAdding: .minute, value: 25, to: report1Start
-                        ) ?? report1Start,
-                        endTime: calendar.date(
-                            byAdding: .minute, value: 26, to: report1Start
-                        ) ?? report1Start,
+                        startTime: calendar.date(byAdding: .minute, value: 25, to: r1Start) ?? r1Start,
+                        endTime: calendar.date(byAdding: .minute, value: 26, to: r1Start) ?? r1Start,
                         peakDB: 93.2,
                         targetDB: 90.0,
                         thresholdDB: 5.0
@@ -309,10 +322,12 @@ final class WatchWidgetScreenshotTests: XCTestCase {
                 overallAverageDB: 85.4,
                 totalMonitoringSeconds: 7200
             ),
+
+            // Report 2: Excellent — clean session
             SPLSessionReport(
-                date: report2Start,
-                sessionStart: report2Start,
-                sessionEnd: report2End,
+                date: r2Start,
+                sessionStart: r2Start,
+                sessionEnd: r2End,
                 targetDB: 90.0,
                 flaggingMode: .balanced,
                 breachEvents: [],
@@ -320,31 +335,25 @@ final class WatchWidgetScreenshotTests: XCTestCase {
                 overallAverageDB: 82.1,
                 totalMonitoringSeconds: 5700
             ),
+
+            // Report 3: Fair — 2 breaches, 1 danger
             SPLSessionReport(
-                date: report3Start,
-                sessionStart: report3Start,
-                sessionEnd: report3End,
+                date: r3Start,
+                sessionStart: r3Start,
+                sessionEnd: r3End,
                 targetDB: 90.0,
                 flaggingMode: .strict,
                 breachEvents: [
                     SPLBreachEvent(
-                        startTime: calendar.date(
-                            byAdding: .minute, value: 40, to: report3Start
-                        ) ?? report3Start,
-                        endTime: calendar.date(
-                            byAdding: .minute, value: 42, to: report3Start
-                        ) ?? report3Start,
+                        startTime: calendar.date(byAdding: .minute, value: 40, to: r3Start) ?? r3Start,
+                        endTime: calendar.date(byAdding: .minute, value: 42, to: r3Start) ?? r3Start,
                         peakDB: 94.8,
                         targetDB: 90.0,
                         thresholdDB: 2.0
                     ),
                     SPLBreachEvent(
-                        startTime: calendar.date(
-                            byAdding: .minute, value: 75, to: report3Start
-                        ) ?? report3Start,
-                        endTime: calendar.date(
-                            byAdding: .minute, value: 76, to: report3Start
-                        ) ?? report3Start,
+                        startTime: calendar.date(byAdding: .minute, value: 75, to: r3Start) ?? r3Start,
+                        endTime: calendar.date(byAdding: .minute, value: 76, to: r3Start) ?? r3Start,
                         peakDB: 91.3,
                         targetDB: 90.0,
                         thresholdDB: 2.0
@@ -353,6 +362,82 @@ final class WatchWidgetScreenshotTests: XCTestCase {
                 overallPeakDB: 94.8,
                 overallAverageDB: 86.7,
                 totalMonitoringSeconds: 6600
+            ),
+
+            // Report 4: Needs Work — 4 breaches, 2 danger
+            SPLSessionReport(
+                date: r4Start,
+                sessionStart: r4Start,
+                sessionEnd: r4End,
+                targetDB: 90.0,
+                flaggingMode: .balanced,
+                breachEvents: [
+                    SPLBreachEvent(
+                        startTime: calendar.date(byAdding: .minute, value: 10, to: r4Start) ?? r4Start,
+                        endTime: calendar.date(byAdding: .minute, value: 15, to: r4Start) ?? r4Start,
+                        peakDB: 97.1,
+                        targetDB: 90.0,
+                        thresholdDB: 5.0
+                    ),
+                    SPLBreachEvent(
+                        startTime: calendar.date(byAdding: .minute, value: 30, to: r4Start) ?? r4Start,
+                        endTime: calendar.date(byAdding: .minute, value: 35, to: r4Start) ?? r4Start,
+                        peakDB: 96.5,
+                        targetDB: 90.0,
+                        thresholdDB: 5.0
+                    ),
+                    SPLBreachEvent(
+                        startTime: calendar.date(byAdding: .minute, value: 55, to: r4Start) ?? r4Start,
+                        endTime: calendar.date(byAdding: .minute, value: 58, to: r4Start) ?? r4Start,
+                        peakDB: 93.2,
+                        targetDB: 90.0,
+                        thresholdDB: 5.0
+                    ),
+                    SPLBreachEvent(
+                        startTime: calendar.date(byAdding: .minute, value: 75, to: r4Start) ?? r4Start,
+                        endTime: calendar.date(byAdding: .minute, value: 78, to: r4Start) ?? r4Start,
+                        peakDB: 94.0,
+                        targetDB: 90.0,
+                        thresholdDB: 5.0
+                    )
+                ],
+                overallPeakDB: 97.1,
+                overallAverageDB: 89.2,
+                totalMonitoringSeconds: 5400
+            ),
+
+            // Report 5: Excellent — another clean session
+            SPLSessionReport(
+                date: r5Start,
+                sessionStart: r5Start,
+                sessionEnd: r5End,
+                targetDB: 90.0,
+                flaggingMode: .balanced,
+                breachEvents: [],
+                overallPeakDB: 87.0,
+                overallAverageDB: 80.5,
+                totalMonitoringSeconds: 7200
+            ),
+
+            // Report 6: Good — 1 breach, older session
+            SPLSessionReport(
+                date: r6Start,
+                sessionStart: r6Start,
+                sessionEnd: r6End,
+                targetDB: 90.0,
+                flaggingMode: .balanced,
+                breachEvents: [
+                    SPLBreachEvent(
+                        startTime: calendar.date(byAdding: .minute, value: 50, to: r6Start) ?? r6Start,
+                        endTime: calendar.date(byAdding: .minute, value: 51, to: r6Start) ?? r6Start,
+                        peakDB: 91.5,
+                        targetDB: 90.0,
+                        thresholdDB: 5.0
+                    )
+                ],
+                overallPeakDB: 91.5,
+                overallAverageDB: 84.3,
+                totalMonitoringSeconds: 6000
             )
         ]
     }

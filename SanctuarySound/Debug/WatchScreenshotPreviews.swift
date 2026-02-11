@@ -8,11 +8,11 @@
 //          App Store screenshot PNGs without requiring watchOS UI tests.
 //
 // SYNC WARNING: These views replicate the visual layout of:
-//   - WatchSPLView.swift          (232 lines — dashboard, ring gauge, corners)
-//   - WatchReportsListView.swift  (41 lines — report list with rows)
-//   - WatchReportDetailView.swift (92 lines — grade, stat rows)
+//   - WatchSPLView.swift          (307 lines — dashboard, ring gauge, corners)
+//   - WatchReportsListView.swift  (40 lines — report list with rows)
+//   - WatchReportDetailView.swift (167 lines — grade, colored stats, timeline)
 //   - WatchComplicationProvider.swift (155 lines — circular, corner, rectangular)
-//   - WatchColors.swift           (122 lines — Dark Booth theme colors)
+//   - WatchColors.swift           (121 lines — Dark Booth theme colors)
 //   If the source Watch files change, update these replicas to match.
 // ============================================================================
 
@@ -56,6 +56,7 @@ struct WatchDashboardPreview: View {
     let isRunning: Bool
     let flaggingMode: String    // "BAL", "STR", "VAR"
     let isPhoneReachable: Bool
+    let sessionElapsed: TimeInterval
 
     var body: some View {
         GeometryReader { geo in
@@ -64,6 +65,15 @@ struct WatchDashboardPreview: View {
             ZStack {
                 ScreenshotColors.background
                     .ignoresSafeArea()
+
+                // ── Radial Background Gradient ──
+                RadialGradient(
+                    colors: [ScreenshotColors.surface.opacity(0.3), ScreenshotColors.background],
+                    center: .center,
+                    startRadius: 0,
+                    endRadius: min(size.width, size.height) * 0.5
+                )
+                .ignoresSafeArea()
 
                 // ── Central Activity Ring Gauge ──
                 activityRingGauge(size: size)
@@ -107,11 +117,16 @@ struct WatchDashboardPreview: View {
                 )
                 .frame(width: ringDiameter, height: ringDiameter)
 
-            // Filled arc — Activity Ring style
+            // Filled arc — Activity Ring style with gradient
             Circle()
                 .trim(from: 0, to: min(ringFillFraction, 1.0))
                 .stroke(
-                    ringColor,
+                    AngularGradient(
+                        gradient: ringGradient,
+                        center: .center,
+                        startAngle: .degrees(-90),
+                        endAngle: .degrees(-90 + 360 * min(ringFillFraction, 1.0))
+                    ),
                     style: StrokeStyle(lineWidth: ringWidth, lineCap: .round)
                 )
                 .frame(width: ringDiameter, height: ringDiameter)
@@ -128,15 +143,25 @@ struct WatchDashboardPreview: View {
                     .blur(radius: 4)
             }
 
-            // Center dB readout
+            // Center dB readout + session timer
             VStack(spacing: 0) {
                 Text("\(Int(currentDB))")
                     .font(.system(size: 34, weight: .heavy, design: .rounded))
                     .foregroundStyle(ringColor)
+                    // Static pulse for alert screenshots (1.08x scale)
+                    .scaleEffect(alertState == "alert" ? 1.08 : 1.0)
 
                 Text("dB")
                     .font(.system(size: 10, weight: .semibold))
                     .foregroundStyle(ScreenshotColors.textSecondary)
+
+                // Session timer (visible only while running)
+                if isRunning && sessionElapsed > 0 {
+                    Text(formattedElapsed)
+                        .font(.system(size: 9, weight: .medium, design: .monospaced))
+                        .foregroundStyle(ScreenshotColors.textMuted)
+                        .padding(.top, 2)
+                }
             }
         }
     }
@@ -207,12 +232,38 @@ struct WatchDashboardPreview: View {
         default:        return ScreenshotColors.accent
         }
     }
+
+    /// Ring gradient based on alert state: solid green (safe), green→amber (warning), amber→red (alert).
+    private var ringGradient: Gradient {
+        switch alertState {
+        case "alert":
+            return Gradient(colors: [ScreenshotColors.accentWarm, ScreenshotColors.accentDanger])
+        case "warning":
+            return Gradient(colors: [ScreenshotColors.accent, ScreenshotColors.accentWarm])
+        default:
+            return Gradient(colors: [ScreenshotColors.accent, ScreenshotColors.accent])
+        }
+    }
+
+    /// Formatted elapsed time matching WatchSPLViewModel.formattedElapsed.
+    private var formattedElapsed: String {
+        let total = max(0, Int(sessionElapsed))
+        let hours = total / 3600
+        let minutes = (total % 3600) / 60
+        let seconds = total % 60
+        if hours > 0 {
+            return String(format: "%d:%02d:%02d", hours, minutes, seconds)
+        }
+        return String(format: "%d:%02d", minutes, seconds)
+    }
 }
 
 
 // MARK: - ─── Watch Report List Preview ─────────────────────────────────────
 
 /// Replica of WatchReportsListView + WatchReportRow for screenshot rendering.
+/// NOTE: Uses VStack instead of ScrollView — ImageRenderer cannot measure
+/// ScrollView content (collapses to zero height, producing black screenshots).
 struct WatchReportListPreview: View {
     let reports: [SPLSessionReport]
 
@@ -231,42 +282,69 @@ struct WatchReportListPreview: View {
                     .padding(.top, 12)
                     .padding(.bottom, 8)
 
-                // Report rows
-                ScrollView {
-                    VStack(spacing: 4) {
-                        ForEach(reports) { report in
-                            reportRow(report)
-                                .padding(.horizontal, 8)
-                                .padding(.vertical, 6)
-                                .background(ScreenshotColors.surface)
-                                .clipShape(RoundedRectangle(cornerRadius: 8))
-                        }
+                // Report rows (VStack, not ScrollView)
+                VStack(spacing: 4) {
+                    ForEach(reports) { report in
+                        reportRow(report)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 6)
+                            .background(ScreenshotColors.surface)
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
                     }
-                    .padding(.horizontal, 8)
                 }
+                .padding(.horizontal, 8)
+
+                Spacer()
             }
         }
     }
 
     private func reportRow(_ report: SPLSessionReport) -> some View {
-        HStack {
+        HStack(spacing: 6) {
+            // ── Grade Icon ──
+            Image(systemName: gradeIcon(for: report))
+                .font(.system(size: 12))
+                .foregroundStyle(gradeColor(for: report))
+
             VStack(alignment: .leading, spacing: 2) {
                 Text(report.date, style: .date)
                     .font(.system(size: 11, weight: .medium))
                     .foregroundStyle(ScreenshotColors.textPrimary)
-                Text("Peak: \(Int(report.overallPeakDB)) dB")
-                    .font(.system(size: 10, weight: .regular, design: .monospaced))
-                    .foregroundStyle(ScreenshotColors.textSecondary)
+                HStack(spacing: 6) {
+                    Text("Peak: \(Int(report.overallPeakDB))")
+                        .font(.system(size: 9, weight: .regular, design: .monospaced))
+                        .foregroundStyle(ScreenshotColors.textSecondary)
+                    Text("Avg: \(Int(report.overallAverageDB))")
+                        .font(.system(size: 9, weight: .regular, design: .monospaced))
+                        .foregroundStyle(ScreenshotColors.textMuted)
+                }
             }
             Spacer()
             Text("\(report.breachCount)")
                 .font(.system(size: 14, weight: .bold, design: .monospaced))
-                .foregroundStyle(
-                    report.breachCount > 0
-                        ? ScreenshotColors.accentWarm
-                        : ScreenshotColors.accent
-                )
+                .foregroundStyle(breachCountColor(for: report))
         }
+    }
+
+    private func gradeIcon(for report: SPLSessionReport) -> String {
+        let pct = report.breachPercentage
+        if pct == 0 { return "checkmark.circle.fill" }
+        if pct < 5 { return "checkmark.circle" }
+        if pct < 15 { return "exclamationmark.triangle" }
+        return "xmark.circle"
+    }
+
+    private func gradeColor(for report: SPLSessionReport) -> Color {
+        let pct = report.breachPercentage
+        if pct < 5 { return ScreenshotColors.accent }
+        if pct < 15 { return ScreenshotColors.accentWarm }
+        return ScreenshotColors.accentDanger
+    }
+
+    private func breachCountColor(for report: SPLSessionReport) -> Color {
+        if report.breachCount == 0 { return ScreenshotColors.accent }
+        if report.breachCount <= 2 { return ScreenshotColors.accentWarm }
+        return ScreenshotColors.accentDanger
     }
 }
 
@@ -274,6 +352,8 @@ struct WatchReportListPreview: View {
 // MARK: - ─── Watch Report Detail Preview ───────────────────────────────────
 
 /// Replica of WatchReportDetailView for screenshot rendering.
+/// NOTE: Uses VStack instead of ScrollView — ImageRenderer cannot measure
+/// ScrollView content (collapses to zero height, producing black screenshots).
 struct WatchReportDetailPreview: View {
     let report: SPLSessionReport
 
@@ -282,50 +362,49 @@ struct WatchReportDetailPreview: View {
             ScreenshotColors.background
                 .ignoresSafeArea()
 
-            ScrollView {
-                VStack(alignment: .leading, spacing: 8) {
-                    // ── Navigation title ──
-                    Text("Report")
-                        .font(.system(size: 15, weight: .bold))
-                        .foregroundStyle(ScreenshotColors.textPrimary)
+            VStack(alignment: .leading, spacing: 6) {
+                // ── Navigation title ──
+                Text("Report")
+                    .font(.system(size: 15, weight: .bold))
+                    .foregroundStyle(ScreenshotColors.textPrimary)
 
-                    // ── Header ──
-                    Text(report.date, style: .date)
-                        .font(.system(size: 13, weight: .bold))
-                        .foregroundStyle(ScreenshotColors.textPrimary)
+                // ── Header ──
+                Text(report.date, style: .date)
+                    .font(.system(size: 13, weight: .bold))
+                    .foregroundStyle(ScreenshotColors.textPrimary)
 
-                    // ── Grade ──
-                    HStack {
-                        Image(systemName: gradeIcon)
-                            .foregroundStyle(gradeColor)
-                        Text(gradeLabel)
-                            .font(.system(size: 14, weight: .bold))
-                            .foregroundStyle(gradeColor)
-                    }
-
-                    Rectangle()
-                        .fill(ScreenshotColors.textMuted)
-                        .frame(height: 0.5)
-
-                    // ── Stats ──
-                    statRow(label: "Peak", value: "\(Int(report.overallPeakDB)) dB")
-                    statRow(label: "Average", value: "\(Int(report.overallAverageDB)) dB")
-                    statRow(label: "Target", value: "\(Int(report.targetDB)) dB")
-                    statRow(label: "Breaches", value: "\(report.breachCount)")
-                    statRow(label: "Danger", value: "\(report.dangerCount)")
-                    statRow(label: "Duration", value: formatDuration(report.totalMonitoringSeconds))
-                    statRow(
-                        label: "Over %",
-                        value: String(format: "%.1f%%", report.breachPercentage)
-                    )
+                // ── Grade ──
+                HStack {
+                    Image(systemName: gradeIcon)
+                        .foregroundStyle(gradeColor)
+                    Text(gradeLabel)
+                        .font(.system(size: 14, weight: .bold))
+                        .foregroundStyle(gradeColor)
                 }
-                .padding(.horizontal, 4)
-                .padding(.top, 8)
+
+                // ── Breach Timeline Bar ──
+                if report.totalMonitoringSeconds > 0 {
+                    breachTimelineBar
+                }
+
+                // ── Stats ──
+                coloredStatRow(label: "Peak", value: "\(Int(report.overallPeakDB)) dB", color: peakColor)
+                coloredStatRow(label: "Average", value: "\(Int(report.overallAverageDB)) dB", color: averageColor)
+                coloredStatRow(label: "Target", value: "\(Int(report.targetDB)) dB", color: ScreenshotColors.textPrimary)
+                coloredStatRow(label: "Breaches", value: "\(report.breachCount)", color: breachCountColor)
+                coloredStatRow(label: "Danger", value: "\(report.dangerCount)", color: dangerColor)
+                coloredStatRow(label: "Duration", value: formatDuration(report.totalMonitoringSeconds), color: ScreenshotColors.textPrimary)
+                coloredStatRow(label: "Over %", value: String(format: "%.1f%%", report.breachPercentage), color: overPercentColor)
             }
+            .padding(.horizontal, 4)
+            .padding(.top, 8)
         }
     }
 
-    private func statRow(label: String, value: String) -> some View {
+
+    // MARK: - Colored Stat Row
+
+    private func coloredStatRow(label: String, value: String, color: Color) -> some View {
         HStack {
             Text(label)
                 .font(.system(size: 11, weight: .medium))
@@ -333,9 +412,80 @@ struct WatchReportDetailPreview: View {
             Spacer()
             Text(value)
                 .font(.system(size: 12, weight: .semibold, design: .monospaced))
-                .foregroundStyle(ScreenshotColors.textPrimary)
+                .foregroundStyle(color)
         }
+        .padding(.horizontal, 6)
+        .padding(.vertical, 4)
+        .background(ScreenshotColors.surfaceElevated)
+        .clipShape(RoundedRectangle(cornerRadius: 6))
     }
+
+
+    // MARK: - Breach Timeline Bar
+
+    private var breachTimelineBar: some View {
+        GeometryReader { geo in
+            let totalWidth = geo.size.width
+            let totalSeconds = report.totalMonitoringSeconds
+
+            ZStack(alignment: .leading) {
+                // Full session background (safe = green)
+                RoundedRectangle(cornerRadius: 3)
+                    .fill(ScreenshotColors.accent.opacity(0.3))
+                    .frame(height: 6)
+
+                // Breach segments overlaid
+                ForEach(report.breachEvents) { breach in
+                    let startFraction = max(0, min(1, breach.startTime.timeIntervalSince(report.sessionStart) / totalSeconds))
+                    let durationFraction = max(0, min(1 - startFraction, breach.durationSeconds / totalSeconds))
+                    let xOffset = startFraction * totalWidth
+                    let segmentWidth = max(durationFraction * totalWidth, 2)
+
+                    RoundedRectangle(cornerRadius: 3)
+                        .fill(breach.wasDanger ? ScreenshotColors.accentDanger : ScreenshotColors.accentWarm)
+                        .frame(width: segmentWidth, height: 6)
+                        .offset(x: xOffset)
+                }
+            }
+        }
+        .frame(height: 6)
+        .padding(.vertical, 2)
+    }
+
+
+    // MARK: - Color Logic
+
+    private var peakColor: Color {
+        let threshold = report.flaggingMode.thresholdDB
+        if report.overallPeakDB > report.targetDB + threshold { return ScreenshotColors.accentDanger }
+        if report.overallPeakDB > report.targetDB { return ScreenshotColors.accentWarm }
+        return ScreenshotColors.accent
+    }
+
+    private var averageColor: Color {
+        if report.overallAverageDB > report.targetDB - 3 { return ScreenshotColors.accentWarm }
+        return ScreenshotColors.accent
+    }
+
+    private var breachCountColor: Color {
+        if report.breachCount == 0 { return ScreenshotColors.accent }
+        if report.breachCount <= 2 { return ScreenshotColors.accentWarm }
+        return ScreenshotColors.accentDanger
+    }
+
+    private var dangerColor: Color {
+        report.dangerCount > 0 ? ScreenshotColors.accentDanger : ScreenshotColors.accent
+    }
+
+    private var overPercentColor: Color {
+        let pct = report.breachPercentage
+        if pct < 5 { return ScreenshotColors.accent }
+        if pct < 15 { return ScreenshotColors.accentWarm }
+        return ScreenshotColors.accentDanger
+    }
+
+
+    // MARK: - Helpers
 
     private func formatDuration(_ seconds: TimeInterval) -> String {
         let mins = Int(seconds) / 60
