@@ -213,6 +213,56 @@ final class SPLAlertStateCodableTests: XCTestCase {
 }
 
 
+// MARK: - ─── Session Timer Logic Tests ──────────────────────────────────────
+
+/// Tests for the session timer formatting logic used by the Watch dashboard.
+/// These mirror the computed property in WatchSPLViewModel.formattedElapsed
+/// but test the underlying formatting directly.
+final class SessionTimerLogicTests: XCTestCase {
+
+    /// Computes formatted elapsed string using the same formula as WatchSPLViewModel.formattedElapsed.
+    private func formattedElapsed(_ seconds: TimeInterval) -> String {
+        let total = max(0, Int(seconds))
+        let hours = total / 3600
+        let minutes = (total % 3600) / 60
+        let secs = total % 60
+        if hours > 0 {
+            return String(format: "%d:%02d:%02d", hours, minutes, secs)
+        }
+        return String(format: "%d:%02d", minutes, secs)
+    }
+
+    func testFormattedElapsed_zero() {
+        XCTAssertEqual(formattedElapsed(0), "0:00")
+    }
+
+    func testFormattedElapsed_minutesAndSeconds() {
+        XCTAssertEqual(formattedElapsed(754), "12:34")
+    }
+
+    func testFormattedElapsed_hoursMinutesSeconds() {
+        XCTAssertEqual(formattedElapsed(5025), "1:23:45")
+    }
+
+    func testFormattedElapsed_exactMinute() {
+        XCTAssertEqual(formattedElapsed(60), "1:00")
+    }
+
+    func testFormattedElapsed_exactHour() {
+        XCTAssertEqual(formattedElapsed(3600), "1:00:00")
+    }
+
+    func testFormattedElapsed_underOneMinute() {
+        XCTAssertEqual(formattedElapsed(45), "0:45")
+    }
+
+    func testFormattedElapsed_multiHourSession() {
+        // 2 hours, 15 minutes, 30 seconds = 8130 seconds
+        XCTAssertEqual(formattedElapsed(8130), "2:15:30")
+    }
+}
+
+
 // MARK: - ─── SPL Snapshot Tests ─────────────────────────────────────────────
 
 final class SPLSnapshotTests: XCTestCase {

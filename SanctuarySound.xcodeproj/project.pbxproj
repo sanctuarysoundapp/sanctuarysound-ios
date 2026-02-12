@@ -78,6 +78,7 @@
 		AA000066 /* QABuiltInContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000066 /* QABuiltInContent.swift */; };
 		AA000067 /* QAArticleDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000067 /* QAArticleDetailView.swift */; };
 		AA000068 /* SampleDataInjector.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000068 /* SampleDataInjector.swift */; };
+		AA000069 /* WatchScreenshotPreviews.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000069 /* WatchScreenshotPreviews.swift */; };
 		AA100001 /* SoundEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB100001 /* SoundEngineTests.swift */; };
 		AA100002 /* PCOTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB100002 /* PCOTests.swift */; };
 		AA100003 /* FrequencyAnalysisTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB100003 /* FrequencyAnalysisTests.swift */; };
@@ -86,6 +87,7 @@
 		AA100006 /* SPLFormattingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB100006 /* SPLFormattingTests.swift */; };
 		AA100007 /* SettingsEnumTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB100007 /* SettingsEnumTests.swift */; };
 		AA100008 /* QAStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB100008 /* QAStoreTests.swift */; };
+		AA100009 /* WatchWidgetScreenshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB100009 /* WatchWidgetScreenshotTests.swift */; };
 		AA200001 /* SanctuarySoundWatchApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB200001 /* SanctuarySoundWatchApp.swift */; };
 		AA200002 /* WatchSPLView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB200002 /* WatchSPLView.swift */; };
 		AA200003 /* WatchSPLViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB200003 /* WatchSPLViewModel.swift */; };
@@ -243,6 +245,7 @@
 		AB000066 /* QABuiltInContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QABuiltInContent.swift; sourceTree = "<group>"; };
 		AB000067 /* QAArticleDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QAArticleDetailView.swift; sourceTree = "<group>"; };
 		AB000068 /* SampleDataInjector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleDataInjector.swift; sourceTree = "<group>"; };
+		AB000069 /* WatchScreenshotPreviews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchScreenshotPreviews.swift; sourceTree = "<group>"; };
 		AB100001 /* SoundEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundEngineTests.swift; sourceTree = "<group>"; };
 		AB100002 /* PCOTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PCOTests.swift; sourceTree = "<group>"; };
 		AB100003 /* FrequencyAnalysisTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrequencyAnalysisTests.swift; sourceTree = "<group>"; };
@@ -251,6 +254,7 @@
 		AB100006 /* SPLFormattingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SPLFormattingTests.swift; sourceTree = "<group>"; };
 		AB100007 /* SettingsEnumTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsEnumTests.swift; sourceTree = "<group>"; };
 		AB100008 /* QAStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QAStoreTests.swift; sourceTree = "<group>"; };
+		AB100009 /* WatchWidgetScreenshotTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchWidgetScreenshotTests.swift; sourceTree = "<group>"; };
 		AB200001 /* SanctuarySoundWatchApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SanctuarySoundWatchApp.swift; sourceTree = "<group>"; };
 		AB200002 /* WatchSPLView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchSPLView.swift; sourceTree = "<group>"; };
 		AB200003 /* WatchSPLViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchSPLViewModel.swift; sourceTree = "<group>"; };
@@ -524,6 +528,7 @@
 				AB100006 /* SPLFormattingTests.swift */,
 				AB100007 /* SettingsEnumTests.swift */,
 				AB100008 /* QAStoreTests.swift */,
+				AB100009 /* WatchWidgetScreenshotTests.swift */,
 			);
 			path = SanctuarySoundTests;
 			sourceTree = "<group>";
@@ -566,6 +571,7 @@
 			isa = PBXGroup;
 			children = (
 				AB000068 /* SampleDataInjector.swift */,
+				AB000069 /* WatchScreenshotPreviews.swift */,
 			);
 			path = Debug;
 			sourceTree = "<group>";
@@ -838,6 +844,7 @@
 				AA000063 /* SPLSessionReportView.swift in Sources */,
 				AA000064 /* SPLReportExportView.swift in Sources */,
 				AA000068 /* SampleDataInjector.swift in Sources */,
+				AA000069 /* WatchScreenshotPreviews.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -853,6 +860,7 @@
 				AA100006 /* SPLFormattingTests.swift in Sources */,
 				AA100007 /* SettingsEnumTests.swift in Sources */,
 				AA100008 /* QAStoreTests.swift in Sources */,
+				AA100009 /* WatchWidgetScreenshotTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1204,6 +1212,7 @@
 		B2300001 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = M2739G49TS;
@@ -1216,6 +1225,7 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 4;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SanctuarySoundWatch.app/SanctuarySoundWatch";
 				WATCHOS_DEPLOYMENT_TARGET = 10.0;
 			};
 			name = Debug;
@@ -1223,6 +1233,7 @@
 		B2300002 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = M2739G49TS;
@@ -1235,6 +1246,7 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 4;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SanctuarySoundWatch.app/SanctuarySoundWatch";
 				WATCHOS_DEPLOYMENT_TARGET = 10.0;
 			};
 			name = Release;
