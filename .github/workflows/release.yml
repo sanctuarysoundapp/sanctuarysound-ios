@@ -43,13 +43,22 @@ jobs:
             --version "${{ steps.version.outputs.version }}" \
             --build "${{ steps.version.outputs.build }}"
 
-      - name: Run tests
+      - name: Run tests (iOS)
         run: |
           xcodebuild test \
             -project ${{ env.PROJECT }} \
             -scheme ${{ env.SCHEME }} \
             -destination 'platform=iOS Simulator,name=iPhone 17 Pro Max' \
             -only-testing:SanctuarySoundTests \
+            -configuration Debug \
+            CODE_SIGNING_ALLOWED=NO
+
+      - name: Run tests (watchOS)
+        run: |
+          xcodebuild test \
+            -project ${{ env.PROJECT }} \
+            -scheme SanctuarySoundWatchTests \
+            -destination 'platform=watchOS Simulator,name=Apple Watch Ultra 3 (49mm)' \
             -configuration Debug \
             CODE_SIGNING_ALLOWED=NO
 
