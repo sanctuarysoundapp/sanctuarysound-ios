@@ -30,6 +30,9 @@ final class PCOClient: ObservableObject {
     /// Retains the auth session while the browser is presented.
     private var activeAuthSession: ASWebAuthenticationSession?
 
+    /// Serializes token refresh to prevent concurrent refresh attempts.
+    private var refreshTask: Task<Void, Error>?
+
     /// Provides the presentation anchor for ASWebAuthenticationSession.
     private let contextProvider = AuthPresentationContext()
 
@@ -89,8 +92,9 @@ final class PCOClient: ObservableObject {
 
     /// Fetch recent plans for a service type.
     func fetchPlans(serviceTypeID: String, limit: Int = 10) async throws -> [PCOResource<PCOPlanAttributes>] {
+        let safeTypeID = sanitizedPathSegment(serviceTypeID)
         let response: PCOResponse<PCOPlanAttributes> = try await get(
-            path: "/services/v2/service_types/\(serviceTypeID)/plans",
+            path: "/services/v2/service_types/\(safeTypeID)/plans",
             query: ["order": "-sort_date", "per_page": "\(limit)"]
         )
         return response.data
@@ -98,8 +102,10 @@ final class PCOClient: ObservableObject {
 
     /// Fetch plan items (songs) for a specific plan.
     func fetchPlanItems(serviceTypeID: String, planID: String) async throws -> [PCOResource<PCOPlanItemAttributes>] {
+        let safeTypeID = sanitizedPathSegment(serviceTypeID)
+        let safePlanID = sanitizedPathSegment(planID)
         let response: PCOResponse<PCOPlanItemAttributes> = try await get(
-            path: "/services/v2/service_types/\(serviceTypeID)/plans/\(planID)/items",
+            path: "/services/v2/service_types/\(safeTypeID)/plans/\(safePlanID)/items",
             query: ["filter": "song"]
         )
         return response.data
@@ -107,8 +113,10 @@ final class PCOClient: ObservableObject {
 
     /// Fetch team members for a specific plan.
     func fetchTeamMembers(serviceTypeID: String, planID: String) async throws -> [PCOResource<PCOTeamMemberAttributes>] {
+        let safeTypeID = sanitizedPathSegment(serviceTypeID)
+        let safePlanID = sanitizedPathSegment(planID)
         let response: PCOResponse<PCOTeamMemberAttributes> = try await get(
-            path: "/services/v2/service_types/\(serviceTypeID)/plans/\(planID)/team_members",
+            path: "/services/v2/service_types/\(safeTypeID)/plans/\(safePlanID)/team_members",
             query: ["per_page": "100"]
         )
         return response.data
@@ -116,16 +124,18 @@ final class PCOClient: ObservableObject {
 
     /// Fetch a single song's details (for key info).
     func fetchSong(songID: String) async throws -> PCOResource<PCOSongAttributes> {
+        let safeSongID = sanitizedPathSegment(songID)
         let response: PCOSingleResponse<PCOSongAttributes> = try await get(
-            path: "/services/v2/songs/\(songID)"
+            path: "/services/v2/songs/\(safeSongID)"
         )
         return response.data
     }
 
     /// Fetch arrangements for a song (contains BPM and key).
     func fetchArrangements(songID: String) async throws -> [PCOResource<PCOArrangementAttributes>] {
+        let safeSongID = sanitizedPathSegment(songID)
         let response: PCOResponse<PCOArrangementAttributes> = try await get(
-            path: "/services/v2/songs/\(songID)/arrangements"
+            path: "/services/v2/songs/\(safeSongID)/arrangements"
         )
         return response.data
     }
@@ -148,17 +158,36 @@ final class PCOClient: ObservableObject {
         folders: [PCOResource<PCOFolderAttributes>],
         serviceTypes: [PCOResource<PCOServiceTypeAttributes>]
     ) {
+        let safeFolderID = sanitizedPathSegment(folderID)
         async let subFolders: PCOResponse<PCOFolderAttributes> = get(
-            path: "/services/v2/folders/\(folderID)/folders",
+            path: "/services/v2/folders/\(safeFolderID)/folders",
             query: ["per_page": "100"]
         )
         async let serviceTypes: PCOResponse<PCOServiceTypeAttributes> = get(
-            path: "/services/v2/folders/\(folderID)/service_types",
+            path: "/services/v2/folders/\(safeFolderID)/service_types",
             query: ["per_page": "100"]
         )
 
         let (foldersResponse, typesResponse) = try await (subFolders, serviceTypes)
         return (folders: foldersResponse.data, serviceTypes: typesResponse.data)
+    }
+
+
+    // MARK: - ─── Path Sanitization ───────────────────────────────────────────
+
+    /// Character set for encoding individual path segments — excludes "/"
+    /// to prevent path traversal via IDs containing "../".
+    private static let pathSegmentAllowed: CharacterSet = {
+        var set = CharacterSet.urlPathAllowed
+        set.remove("/")
+        return set
+    }()
+
+    /// Percent-encodes a path segment to prevent path traversal or injection
+    /// via API IDs. PCO IDs are numeric, but this guard protects against
+    /// malformed or tampered API responses containing special characters.
+    private func sanitizedPathSegment(_ segment: String) -> String {
+        segment.addingPercentEncoding(withAllowedCharacters: Self.pathSegmentAllowed) ?? segment
     }
 
 
@@ -214,12 +243,28 @@ final class PCOClient: ObservableObject {
     private func refreshTokenIfNeeded() async throws {
         guard let tokens, tokens.expiresAt < Date() else { return }
 
-        Logger.network.info("PCO token expired — refreshing")
-        let newTokens = try await refreshTokens(refreshToken: tokens.refreshToken)
-        self.tokens = newTokens
-        isAuthenticated = true
-        try SecureStorage.saveTokens(newTokens)
-        Logger.network.info("PCO token refresh succeeded")
+        // If a refresh is already in flight, await it instead of starting another.
+        // Prevents concurrent refreshes that could invalidate each other's tokens.
+        if let existingTask = refreshTask {
+            try await existingTask.value
+            return
+        }
+
+        let task = Task<Void, Error> { [weak self] in
+            guard let self else { return }
+            defer { self.refreshTask = nil }
+
+            guard let currentTokens = self.tokens else { return }
+            Logger.network.info("PCO token expired — refreshing")
+            let newTokens = try await self.refreshTokens(refreshToken: currentTokens.refreshToken)
+            self.tokens = newTokens
+            self.isAuthenticated = true
+            try SecureStorage.saveTokens(newTokens)
+            Logger.network.info("PCO token refresh succeeded")
+        }
+
+        refreshTask = task
+        try await task.value
     }
 
     private func refreshTokens(refreshToken: String) async throws -> PCOTokens {
@@ -345,7 +390,7 @@ final class PCOClient: ObservableObject {
                     continuation.resume(throwing: PCOError.authCancelled)
                 }
             }
-            authSession.prefersEphemeralWebBrowserSession = false
+            authSession.prefersEphemeralWebBrowserSession = true
             authSession.presentationContextProvider = self?.contextProvider
 
             // Retain the session so it isn't deallocated
@@ -386,7 +431,9 @@ private final class AuthPresentationContext: NSObject, ASWebAuthenticationPresen
         // A window scene always exists when OAuth is triggered from the UI.
         guard let fallbackScene = scenes.first else {
             Logger.network.error("No UIWindowScene available for OAuth presentation anchor")
-            fatalError("No UIWindowScene available — OAuth requires an active window scene")
+            // Return a detached window rather than crashing — the OAuth flow
+            // will fail gracefully if no scene is available.
+            return ASPresentationAnchor()
         }
         return ASPresentationAnchor(windowScene: fallbackScene)
     }

@@ -9,6 +9,7 @@
 // ============================================================================
 
 import Foundation
+import OSLog
 import WatchConnectivity
 
 
@@ -71,7 +72,9 @@ final class WatchSessionManager: NSObject, ObservableObject {
         lastSendTime = now
 
         let message = snapshot.toDictionary()
-        session.sendMessage(message, replyHandler: nil, errorHandler: nil)
+        session.sendMessage(message, replyHandler: nil) { error in
+            Logger.connectivity.debug("Watch SPL message failed: \(error.localizedDescription)")
+        }
     }
 
     // MARK: - Send Preferences
@@ -90,7 +93,11 @@ final class WatchSessionManager: NSObject, ObservableObject {
             context[WCMessageKey.calibrationOffset] = offset
         }
 
-        try? session.updateApplicationContext(context)
+        do {
+            try session.updateApplicationContext(context)
+        } catch {
+            Logger.connectivity.error("Failed to update Watch application context: \(error.localizedDescription)")
+        }
     }
 
     // MARK: - Send Report
