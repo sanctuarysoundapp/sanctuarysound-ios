@@ -25,12 +25,21 @@ jobs:
             -configuration Debug \
             CODE_SIGNING_ALLOWED=NO
 
-      - name: Test
+      - name: Test (iOS)
         run: |
           xcodebuild test \
             -project SanctuarySound.xcodeproj \
             -scheme SanctuarySound \
             -destination 'platform=iOS Simulator,name=iPhone 17 Pro Max' \
             -only-testing:SanctuarySoundTests \
+            -configuration Debug \
+            CODE_SIGNING_ALLOWED=NO
+
+      - name: Test (watchOS)
+        run: |
+          xcodebuild test \
+            -project SanctuarySound.xcodeproj \
+            -scheme SanctuarySoundWatchTests \
+            -destination 'platform=watchOS Simulator,name=Apple Watch Ultra 3 (49mm)' \
             -configuration Debug \
             CODE_SIGNING_ALLOWED=NO
