@@ -358,9 +358,7 @@ struct MixerConnectionView: View {
     private var saveSnapshotSection: some View {
         SectionCard(title: "Actions") {
             Button {
-                let dateFormatter = DateFormatter()
-                dateFormatter.dateFormat = "MMM d, h:mm a"
-                snapshotName = "Live — \(dateFormatter.string(from: Date()))"
+                snapshotName = "Live — \(AppDateFormatter.dateWithTime.string(from: Date()))"
                 showingSaveSheet = true
             } label: {
                 HStack(spacing: 8) {

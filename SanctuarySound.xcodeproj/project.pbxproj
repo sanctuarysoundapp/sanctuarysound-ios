@@ -79,6 +79,10 @@
 		AA000067 /* QAArticleDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000067 /* QAArticleDetailView.swift */; };
 		AA000068 /* SampleDataInjector.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000068 /* SampleDataInjector.swift */; };
 		AA000069 /* WatchScreenshotPreviews.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000069 /* WatchScreenshotPreviews.swift */; };
+		AA00006A /* DateFormatters.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB00006A /* DateFormatters.swift */; };
+		AA00006B /* VenueManagementSheets.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB00006B /* VenueManagementSheets.swift */; };
+		AA00006C /* ServiceDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB00006C /* ServiceDetailView.swift */; };
+		AA00006D /* InputLibrarySheets.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB00006D /* InputLibrarySheets.swift */; };
 		AA100001 /* SoundEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB100001 /* SoundEngineTests.swift */; };
 		AA100002 /* PCOTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB100002 /* PCOTests.swift */; };
 		AA100003 /* FrequencyAnalysisTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB100003 /* FrequencyAnalysisTests.swift */; };
@@ -246,6 +250,10 @@
 		AB000067 /* QAArticleDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QAArticleDetailView.swift; sourceTree = "<group>"; };
 		AB000068 /* SampleDataInjector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleDataInjector.swift; sourceTree = "<group>"; };
 		AB000069 /* WatchScreenshotPreviews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchScreenshotPreviews.swift; sourceTree = "<group>"; };
+		AB00006A /* DateFormatters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateFormatters.swift; sourceTree = "<group>"; };
+		AB00006B /* VenueManagementSheets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VenueManagementSheets.swift; sourceTree = "<group>"; };
+		AB00006C /* ServiceDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceDetailView.swift; sourceTree = "<group>"; };
+		AB00006D /* InputLibrarySheets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputLibrarySheets.swift; sourceTree = "<group>"; };
 		AB100001 /* SoundEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundEngineTests.swift; sourceTree = "<group>"; };
 		AB100002 /* PCOTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PCOTests.swift; sourceTree = "<group>"; };
 		AB100003 /* FrequencyAnalysisTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrequencyAnalysisTests.swift; sourceTree = "<group>"; };
@@ -410,7 +418,10 @@
 				AB000030 /* MixerConnectionView.swift */,
 				AB000035 /* PCOImportSheet.swift */,
 				AB000040 /* ServicesView.swift */,
+				AB00006B /* VenueManagementSheets.swift */,
+				AB00006C /* ServiceDetailView.swift */,
 				AB000041 /* InputLibraryView.swift */,
+				AB00006D /* InputLibrarySheets.swift */,
 				AB000042 /* ConsolesView.swift */,
 				AB000043 /* ToolsView.swift */,
 				AB000051 /* EQAnalyzerView.swift */,
@@ -500,6 +511,7 @@
 			children = (
 				AB000060 /* SharedComponents.swift */,
 				AB000061 /* StepNavigation.swift */,
+				AB00006A /* DateFormatters.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -845,6 +857,10 @@
 				AA000064 /* SPLReportExportView.swift in Sources */,
 				AA000068 /* SampleDataInjector.swift in Sources */,
 				AA000069 /* WatchScreenshotPreviews.swift in Sources */,
+				AA00006A /* DateFormatters.swift in Sources */,
+				AA00006B /* VenueManagementSheets.swift in Sources */,
+				AA00006C /* ServiceDetailView.swift in Sources */,
+				AA00006D /* InputLibrarySheets.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

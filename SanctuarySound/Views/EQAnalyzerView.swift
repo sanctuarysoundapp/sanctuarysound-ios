@@ -281,8 +281,6 @@ struct EQAnalyzerView: View {
     }
 
     private func formatDate(_ date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "MMM d, h:mm a"
-        return formatter.string(from: date)
+        AppDateFormatter.dateWithTime.string(from: date)
     }
 }
