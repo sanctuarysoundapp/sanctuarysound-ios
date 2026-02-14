@@ -111,9 +111,7 @@ final class EQAnalyzer: ObservableObject {
     func captureSnapshot(name: String = "") {
         let snapshotName: String
         if name.isEmpty {
-            let formatter = DateFormatter()
-            formatter.dateFormat = "MMM d, h:mm:ss a"
-            snapshotName = "Capture — \(formatter.string(from: Date()))"
+            snapshotName = "Capture — \(AppDateFormatter.dateWithTime.string(from: Date()))"
         } else {
             snapshotName = name
         }

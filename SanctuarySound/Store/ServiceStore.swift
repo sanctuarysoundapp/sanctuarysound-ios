@@ -444,7 +444,7 @@ final class ServiceStore: ObservableObject {
             encoder.dateEncodingStrategy = .iso8601
             encoder.outputFormatting = .prettyPrinted
             let jsonData = try encoder.encode(data)
-            try jsonData.write(to: url, options: .atomic)
+            try jsonData.write(to: url, options: [.atomic, .completeFileProtection])
         } catch {
             Logger.persistence.error("Failed to persist \(filename): \(error.localizedDescription)")
         }

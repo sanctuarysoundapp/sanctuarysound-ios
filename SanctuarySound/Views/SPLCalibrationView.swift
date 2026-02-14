@@ -545,14 +545,8 @@ struct SPLCalibrationView: View {
         return BoothColors.accentDanger
     }
 
-    private static let reportDateFormatter: DateFormatter = {
-        let f = DateFormatter()
-        f.dateFormat = "MMM d, h:mm a"
-        return f
-    }()
-
     private func formatReportDate(_ date: Date) -> String {
-        Self.reportDateFormatter.string(from: date)
+        AppDateFormatter.dateWithTime.string(from: date)
     }
 
     private func formatDuration(_ seconds: TimeInterval) -> String {

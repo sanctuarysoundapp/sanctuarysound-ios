@@ -28,11 +28,35 @@ struct MixerConnectionView: View {
     @State private var selectedMixer: MixerModel = .allenHeathAvantis
     @State private var showingSaveSheet = false
     @State private var snapshotName: String = ""
+    @State private var showIPValidationAlert = false
     @FocusState private var focusedField: ConnectionField?
 
     private enum ConnectionField {
         case ipAddress
         case port
+    }
+
+    /// Validates that the host input is a well-formed IPv4 address.
+    /// Rejects non-numeric input that may arrive via paste.
+    private var isValidIPv4: Bool {
+        let octets = hostInput.split(separator: ".")
+        guard octets.count == 4 else { return false }
+        return octets.allSatisfy { octet in
+            guard let value = UInt8(octet) else { return false }
+            return (0...255).contains(value)
+        }
+    }
+
+    /// True when the IP is a private/link-local address (RFC 1918 + RFC 3927).
+    /// Mixer connections should only target local network consoles.
+    private var isPrivateIP: Bool {
+        guard isValidIPv4 else { return false }
+        let octets = hostInput.split(separator: ".").compactMap { UInt8($0) }
+        guard octets.count == 4 else { return false }
+        return octets[0] == 10
+            || (octets[0] == 172 && (16...31).contains(octets[1]))
+            || (octets[0] == 192 && octets[1] == 168)
+            || (octets[0] == 169 && octets[1] == 254)
     }
 
     private var supportedMixers: [MixerModel] {
@@ -151,6 +175,10 @@ struct MixerConnectionView: View {
             if connectionManager.status.isConnected {
                 connectionManager.disconnect()
             } else {
+                guard isValidIPv4, isPrivateIP else {
+                    showIPValidationAlert = true
+                    return
+                }
                 let portNum = UInt16(portInput) ?? 51325
                 connectionManager.connect(
                     host: hostInput,
@@ -177,6 +205,15 @@ struct MixerConnectionView: View {
             .clipShape(RoundedRectangle(cornerRadius: 10))
         }
         .disabled(hostInput.isEmpty && !connectionManager.status.isConnected)
+        .alert("Invalid IP Address", isPresented: $showIPValidationAlert) {
+            Button("OK", role: .cancel) { }
+        } message: {
+            if !isValidIPv4 {
+                Text("Enter a valid IPv4 address (e.g. 192.168.1.50).")
+            } else {
+                Text("Mixer connections are restricted to local network addresses (192.168.x.x, 10.x.x.x, 172.16-31.x.x).")
+            }
+        }
     }
 
 
@@ -321,9 +358,7 @@ struct MixerConnectionView: View {
     private var saveSnapshotSection: some View {
         SectionCard(title: "Actions") {
             Button {
-                let dateFormatter = DateFormatter()
-                dateFormatter.dateFormat = "MMM d, h:mm a"
-                snapshotName = "Live — \(dateFormatter.string(from: Date()))"
+                snapshotName = "Live — \(AppDateFormatter.dateWithTime.string(from: Date()))"
                 showingSaveSheet = true
             } label: {
                 HStack(spacing: 8) {
