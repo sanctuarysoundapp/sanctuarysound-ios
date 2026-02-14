@@ -516,10 +516,7 @@ final class PlanningCenterManager: ObservableObject {
         }
 
         // Try date-only format (e.g., "2026-02-15")
-        let dateOnly = DateFormatter()
-        dateOnly.dateFormat = "yyyy-MM-dd"
-        dateOnly.locale = Locale(identifier: "en_US_POSIX")
-        if let date = dateOnly.date(from: dateString) {
+        if let date = AppDateFormatter.isoDateOnly.date(from: dateString) {
             return date
         }
 
